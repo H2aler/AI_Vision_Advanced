@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 시각화 시스템</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0f0f23;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: 90vh;
+        }
+        .control-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        .main-view {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        button {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            margin: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        button:hover {
+            border-color: #00ffff;
+        }
+        button.active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+        #mainCanvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="control-panel">
+            <h3>🧬 양자 생명체</h3>
+            <button onclick="toggleFeature('quantumCellularAutomata')">양자 세포 자동자</button>
+            <button onclick="toggleFeature('quantumNeuralEcosystem')">양자 신경망 생태계</button>
+            <button onclick="toggleFeature('quantumBiology')">양자 생물학</button>
+            
+            <h3>⚛️ 양자 컴퓨팅</h3>
+            <button onclick="toggleFeature('quantumCircuit')">양자 회로</button>
+            <button onclick="toggleFeature('quantumAlgorithms')">양자 알고리즘</button>
+            <button onclick="toggleFeature('entanglementNetwork')">얽힘 네트워크</button>
+            
+            <h3>🤖 인공지능</h3>
+            <button onclick="toggleFeature('neuralNetwork')">신경망 시스템</button>
+            <button onclick="toggleFeature('deepLearning')">딥러닝</button>
+            <button onclick="toggleFeature('generativeAI')">생성형 AI</button>
+            
+            <h3>🎨 AI 아트</h3>
+            <button onclick="toggleFeature('creativeAIArt')">창조적 AI 아트</button>
+            <button onclick="toggleFeature('artGenerator')">AI 아트 생성기</button>
+            
+            <h3>🔧 제어</h3>
+            <button onclick="startSimulation()">시작</button>
+            <button onclick="stopSimulation()">정지</button>
+            <button onclick="activateAllAI()">모든 AI 활성화</button>
+        </div>
+        
+        <div class="main-view">
+            <canvas id="mainCanvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        class AIVisualizationEngine {
+            constructor() {
+                this.canvas = document.getElementById('mainCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.isRunning = false;
+                this.time = 0;
+                this.resizeCanvas();
+                
+                // AI 시스템들 초기화
+                this.quantumLife = {
+                    quantumCellularAutomata: { active: false, grid: [] },
+                    quantumNeuralEcosystem: { active: false, networks: [] },
+                    quantumBiology: { active: false, coherence: 0 }
+                };
+                
+                this.quantumComputing = {
+                    quantumCircuit: { active: false, qubits: [] },
+                    quantumAlgorithms: { active: false },
+                    entanglementNetwork: { active: false, nodes: [] }
+                };
+                
+                this.artificialIntelligence = {
+                    neuralNetwork: { active: false, layers: [], activations: [] },
+                    deepLearning: { active: false, loss: 0, accuracy: 0 },
+                    generativeAI: { active: false, creativity: 0.5 }
+                };
+                
+                this.creativeAIArt = {
+                    creativeAIArt: { active: false, brushStrokes: [] },
+                    artGenerator: { active: false, parameters: {} }
+                };
+            }
+            
+            resizeCanvas() {
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = this.canvas.offsetHeight;
+            }
+            
+            start() {
+                this.isRunning = true;
+                this.animate();
+            }
+            
+            stop() {
+                this.isRunning = false;
+            }
+            
+            animate() {
+                if (!this.isRunning) return;
+                
+                this.update();
+                this.render();
+                this.time += 0.016;
+                requestAnimationFrame(() => this.animate());
+            }
+            
+            update() {
+                this.updateQuantumLife();
+                this.updateQuantumComputing();
+                this.updateArtificialIntelligence();
+                this.updateCreativeAIArt();
+            }
+            
+            updateQuantumLife() {
+                if (this.quantumLife.quantumCellularAutomata.active) {
+                    this.updateQuantumCellularAutomata();
+                }
+                if (this.quantumLife.quantumNeuralEcosystem.active) {
+                    this.updateQuantumNeuralEcosystem();
+                }
+                if (this.quantumLife.quantumBiology.active) {
+                    this.updateQuantumBiology();
+                }
+            }
+            
+            updateQuantumCellularAutomata() {
+                const qca = this.quantumLife.quantumCellularAutomata;
+                if (!qca.grid.length) {
+                    this.initializeQuantumCellularAutomata(qca);
+                }
+                
+                for (let i = 0; i < 50; i++) {
+                    for (let j = 0; j < 50; j++) {
+                        const cell = qca.grid[i][j];
+                        cell.state.real += (Math.random() - 0.5) * 0.1;
+                        cell.state.imag += (Math.random() - 0.5) * 0.1;
+                        
+                        const norm = Math.sqrt(cell.state.real * cell.state.real + cell.state.imag * cell.state.imag);
+                        cell.state.real /= norm;
+                        cell.state.imag /= norm;
+                    }
+                }
+            }
+            
+            initializeQuantumCellularAutomata(qca) {
+                qca.grid = [];
+                for (let i = 0; i < 50; i++) {
+                    qca.grid[i] = [];
+                    for (let j = 0; j < 50; j++) {
+                        qca.grid[i][j] = {
+                            state: { real: Math.random(), imag: Math.random() },
+                            energy: Math.random()
+                        };
+                    }
+                }
+            }
+            
+            updateQuantumNeuralEcosystem() {
+                const qne = this.quantumLife.quantumNeuralEcosystem;
+                if (!qne.networks.length) {
+                    this.initializeQuantumNeuralEcosystem(qne);
+                }
+                
+                for (let network of qne.networks) {
+                    for (let neuron of network.neurons) {
+                        neuron.activation += (Math.random() - 0.5) * 0.1;
+                        neuron.activation = Math.max(0, Math.min(1, neuron.activation));
+                    }
+                }
+            }
+            
+            initializeQuantumNeuralEcosystem(qne) {
+                qne.networks = [];
+                for (let i = 0; i < 5; i++) {
+                    qne.networks.push({
+                        neurons: Array.from({length: 10}, () => ({
+                            activation: Math.random()
+                        }))
+                    });
+                }
+            }
+            
+            updateQuantumBiology() {
+                const qb = this.quantumLife.quantumBiology;
+                qb.coherence += (Math.random() - 0.5) * 0.01;
+                qb.coherence = Math.max(0, Math.min(1, qb.coherence));
+            }
+            
+            updateQuantumComputing() {
+                if (this.quantumComputing.quantumCircuit.active) {
+                    this.updateQuantumCircuit();
+                }
+                if (this.quantumComputing.entanglementNetwork.active) {
+                    this.updateEntanglementNetwork();
+                }
+            }
+            
+            updateQuantumCircuit() {
+                const qc = this.quantumComputing.quantumCircuit;
+                if (!qc.qubits.length) {
+                    this.initializeQuantumCircuit(qc);
+                }
+                
+                for (let qubit of qc.qubits) {
+                    qubit.state.real += (Math.random() - 0.5) * 0.1;
+                    qubit.state.imag += (Math.random() - 0.5) * 0.1;
+                    
+                    const norm = Math.sqrt(qubit.state.real * qubit.state.real + qubit.state.imag * qubit.state.imag);
+                    qubit.state.real /= norm;
+                    qubit.state.imag /= norm;
+                }
+            }
+            
+            initializeQuantumCircuit(qc) {
+                qc.qubits = [];
+                for (let i = 0; i < 5; i++) {
+                    qc.qubits.push({
+                        state: { real: 1, imag: 0 },
+                        x: 50 + i * 100,
+                        y: 200
+                    });
+                }
+            }
+            
+            updateEntanglementNetwork() {
+                const en = this.quantumComputing.entanglementNetwork;
+                if (!en.nodes.length) {
+                    this.initializeEntanglementNetwork(en);
+                }
+                
+                for (let node of en.nodes) {
+                    node.x += (Math.random() - 0.5) * 2;
+                    node.y += (Math.random() - 0.5) * 2;
+                }
+            }
+            
+            initializeEntanglementNetwork(en) {
+                en.nodes = [];
+                for (let i = 0; i < 10; i++) {
+                    en.nodes.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        state: Math.random()
+                    });
+                }
+            }
+            
+            updateArtificialIntelligence() {
+                if (this.artificialIntelligence.neuralNetwork.active) {
+                    this.updateNeuralNetwork();
+                }
+                if (this.artificialIntelligence.deepLearning.active) {
+                    this.updateDeepLearning();
+                }
+                if (this.artificialIntelligence.generativeAI.active) {
+                    this.updateGenerativeAI();
+                }
+            }
+            
+            updateNeuralNetwork() {
+                const nn = this.artificialIntelligence.neuralNetwork;
+                if (!nn.layers.length) {
+                    this.initializeNeuralNetwork(nn);
+                }
+                
+                for (let layer = 0; layer < nn.activations.length; layer++) {
+                    for (let neuron = 0; neuron < nn.activations[layer].length; neuron++) {
+                        nn.activations[layer][neuron] += (Math.random() - 0.5) * 0.01;
+                        nn.activations[layer][neuron] = Math.max(0, Math.min(1, nn.activations[layer][neuron]));
+                    }
+                }
+            }
+            
+            initializeNeuralNetwork(nn) {
+                nn.layers = [3, 5, 2];
+                nn.activations = [];
+                
+                for (let i = 0; i < nn.layers.length; i++) {
+                    nn.activations.push(Array.from({length: nn.layers[i]}, () => Math.random()));
+                }
+            }
+            
+            updateDeepLearning() {
+                const dl = this.artificialIntelligence.deepLearning;
+                dl.loss += (Math.random() - 0.5) * 0.01;
+                dl.accuracy += (Math.random() - 0.5) * 0.01;
+            }
+            
+            updateGenerativeAI() {
+                const gai = this.artificialIntelligence.generativeAI;
+                gai.creativity += (Math.random() - 0.5) * 0.01;
+                gai.creativity = Math.max(0, Math.min(1, gai.creativity));
+            }
+            
+            updateCreativeAIArt() {
+                if (this.creativeAIArt.creativeAIArt.active) {
+                    this.updateCreativeAIArtCore();
+                }
+            }
+            
+            updateCreativeAIArtCore() {
+                const caa = this.creativeAIArt.creativeAIArt;
+                if (!caa.brushStrokes.length) {
+                    this.initializeCreativeAIArt(caa);
+                }
+                
+                if (Math.random() < 0.1) {
+                    this.generateNewBrushStroke(caa);
+                }
+                
+                for (let stroke of caa.brushStrokes) {
+                    stroke.x += (Math.random() - 0.5) * 5;
+                    stroke.y += (Math.random() - 0.5) * 5;
+                    stroke.size += (Math.random() - 0.5) * 2;
+                    stroke.size = Math.max(1, Math.min(30, stroke.size));
+                }
+                
+                if (caa.brushStrokes.length > 50) {
+                    caa.brushStrokes.shift();
+                }
+            }
+            
+            initializeCreativeAIArt(caa) {
+                caa.brushStrokes = [];
+            }
+            
+            generateNewBrushStroke(caa) {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                const stroke = {
+                    x: Math.random() * this.canvas.width,
+                    y: Math.random() * this.canvas.height,
+                    size: Math.random() * 20 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                };
+                caa.brushStrokes.push(stroke);
+            }
+            
+            render() {
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.renderQuantumLife();
+                this.renderQuantumComputing();
+                this.renderArtificialIntelligence();
+                this.renderCreativeAIArt();
+            }
+            
+            renderQuantumLife() {
+                if (this.quantumLife.quantumCellularAutomata.active) {
+                    this.renderQuantumCellularAutomata();
+                }
+                if (this.quantumLife.quantumNeuralEcosystem.active) {
+                    this.renderQuantumNeuralEcosystem();
+                }
+                if (this.quantumLife.quantumBiology.active) {
+                    this.renderQuantumBiology();
+                }
+            }
+            
+            renderQuantumCellularAutomata() {
+                const qca = this.quantumLife.quantumCellularAutomata;
+                const cellSize = Math.min(this.canvas.width, this.canvas.height) / 50;
+                
+                for (let i = 0; i < 50; i++) {
+                    for (let j = 0; j < 50; j++) {
+                        const cell = qca.grid[i][j];
+                        const x = i * cellSize;
+                        const y = j * cellSize;
+                        
+                        const intensity = Math.abs(cell.state.real) + Math.abs(cell.state.imag);
+                        this.ctx.fillStyle = `rgba(0, 255, 255, ${intensity * 0.5})`;
+                        this.ctx.fillRect(x, y, cellSize, cellSize);
+                    }
+                }
+            }
+            
+            renderQuantumNeuralEcosystem() {
+                const qne = this.quantumLife.quantumNeuralEcosystem;
+                
+                for (let network of qne.networks) {
+                    for (let i = 0; i < network.neurons.length; i++) {
+                        const neuron = network.neurons[i];
+                        const x = (i * 50) % this.canvas.width;
+                        const y = Math.floor(i * 50 / this.canvas.width) * 50;
+                        
+                        this.ctx.fillStyle = `rgba(255, 0, 255, ${neuron.activation})`;
+                        this.ctx.beginPath();
+                        this.ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                        this.ctx.fill();
+                    }
+                }
+            }
+            
+            renderQuantumBiology() {
+                const qb = this.quantumLife.quantumBiology;
+                
+                this.ctx.fillStyle = `rgba(0, 255, 0, ${qb.coherence})`;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            renderQuantumComputing() {
+                if (this.quantumComputing.quantumCircuit.active) {
+                    this.renderQuantumCircuit();
+                }
+                if (this.quantumComputing.entanglementNetwork.active) {
+                    this.renderEntanglementNetwork();
+                }
+            }
+            
+            renderQuantumCircuit() {
+                const qc = this.quantumComputing.quantumCircuit;
+                
+                for (let qubit of qc.qubits) {
+                    const intensity = Math.abs(qubit.state.real) + Math.abs(qubit.state.imag);
+                    this.ctx.fillStyle = `rgba(255, 255, 0, ${intensity})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(qubit.x, qubit.y, 15, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                }
+            }
+            
+            renderEntanglementNetwork() {
+                const en = this.quantumComputing.entanglementNetwork;
+                
+                for (let node of en.nodes) {
+                    this.ctx.fillStyle = `rgba(255, 0, 0, ${node.state})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, 8, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                }
+            }
+            
+            renderArtificialIntelligence() {
+                if (this.artificialIntelligence.neuralNetwork.active) {
+                    this.renderNeuralNetwork();
+                }
+            }
+            
+            renderNeuralNetwork() {
+                const nn = this.artificialIntelligence.neuralNetwork;
+                
+                for (let layer = 0; layer < nn.layers.length; layer++) {
+                    for (let neuron = 0; neuron < nn.layers[layer]; neuron++) {
+                        const x = 100 + layer * 150;
+                        const y = 100 + neuron * 40;
+                        
+                        this.ctx.fillStyle = `rgba(0, 255, 255, ${nn.activations[layer][neuron]})`;
+                        this.ctx.beginPath();
+                        this.ctx.arc(x, y, 12, 0, 2 * Math.PI);
+                        this.ctx.fill();
+                    }
+                }
+            }
+            
+            renderCreativeAIArt() {
+                if (this.creativeAIArt.creativeAIArt.active) {
+                    this.renderCreativeAIArtCore();
+                }
+            }
+            
+            renderCreativeAIArtCore() {
+                const caa = this.creativeAIArt.creativeAIArt;
+                
+                for (let stroke of caa.brushStrokes) {
+                    this.ctx.fillStyle = stroke.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(stroke.x, stroke.y, stroke.size, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                }
+            }
+        }
+        
+        let engine = null;
+        
+        function toggleFeature(featureName) {
+            if (!engine) return;
+            
+            const button = event.target;
+            button.classList.toggle('active');
+            
+            if (featureName.includes('quantumCellularAutomata')) {
+                engine.quantumLife.quantumCellularAutomata.active = !engine.quantumLife.quantumCellularAutomata.active;
+            } else if (featureName.includes('quantumNeuralEcosystem')) {
+                engine.quantumLife.quantumNeuralEcosystem.active = !engine.quantumLife.quantumNeuralEcosystem.active;
+            } else if (featureName.includes('quantumBiology')) {
+                engine.quantumLife.quantumBiology.active = !engine.quantumLife.quantumBiology.active;
+            } else if (featureName.includes('quantumCircuit')) {
+                engine.quantumComputing.quantumCircuit.active = !engine.quantumComputing.quantumCircuit.active;
+            } else if (featureName.includes('quantumAlgorithms')) {
+                engine.quantumComputing.quantumAlgorithms.active = !engine.quantumComputing.quantumAlgorithms.active;
+            } else if (featureName.includes('entanglementNetwork')) {
+                engine.quantumComputing.entanglementNetwork.active = !engine.quantumComputing.entanglementNetwork.active;
+            } else if (featureName.includes('neuralNetwork')) {
+                engine.artificialIntelligence.neuralNetwork.active = !engine.artificialIntelligence.neuralNetwork.active;
+            } else if (featureName.includes('deepLearning')) {
+                engine.artificialIntelligence.deepLearning.active = !engine.artificialIntelligence.deepLearning.active;
+            } else if (featureName.includes('generativeAI')) {
+                engine.artificialIntelligence.generativeAI.active = !engine.artificialIntelligence.generativeAI.active;
+            } else if (featureName.includes('creativeAIArt')) {
+                engine.creativeAIArt.creativeAIArt.active = !engine.creativeAIArt.creativeAIArt.active;
+            } else if (featureName.includes('artGenerator')) {
+                engine.creativeAIArt.artGenerator.active = !engine.creativeAIArt.artGenerator.active;
+            }
+        }
+        
+        function startSimulation() {
+            if (!engine) {
+                engine = new AIVisualizationEngine();
+            }
+            engine.start();
+        }
+        
+        function stopSimulation() {
+            if (engine) {
+                engine.stop();
+            }
+        }
+        
+        function activateAllAI() {
+            if (!engine) {
+                engine = new AIVisualizationEngine();
+            }
+            
+            Object.keys(engine.quantumLife).forEach(key => {
+                engine.quantumLife[key].active = true;
+            });
+            Object.keys(engine.quantumComputing).forEach(key => {
+                engine.quantumComputing[key].active = true;
+            });
+            Object.keys(engine.artificialIntelligence).forEach(key => {
+                engine.artificialIntelligence[key].active = true;
+            });
+            Object.keys(engine.creativeAIArt).forEach(key => {
+                engine.creativeAIArt[key].active = true;
+            });
+            
+            document.querySelectorAll('button').forEach(button => {
+                if (button.textContent !== '시작' && button.textContent !== '정지' && button.textContent !== '모든 AI 활성화') {
+                    button.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('load', () => {
+            engine = new AIVisualizationEngine();
+        });
+    </script>
+</body>
+</html>

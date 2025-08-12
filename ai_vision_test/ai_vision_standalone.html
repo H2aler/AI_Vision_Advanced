@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision 시스템 - 컴퓨터 비전 시각화</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .control-panel {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.8);
+            border-right: 2px solid #00ffff;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .main-view {
+            flex: 1;
+            position: relative;
+        }
+
+        #canvas {
+            display: block;
+            background: #000;
+            border: 2px solid #00ffff;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+        }
+
+        .section h3 {
+            color: #00ffff;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .control-group {
+            margin-bottom: 10px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            background: #333;
+            outline: none;
+        }
+
+        .control-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            border: none;
+            color: #000;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background: linear-gradient(45deg, #00ccff, #0066cc);
+            transform: translateY(-2px);
+        }
+
+        .button.active {
+            background: linear-gradient(45deg, #ff0080, #ff00ff);
+        }
+
+        .status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            font-size: 12px;
+            max-width: 300px;
+        }
+
+        .vision-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="control-panel">
+            <div class="section">
+                <h3>AI Vision 제어</h3>
+                <button class="button" onclick="toggleVision()">비전 활성화</button>
+                <button class="button" onclick="resetVision()">초기화</button>
+                <button class="button" onclick="captureFrame()">프레임 캡처</button>
+            </div>
+
+            <div class="section">
+                <h3>이미지 처리</h3>
+                <div class="control-group">
+                    <label>가우시안 블러</label>
+                    <input type="range" id="gaussianBlur" min="0" max="10" value="2" onchange="updateFilters()">
+                </div>
+                <div class="control-group">
+                    <label>엣지 감지 강도</label>
+                    <input type="range" id="edgeDetection" min="0" max="100" value="50" onchange="updateFilters()">
+                </div>
+                <div class="control-group">
+                    <label>노이즈 제거</label>
+                    <input type="range" id="noiseReduction" min="0" max="100" value="30" onchange="updateFilters()">
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="sobelFilter" onchange="updateFilters()">
+                    <label for="sobelFilter">Sobel 필터</label>
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="laplacianFilter" onchange="updateFilters()">
+                    <label for="laplacianFilter">Laplacian 필터</label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>객체 감지</h3>
+                <div class="control-group">
+                    <label>감지 임계값</label>
+                    <input type="range" id="detectionThreshold" min="0" max="100" value="70" onchange="updateDetection()">
+                </div>
+                <div class="control-group">
+                    <label>최소 객체 크기</label>
+                    <input type="range" id="minObjectSize" min="10" max="200" value="50" onchange="updateDetection()">
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="showBoundingBoxes" checked onchange="updateDetection()">
+                    <label for="showBoundingBoxes">바운딩 박스 표시</label>
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="showConfidence" checked onchange="updateDetection()">
+                    <label for="showConfidence">신뢰도 표시</label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>특징 추출</h3>
+                <div class="control-group">
+                    <label>특징점 수</label>
+                    <input type="range" id="featureCount" min="10" max="500" value="100" onchange="updateFeatures()">
+                </div>
+                <div class="control-group">
+                    <label>특징점 크기</label>
+                    <input type="range" id="featureSize" min="1" max="10" value="3" onchange="updateFeatures()">
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="showKeypoints" checked onchange="updateFeatures()">
+                    <label for="showKeypoints">키포인트 표시</label>
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="showDescriptors" onchange="updateFeatures()">
+                    <label for="showDescriptors">디스크립터 표시</label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>이미지 분할</h3>
+                <div class="control-group">
+                    <label>분할 세그먼트 수</label>
+                    <input type="range" id="segmentCount" min="2" max="20" value="8" onchange="updateSegmentation()">
+                </div>
+                <div class="control-group">
+                    <label>색상 임계값</label>
+                    <input type="range" id="colorThreshold" min="0" max="255" value="128" onchange="updateSegmentation()">
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="showSegments" checked onchange="updateSegmentation()">
+                    <label for="showSegments">세그먼트 표시</label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>시각화 설정</h3>
+                <div class="control-group">
+                    <label>투명도</label>
+                    <input type="range" id="opacity" min="0" max="100" value="80" onchange="updateVisualization()">
+                </div>
+                <div class="control-group">
+                    <label>선 두께</label>
+                    <input type="range" id="lineWidth" min="1" max="10" value="2" onchange="updateVisualization()">
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="showGrid" onchange="updateVisualization()">
+                    <label for="showGrid">그리드 표시</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-view">
+            <canvas id="canvas" width="800" height="600"></canvas>
+            
+            <div class="status" id="status">
+                <div>FPS: <span id="fps">0</span></div>
+                <div>객체: <span id="objectCount">0</span></div>
+                <div>특징점: <span id="featureCountDisplay">0</span></div>
+                <div>세그먼트: <span id="segmentCountDisplay">0</span></div>
+            </div>
+
+            <div class="info-panel" id="infoPanel">
+                <div><strong>AI Vision 시스템</strong></div>
+                <div>컴퓨터 비전 알고리즘 시각화</div>
+                <div>실시간 이미지 처리 및 분석</div>
+            </div>
+
+            <div class="vision-overlay" id="visionOverlay" style="display: none;">
+                <div>AI Vision 활성화됨</div>
+                <div>실시간 분석 중...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AIVisionEngine {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.isActive = false;
+                this.time = 0;
+                this.lastTime = 0;
+                this.fps = 0;
+                this.frameCount = 0;
+                
+                // 컴퓨터 비전 상태
+                this.computerVision = {
+                    active: false,
+                    imageProcessing: {
+                        filters: ['gaussian', 'sobel', 'laplacian'],
+                        kernels: {
+                            gaussian: [[1, 2, 1], [2, 4, 2], [1, 2, 1]],
+                            sobel: [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]],
+                            laplacian: [[0, 1, 0], [1, -4, 1], [0, 1, 0]]
+                        },
+                        transformations: ['rotate', 'scale', 'translate'],
+                        processedImage: null
+                    },
+                    objectDetection: {
+                        objects: [],
+                        boundingBoxes: [],
+                        confidenceScores: [],
+                        threshold: 0.7,
+                        minSize: 50
+                    },
+                    imageSegmentation: {
+                        segments: [],
+                        masks: [],
+                        pixelLabels: [],
+                        segmentCount: 8
+                    },
+                    featureExtraction: {
+                        features: [],
+                        descriptors: [],
+                        keypoints: [],
+                        featureMaps: [],
+                        maxFeatures: 100
+                    }
+                };
+                
+                this.initialize();
+            }
+            
+            initialize() {
+                this.initializeComputerVision();
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                this.animate();
+            }
+            
+            initializeComputerVision() {
+                const cv = this.computerVision;
+                
+                // 이미지 처리 초기화
+                cv.imageProcessing.processedImage = this.createTestImage();
+                
+                // 객체 감지 초기화
+                cv.objectDetection.objects = [];
+                cv.objectDetection.boundingBoxes = [];
+                cv.objectDetection.confidenceScores = [];
+                
+                // 이미지 분할 초기화
+                cv.imageSegmentation.segments = [];
+                cv.imageSegmentation.masks = [];
+                cv.imageSegmentation.pixelLabels = new Array(64).fill(0).map(() => new Array(64).fill(0));
+                
+                // 특징 추출 초기화
+                cv.featureExtraction.features = [];
+                cv.featureExtraction.descriptors = [];
+                cv.featureExtraction.keypoints = [];
+                cv.featureExtraction.featureMaps = [];
+            }
+            
+            createTestImage() {
+                const size = 64;
+                const image = new Array(size).fill(0).map(() => new Array(size).fill(0));
+                
+                // 테스트 패턴 생성
+                for (let i = 0; i < size; i++) {
+                    for (let j = 0; j < size; j++) {
+                        // 원형 패턴
+                        const dx = i - size / 2;
+                        const dy = j - size / 2;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // 노이즈 추가
+                        const noise = Math.random() * 0.3;
+                        
+                        if (distance < size / 4) {
+                            image[i][j] = 0.8 + noise;
+                        } else if (distance < size / 2) {
+                            image[i][j] = 0.4 + noise;
+                        } else {
+                            image[i][j] = 0.1 + noise;
+                        }
+                    }
+                }
+                
+                return image;
+            }
+            
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                const rect = container.getBoundingClientRect();
+                this.canvas.width = rect.width - 4;
+                this.canvas.height = rect.height - 4;
+            }
+            
+            animate() {
+                const currentTime = performance.now();
+                const deltaTime = currentTime - this.lastTime;
+                this.lastTime = currentTime;
+                
+                this.time += deltaTime * 0.001;
+                
+                // FPS 계산
+                this.frameCount++;
+                if (this.frameCount % 60 === 0) {
+                    this.fps = Math.round(1000 / deltaTime);
+                    document.getElementById('fps').textContent = this.fps;
+                }
+                
+                this.update();
+                this.render();
+                
+                requestAnimationFrame(() => this.animate());
+            }
+            
+            update() {
+                if (!this.computerVision.active) return;
+                
+                this.updateComputerVision();
+            }
+            
+            updateComputerVision() {
+                const cv = this.computerVision;
+                
+                // 이미지 처리 업데이트
+                this.updateImageProcessing(cv.imageProcessing);
+                
+                // 객체 감지 업데이트
+                this.updateObjectDetection(cv.objectDetection);
+                
+                // 이미지 분할 업데이트
+                this.updateImageSegmentation(cv.imageSegmentation);
+                
+                // 특징 추출 업데이트
+                this.updateFeatureExtraction(cv.featureExtraction);
+            }
+            
+            updateImageProcessing(imageProcessing) {
+                // 가우시안 블러 적용
+                const blurStrength = document.getElementById('gaussianBlur').value / 10;
+                if (blurStrength > 0) {
+                    imageProcessing.processedImage = this.applyGaussianBlur(
+                        imageProcessing.processedImage, 
+                        blurStrength
+                    );
+                }
+                
+                // 엣지 감지
+                const edgeStrength = document.getElementById('edgeDetection').value / 100;
+                if (edgeStrength > 0) {
+                    imageProcessing.processedImage = this.applyEdgeDetection(
+                        imageProcessing.processedImage, 
+                        edgeStrength
+                    );
+                }
+                
+                // 노이즈 제거
+                const noiseReduction = document.getElementById('noiseReduction').value / 100;
+                if (noiseReduction > 0) {
+                    imageProcessing.processedImage = this.applyNoiseReduction(
+                        imageProcessing.processedImage, 
+                        noiseReduction
+                    );
+                }
+            }
+            
+            applyGaussianBlur(image, strength) {
+                const size = image.length;
+                const result = new Array(size).fill(0).map(() => new Array(size).fill(0));
+                const kernel = this.computerVision.imageProcessing.kernels.gaussian;
+                
+                for (let i = 1; i < size - 1; i++) {
+                    for (let j = 1; j < size - 1; j++) {
+                        let sum = 0;
+                        let weight = 0;
+                        
+                        for (let ki = -1; ki <= 1; ki++) {
+                            for (let kj = -1; kj <= 1; kj++) {
+                                const w = kernel[ki + 1][kj + 1];
+                                sum += image[i + ki][j + kj] * w;
+                                weight += w;
+                            }
+                        }
+                        
+                        result[i][j] = sum / weight * strength + image[i][j] * (1 - strength);
+                    }
+                }
+                
+                return result;
+            }
+            
+            applyEdgeDetection(image, strength) {
+                const size = image.length;
+                const result = new Array(size).fill(0).map(() => new Array(size).fill(0));
+                const sobelX = this.computerVision.imageProcessing.kernels.sobel;
+                const sobelY = [[-1, -2, -1], [0, 0, 0], [1, 2, 1]];
+                
+                for (let i = 1; i < size - 1; i++) {
+                    for (let j = 1; j < size - 1; j++) {
+                        let gx = 0, gy = 0;
+                        
+                        for (let ki = -1; ki <= 1; ki++) {
+                            for (let kj = -1; kj <= 1; kj++) {
+                                const pixel = image[i + ki][j + kj];
+                                gx += pixel * sobelX[ki + 1][kj + 1];
+                                gy += pixel * sobelY[ki + 1][kj + 1];
+                            }
+                        }
+                        
+                        const magnitude = Math.sqrt(gx * gx + gy * gy);
+                        result[i][j] = image[i][j] + magnitude * strength;
+                    }
+                }
+                
+                return result;
+            }
+            
+            applyNoiseReduction(image, strength) {
+                const size = image.length;
+                const result = new Array(size).fill(0).map(() => new Array(size).fill(0));
+                
+                for (let i = 1; i < size - 1; i++) {
+                    for (let j = 1; j < size - 1; j++) {
+                        const neighbors = [
+                            image[i-1][j], image[i+1][j], 
+                            image[i][j-1], image[i][j+1],
+                            image[i-1][j-1], image[i-1][j+1],
+                            image[i+1][j-1], image[i+1][j+1]
+                        ];
+                        
+                        const median = neighbors.sort((a, b) => a - b)[4];
+                        result[i][j] = image[i][j] * (1 - strength) + median * strength;
+                    }
+                }
+                
+                return result;
+            }
+            
+            updateObjectDetection(objectDetection) {
+                const threshold = document.getElementById('detectionThreshold').value / 100;
+                const minSize = parseInt(document.getElementById('minObjectSize').value);
+                
+                objectDetection.threshold = threshold;
+                objectDetection.minSize = minSize;
+                
+                // 간단한 객체 감지 시뮬레이션
+                objectDetection.objects = [];
+                objectDetection.boundingBoxes = [];
+                objectDetection.confidenceScores = [];
+                
+                // 원형 객체 감지
+                const centerX = 400 + Math.sin(this.time) * 100;
+                const centerY = 300 + Math.cos(this.time) * 50;
+                const radius = 30 + Math.sin(this.time * 2) * 10;
+                
+                if (radius >= minSize / 2) {
+                    objectDetection.objects.push('원형 객체');
+                    objectDetection.boundingBoxes.push({
+                        x: centerX - radius,
+                        y: centerY - radius,
+                        width: radius * 2,
+                        height: radius * 2
+                    });
+                    objectDetection.confidenceScores.push(0.8 + Math.random() * 0.2);
+                }
+                
+                // 사각형 객체 감지
+                const rectX = 200 + Math.cos(this.time * 0.5) * 80;
+                const rectY = 200 + Math.sin(this.time * 0.5) * 60;
+                const rectSize = 40 + Math.sin(this.time * 1.5) * 15;
+                
+                if (rectSize >= minSize) {
+                    objectDetection.objects.push('사각형 객체');
+                    objectDetection.boundingBoxes.push({
+                        x: rectX - rectSize / 2,
+                        y: rectY - rectSize / 2,
+                        width: rectSize,
+                        height: rectSize
+                    });
+                    objectDetection.confidenceScores.push(0.7 + Math.random() * 0.3);
+                }
+            }
+            
+            updateImageSegmentation(imageSegmentation) {
+                const segmentCount = parseInt(document.getElementById('segmentCount').value);
+                const colorThreshold = parseInt(document.getElementById('colorThreshold').value) / 255;
+                
+                imageSegmentation.segmentCount = segmentCount;
+                imageSegmentation.segments = [];
+                
+                // 간단한 색상 기반 분할
+                for (let i = 0; i < segmentCount; i++) {
+                    const centerX = Math.random() * this.canvas.width;
+                    const centerY = Math.random() * this.canvas.height;
+                    const color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                    
+                    imageSegmentation.segments.push({
+                        id: i,
+                        center: { x: centerX, y: centerY },
+                        color: color,
+                        pixels: []
+                    });
+                }
+            }
+            
+            updateFeatureExtraction(featureExtraction) {
+                const maxFeatures = parseInt(document.getElementById('featureCount').value);
+                const featureSize = parseInt(document.getElementById('featureSize').value);
+                
+                featureExtraction.maxFeatures = maxFeatures;
+                featureExtraction.keypoints = [];
+                
+                // 특징점 생성 (간단한 시뮬레이션)
+                for (let i = 0; i < maxFeatures; i++) {
+                    const x = Math.random() * this.canvas.width;
+                    const y = Math.random() * this.canvas.height;
+                    const angle = Math.random() * Math.PI * 2;
+                    const response = Math.random();
+                    
+                    featureExtraction.keypoints.push({
+                        x: x,
+                        y: y,
+                        angle: angle,
+                        response: response,
+                        size: featureSize
+                    });
+                }
+            }
+            
+            render() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // 배경 그리드
+                if (document.getElementById('showGrid').checked) {
+                    this.renderGrid();
+                }
+                
+                // 기본 시각화
+                this.renderBasicVisualization();
+                
+                // 컴퓨터 비전 렌더링
+                if (this.computerVision.active) {
+                    this.renderComputerVision();
+                }
+                
+                // 상태 업데이트
+                this.updateStatus();
+            }
+            
+            renderGrid() {
+                this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
+                this.ctx.lineWidth = 1;
+                
+                const gridSize = 50;
+                for (let x = 0; x < this.canvas.width; x += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                
+                for (let y = 0; y < this.canvas.height; y += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+            }
+            
+            renderBasicVisualization() {
+                // 움직이는 원형 패턴
+                const centerX = 400 + Math.sin(this.time) * 100;
+                const centerY = 300 + Math.cos(this.time) * 50;
+                const radius = 30 + Math.sin(this.time * 2) * 10;
+                
+                this.ctx.strokeStyle = '#00ffff';
+                this.ctx.lineWidth = parseInt(document.getElementById('lineWidth').value);
+                this.ctx.globalAlpha = parseInt(document.getElementById('opacity').value) / 100;
+                
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                this.ctx.stroke();
+                
+                // 움직이는 사각형 패턴
+                const rectX = 200 + Math.cos(this.time * 0.5) * 80;
+                const rectY = 200 + Math.sin(this.time * 0.5) * 60;
+                const rectSize = 40 + Math.sin(this.time * 1.5) * 15;
+                
+                this.ctx.strokeRect(rectX - rectSize / 2, rectY - rectSize / 2, rectSize, rectSize);
+                
+                this.ctx.globalAlpha = 1.0;
+            }
+            
+            renderComputerVision() {
+                const cv = this.computerVision;
+                
+                // 객체 감지 결과 렌더링
+                if (document.getElementById('showBoundingBoxes').checked) {
+                    cv.objectDetection.objects.forEach((object, index) => {
+                        const bbox = cv.objectDetection.boundingBoxes[index];
+                        const confidence = cv.objectDetection.confidenceScores[index];
+                        
+                        this.ctx.strokeStyle = '#00ff00';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.strokeRect(bbox.x, bbox.y, bbox.width, bbox.height);
+                        
+                        if (document.getElementById('showConfidence').checked) {
+                            this.ctx.fillStyle = '#00ff00';
+                            this.ctx.font = '12px Courier New';
+                            this.ctx.textAlign = 'left';
+                            this.ctx.fillText(`${object}: ${(confidence * 100).toFixed(1)}%`, bbox.x, bbox.y - 5);
+                        }
+                    });
+                }
+                
+                // 특징점 렌더링
+                if (document.getElementById('showKeypoints').checked) {
+                    cv.featureExtraction.keypoints.forEach(keypoint => {
+                        this.ctx.fillStyle = '#ff0000';
+                        this.ctx.beginPath();
+                        this.ctx.arc(keypoint.x, keypoint.y, keypoint.size, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        
+                        // 특징점 방향
+                        if (document.getElementById('showDescriptors').checked) {
+                            this.ctx.strokeStyle = '#ff0000';
+                            this.ctx.lineWidth = 1;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(keypoint.x, keypoint.y);
+                            this.ctx.lineTo(
+                                keypoint.x + Math.cos(keypoint.angle) * 15, 
+                                keypoint.y + Math.sin(keypoint.angle) * 15
+                            );
+                            this.ctx.stroke();
+                        }
+                    });
+                }
+                
+                // 이미지 분할 렌더링
+                if (document.getElementById('showSegments').checked) {
+                    cv.imageSegmentation.segments.forEach(segment => {
+                        this.ctx.strokeStyle = segment.color;
+                        this.ctx.lineWidth = 1;
+                        this.ctx.globalAlpha = 0.3;
+                        
+                        this.ctx.beginPath();
+                        this.ctx.arc(segment.center.x, segment.center.y, 20, 0, Math.PI * 2);
+                        this.ctx.stroke();
+                        
+                        this.ctx.globalAlpha = 1.0;
+                    });
+                }
+            }
+            
+            updateStatus() {
+                const cv = this.computerVision;
+                document.getElementById('objectCount').textContent = cv.objectDetection.objects.length;
+                document.getElementById('featureCountDisplay').textContent = cv.featureExtraction.keypoints.length;
+                document.getElementById('segmentCountDisplay').textContent = cv.imageSegmentation.segments.length;
+            }
+        }
+        
+        // 전역 변수
+        let engine;
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            engine = new AIVisionEngine();
+        });
+        
+        // 제어 함수들
+        function toggleVision() {
+            engine.computerVision.active = !engine.computerVision.active;
+            const overlay = document.getElementById('visionOverlay');
+            overlay.style.display = engine.computerVision.active ? 'block' : 'none';
+            
+            const button = event.target;
+            button.classList.toggle('active');
+        }
+        
+        function resetVision() {
+            engine.initializeComputerVision();
+        }
+        
+        function captureFrame() {
+            // 프레임 캡처 기능 (간단한 구현)
+            const link = document.createElement('a');
+            link.download = 'ai_vision_capture.png';
+            link.href = engine.canvas.toDataURL();
+            link.click();
+        }
+        
+        function updateFilters() {
+            // 필터 업데이트는 updateImageProcessing에서 처리됨
+        }
+        
+        function updateDetection() {
+            // 객체 감지 업데이트는 updateObjectDetection에서 처리됨
+        }
+        
+        function updateFeatures() {
+            // 특징 추출 업데이트는 updateFeatureExtraction에서 처리됨
+        }
+        
+        function updateSegmentation() {
+            // 이미지 분할 업데이트는 updateImageSegmentation에서 처리됨
+        }
+        
+        function updateVisualization() {
+            // 시각화 업데이트는 render에서 처리됨
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision Advanced - TensorFlow.js</title>
+    <link rel="icon" href="data:,">
+    
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/knn-classifier@1.2.2/dist/knn-classifier.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+    <!-- EXIF for metadata heuristics -->
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .status {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .controls-inline {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .controls-inline label {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .video-container {
+            position: relative;
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+        }
+        .video-container.original-size { /* 업로드 이미지 원본 크기 보기 모드 */
+            overflow: auto;
+        }
+        #video {
+            max-width: 800px;
+            width: 100%;
+            border-radius: 15px;
+        }
+        /* 업로드된 비디오도 동일 스타일로 표시 */
+        .video-container video {
+            max-width: 800px;
+            width: 100%;
+            border-radius: 15px;
+            display: block;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 800px;
+            width: 100%;
+            border-radius: 15px;
+        }
+        .video-container.original-size #canvas { /* 원본 크기일 때는 절대 위치 해제하고 실제 픽셀 크기로 표시 */
+            position: static;
+            left: auto;
+            transform: none;
+            max-width: none;
+            width: auto;
+        }
+        .video-container.original-size #video { /* 원본 이미지 표시 중에는 비디오 숨김 */
+            display: none;
+        }
+        .results {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .media-list {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+            margin: 16px 0;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .media-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+        .media-item:hover { background: rgba(255,255,255,0.08); }
+        .media-item.active { background: rgba(0,255,0,0.2); border-left: 4px solid #00ff88; }
+        .media-meta { opacity: 0.9; font-size: 0.9em; }
+        .media-actions button { padding: 6px 10px; border-radius: 8px; }
+        .result-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #00ff00;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #00ff00;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .model-status {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .model-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        .model-loaded {
+            background: rgba(0, 255, 0, 0.3);
+            border: 1px solid #00ff00;
+        }
+        .model-loading {
+            background: rgba(255, 255, 0, 0.3);
+            border: 1px solid #ffff00;
+        }
+        .model-error {
+            background: rgba(255, 0, 0, 0.3);
+            border: 1px solid #ff0000;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00ff00;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Vision Advanced - TensorFlow.js</h1>
+        
+        <div class="status" id="status">
+            🚀 AI Vision 시스템 초기화 중...
+        </div>
+
+        <div class="model-status" id="modelStatus">
+            <div class="model-item model-loading">TensorFlow.js 로딩 중...</div>
+            <div class="model-item model-loading">MobileNet 로딩 중...</div>
+            <div class="model-item model-loading">COCO-SSD 로딩 중...</div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn">📹 카메라 시작</button>
+            <button id="stopBtn" disabled>⏹️ 카메라 중지</button>
+            <button id="analyzeBtn" disabled>🔍 이미지 분석</button>
+            <button id="realtimeBtn" disabled>🔄 실시간 분석</button>
+            <button id="testApiBtn">🌐 API 테스트</button>
+            <button id="uploadBtn">📁 이미지 업로드</button>
+            <button id="uploadVideoBtn">🎞️ 동영상 업로드</button>
+            <button id="clearImageBtn" disabled>🗑️ 업로드 이미지 제거</button>
+            <button id="clearVideoBtn" disabled>🗑️ 업로드 동영상 제거</button>
+        </div>
+        <div class="media-list" id="mediaList">
+            <div class="media-meta">업로드 목록 (이미지/동영상). 항목을 클릭하면 현재 소스로 설정됩니다.</div>
+            <div id="mediaItems"></div>
+        </div>
+        <div class="controls-inline">
+            <label for="thresholdInput">신뢰도 임계값</label>
+            <input type="range" id="thresholdInput" min="0" max="0.95" step="0.01" value="0.50" />
+            <span id="thresholdValue">0.50</span>
+            <label style="margin-left:12px;">
+                <input type="checkbox" id="autoThresholdToggle" /> 자동 조절
+            </label>
+        </div>
+        <div class="controls-inline">
+            <label style="min-width:120px">사용자 학습(KNN)</label>
+            <input id="trainLabelInput" placeholder="레이블 (예: 고양이)" style="width:160px" />
+            <button id="addSampleBtn">샘플 추가</button>
+            <button id="predictKnnBtn">KNN 예측</button>
+            <button id="clearKnnBtn">초기화</button>
+        </div>
+        <div class="controls-inline">
+            <label style="min-width:120px">OCR</label>
+            <button id="runOcrBtn">텍스트 인식</button>
+            <span id="ocrStatus" style="margin-left:8px; opacity:0.9">대기</span>
+        </div>
+        <div class="controls-inline">
+            <label style="min-width:120px">영상 제어</label>
+            <button id="videoPlayBtn">재생</button>
+            <button id="videoPauseBtn">일시정지</button>
+            <button id="videoStopBtn">정지</button>
+        </div>
+        <div class="controls-inline">
+            <label style="min-width:120px">자동 옵션</label>
+            <label><input type="checkbox" id="autoStartToggle" checked /> 업로드 시 첫 항목 자동 시작</label>
+            <label><input type="checkbox" id="autoAdvanceToggle" /> 동영상 연속 진행</label>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>AI 모델 분석 중...</p>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="fpsValue">0</div>
+                <div class="stat-label">FPS</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="memoryValue">0</div>
+                <div class="stat-label">메모리 (MB)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="objectsValue">0</div>
+                <div class="stat-label">감지된 객체</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="confidenceValue">0%</div>
+                <div class="stat-label">평균 신뢰도</div>
+            </div>
+        </div>
+
+        <div class="video-container">
+            <video id="video" autoplay muted></video>
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="results" id="results">
+            <h3>📊 분석 결과</h3>
+            <div id="resultContent">
+                결과가 여기에 표시됩니다...
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+        <input type="file" id="videoFileInput" accept="video/*" multiple style="display: none;">
+    </div>
+
+    <script>
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas');
+        const containerEl = document.querySelector('.video-container');
+        let ctx = canvas.getContext('2d');
+        let stream = null;
+        let isAnalyzing = false;
+        let isRealtime = false;
+        let animationId = null;
+        
+        // 실시간 세션 누적 통계
+        let realtimeAggregation = {
+            analyzedFrameCount: 0,
+            sumAverageConfidence: 0,
+            sumDetectedObjects: 0,
+            classNameToCount: {}
+        };
+        
+        // TensorFlow.js 모델들
+        let mobileNetModel = null;
+        let cocoSsdModel = null;
+        let knnClassifierModel = null;
+
+        // 입력 소스 상태
+        let currentSourceType = 'video'; // 'video' | 'image'
+        let uploadedImageEl = null;
+        let uploadedVideoEl = null;
+        let uploadedVideoBlobUrl = null;
+        let uploadedVideoPlaying = false;
+        // 다중 업로드 관리
+        const uploadedMedia = []; // { id, type: 'image'|'video', name, url, element }
+        let activeMediaId = null;
+
+        // 합성/실사 판별 관련 가중치 설정
+        const realismWeights = {
+            mobilenetReal: 0.45,   // MobileNet 상위 라벨의 실사/합성 힌트
+            exifPresence: 0.15,    // EXIF 메타데이터 존재
+            compression: 0.2,      // 고주파/블록 노이즈 지표
+            edgeStats: 0.2         // 에지 난이도/연속성
+        };
+
+        function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+
+        function estimateCompressionArtifacts(imageData) {
+            // 간단한 블록 경계 대비 기반 (근사)
+            const { data, width, height } = imageData;
+            let blockTransitions = 0;
+            let samples = 0;
+            for (let y = 0; y < height; y += 8) {
+                for (let x = 8; x < width; x += 8) {
+                    const idxA = ((y * width) + x - 1) * 4;
+                    const idxB = ((y * width) + x) * 4;
+                    const lumA = 0.299*data[idxA] + 0.587*data[idxA+1] + 0.114*data[idxA+2];
+                    const lumB = 0.299*data[idxB] + 0.587*data[idxB+1] + 0.114*data[idxB+2];
+                    blockTransitions += Math.abs(lumA - lumB);
+                    samples++;
+                }
+            }
+            const score = clamp01(blockTransitions / (samples * 12)); // 경험적 스케일링
+            return score; // 높을수록 압축 흔적 많음 → 실사 가능성↑
+        }
+
+        function estimateEdgeNaturalness(imageData) {
+            // 간단한 소벨 에지 강도와 분산 기반
+            const { data, width, height } = imageData;
+            const lum = new Float32Array(width*height);
+            for (let y=0;y<height;y++){
+                for (let x=0;x<width;x++){
+                    const i = (y*width+x)*4;
+                    lum[y*width+x] = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+                }
+            }
+            let sum=0, sum2=0, cnt=0;
+            for (let y=1;y<height-1;y+=2){
+                for (let x=1;x<width-1;x+=2){
+                    const gx = -lum[(y-1)*width+(x-1)] -2*lum[y*width+(x-1)] -lum[(y+1)*width+(x-1)]
+                               +lum[(y-1)*width+(x+1)] +2*lum[y*width+(x+1)] +lum[(y+1)*width+(x+1)];
+                    const gy = -lum[(y-1)*width+(x-1)] -2*lum[(y-1)*width+x] -lum[(y-1)*width+(x+1)]
+                               +lum[(y+1)*width+(x-1)] +2*lum[(y+1)*width+x] +lum[(y+1)*width+(x+1)];
+                    const g = Math.sqrt(gx*gx + gy*gy);
+                    sum += g; sum2 += g*g; cnt++;
+                }
+            }
+            const mean = sum/cnt;
+            const variance = clamp01((sum2/cnt - mean*mean) / 255);
+            // 자연스런 장면은 다양한 에지 강도와 분산이 비교적 높음
+            return clamp01(0.5*clamp01(mean/64) + 0.5*variance);
+        }
+
+        function mobilenetRealismHint(labels){
+            // 합성/아이콘/만화 계열 키워드 감점, 카메라/실사 계열 가점 (휴리스틱)
+            const fakeHints = ['cartoon','illustration','drawing','clip art','icon','render','toy'];
+            const realHints = ['person','car','truck','bus','dog','cat','street','camera','food','building'];
+            let score = 0.5; // 중립에서 시작
+            for (const l of labels){
+                const name = l.className?.toLowerCase?.() || '';
+                if (fakeHints.some(k=>name.includes(k))) score -= 0.2*l.probability;
+                if (realHints.some(k=>name.includes(k))) score += 0.2*l.probability;
+            }
+            return clamp01(score);
+        }
+
+        async function estimateRealVsAI(sourceEl){
+            try {
+                // 캔버스 픽셀 확보
+                const w = sourceEl.naturalWidth || sourceEl.videoWidth || sourceEl.width;
+                const h = sourceEl.naturalHeight || sourceEl.videoHeight || sourceEl.height;
+                if (!w || !h) return null;
+                const tmp = document.createElement('canvas');
+                tmp.width = w; tmp.height = h;
+                const tctx = tmp.getContext('2d');
+                tctx.drawImage(sourceEl, 0, 0, w, h);
+                const imgData = tctx.getImageData(0,0,w,h);
+
+                // 1) MobileNet 힌트
+                let mobilenetHints = [];
+                if (mobileNetModel){
+                    mobilenetHints = await mobileNetModel.classify(sourceEl);
+                }
+                const mobilenetScore = mobilenetRealismHint(mobilenetHints);
+
+                // 2) EXIF 메타 존재 여부 (업로드 이미지에만 적용)
+                let exifScore = 0.5;
+                if (currentSourceType === 'image' && uploadedImageEl?.src?.startsWith('data:')){
+                    try { EXIF.getData(uploadedImageEl, function(){ /* sync hook */ }); exifScore = 1; } catch { exifScore = 0.5; }
+                }
+
+                // 3) 압축 아티팩트 추정
+                const compressionScore = estimateCompressionArtifacts(imgData);
+                // 4) 에지 자연스러움
+                const edgeScore = estimateEdgeNaturalness(imgData);
+
+                // 가중 합산
+                const realism = clamp01(
+                    realismWeights.mobilenetReal * mobilenetScore +
+                    realismWeights.exifPresence  * exifScore +
+                    realismWeights.compression   * compressionScore +
+                    realismWeights.edgeStats     * edgeScore
+                );
+
+                return { realism, mobilenetScore, exifScore, compressionScore, edgeScore, mobilenetHints };
+            } catch(err){
+                return null;
+            }
+        }
+
+        function createCroppedCanvasFromBBox(sourceEl, bbox) {
+            const [x, y, w, h] = bbox;
+            const srcW = sourceEl.naturalWidth || sourceEl.videoWidth || sourceEl.width;
+            const srcH = sourceEl.naturalHeight || sourceEl.videoHeight || sourceEl.height;
+            const sx = Math.max(0, Math.floor(x));
+            const sy = Math.max(0, Math.floor(y));
+            const sw = Math.min(srcW - sx, Math.ceil(w));
+            const sh = Math.min(srcH - sy, Math.ceil(h));
+            const crop = document.createElement('canvas');
+            crop.width = Math.max(1, sw);
+            crop.height = Math.max(1, sh);
+            const cctx = crop.getContext('2d');
+            cctx.drawImage(sourceEl, sx, sy, sw, sh, 0, 0, sw, sh);
+            return crop;
+        }
+
+        async function classifyHumanOrAIForBox(sourceEl, bbox) {
+            try {
+                const crop = createCroppedCanvasFromBBox(sourceEl, bbox);
+                // 1) Realism on crop
+                const realism = await estimateRealVsAI(crop);
+                const realismScore = realism?.realism ?? 0.5;
+                // 2) MobileNet hints on crop
+                let labels = [];
+                if (mobileNetModel) {
+                    labels = await mobileNetModel.classify(crop);
+                }
+                const nameProb = (n) => (labels.find(l => (l.className||'').toLowerCase().includes(n))?.probability || 0);
+                const humanKeywords = ['person','man','woman','boy','girl','people','bride','groom','human','face'];
+                const aiKeywords = ['cartoon','anime','illustration','drawing','sketch','icon','render','robot','android','doll','mannequin','figurine','toy'];
+                let humanHint = 0, aiHint = 0;
+                for (const k of humanKeywords) humanHint += nameProb(k);
+                for (const k of aiKeywords) aiHint += nameProb(k);
+                const keywordScore = (humanHint + aiHint) > 0 ? humanHint / (humanHint + aiHint) : 0.5;
+                const combined = clamp01(0.6 * realismScore + 0.4 * keywordScore);
+                const isHuman = combined >= 0.55;
+                return { isHuman, combined, realismScore, keywordScore, labels };
+            } catch {
+                return { isHuman: true, combined: 0.55 };
+            }
+        }
+        
+        // 성능 통계
+        let fps = 0;
+        let frameCount = 0;
+        let lastTime = performance.now();
+        let detectedObjects = 0;
+        let avgConfidence = 0;
+        let minScoreThreshold = 0.5;
+        let autoThresholdEnabled = false;
+        let autoThresholdState = {
+            lastAdjustTs: 0,
+            window: [], // 최근 프레임의 검출 개수, 평균 신뢰도 기록
+            targetObjects: 5, // 목표 검출 개수(경험치)
+            min: 0.25,
+            max: 0.85
+        };
+
+        function getColorForClass(className) {
+            // 안정적인 색상 생성을 위한 간단한 해시
+            let hash = 0;
+            for (let i = 0; i < className.length; i++) {
+                hash = className.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash) % 360;
+            return `hsl(${hue}, 85%, 55%)`;
+        }
+
+        // 상태 업데이트
+        function updateStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.style.background = isError ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)';
+            status.style.borderColor = isError ? '#ff0000' : '#00ff00';
+        }
+
+        // 모델 상태 업데이트
+        function updateModelStatus(modelName, status) {
+            const modelItems = document.querySelectorAll('.model-item');
+            modelItems.forEach(item => {
+                if (item.textContent.includes(modelName)) {
+                    item.className = `model-item model-${status}`;
+                    if (status === 'loaded') {
+                        item.textContent = `${modelName} 로드됨 ✅`;
+                    } else if (status === 'error') {
+                        item.textContent = `${modelName} 오류 ❌`;
+                    }
+                }
+            });
+        }
+
+        // 로딩 표시
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // 결과 추가
+        function addResult(title, content) {
+            const resultContent = document.getElementById('resultContent');
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerHTML = `
+                <strong>${title}</strong><br>
+                ${content}
+            `;
+            resultContent.appendChild(resultItem);
+            // 스크롤 컨테이너(#results)를 맨 아래로
+            const resultContainer = document.getElementById('results');
+            if (resultContainer) {
+                resultContainer.scrollTop = resultContainer.scrollHeight;
+            }
+            // 페이지 자체 스크롤도 하단으로 이동 (실시간 분석 추적)
+            const bottom = document.documentElement.scrollHeight || document.body.scrollHeight;
+            if (window.scrollY + window.innerHeight < bottom - 60) {
+                window.scrollTo({ top: bottom, behavior: 'auto' });
+            }
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            document.getElementById('fpsValue').textContent = fps.toFixed(1);
+            document.getElementById('memoryValue').textContent = (performance.memory?.usedJSHeapSize / 1024 / 1024 || 0).toFixed(1);
+            document.getElementById('objectsValue').textContent = detectedObjects;
+            document.getElementById('confidenceValue').textContent = (avgConfidence * 100).toFixed(1) + '%';
+        }
+
+        // FPS 계산
+        function calculateFPS() {
+            frameCount++;
+            const currentTime = performance.now();
+            if (currentTime - lastTime >= 1000) {
+                fps = frameCount;
+                frameCount = 0;
+                lastTime = currentTime;
+                updateStats();
+            }
+        }
+
+        // TensorFlow.js 초기화
+        async function initializeTensorFlow() {
+            try {
+                updateStatus('🧠 TensorFlow.js 초기화 중...');
+                
+                // WebGL 백엔드 설정
+                await tf.setBackend('webgl');
+                await tf.ready();
+                
+                updateModelStatus('TensorFlow.js', 'loaded');
+                console.log('TensorFlow.js 로드됨:', tf.version);
+                console.log('현재 백엔드:', tf.getBackend());
+
+                // MobileNet 모델 로드 (@tensorflow-models/mobilenet 사용)
+                updateStatus('📱 MobileNet 모델 로딩 중...');
+                mobileNetModel = await mobilenet.load();
+                updateModelStatus('MobileNet', 'loaded');
+                console.log('MobileNet 모델 로드됨');
+
+                // COCO-SSD 모델 로드
+                updateStatus('🎯 COCO-SSD 모델 로딩 중...');
+                cocoSsdModel = await cocoSsd.load({ base: 'lite_mobilenet_v2' });
+                updateModelStatus('COCO-SSD', 'loaded');
+                console.log('COCO-SSD 모델 로드됨');
+
+                // KNN 분류기 초기화
+                updateStatus('🧩 KNN 분류기 초기화...');
+                knnClassifierModel = knnClassifier.create();
+                console.log('KNN 분류기 준비됨');
+
+                updateStatus('✅ 모든 AI 모델이 로드되었습니다!');
+                document.getElementById('analyzeBtn').disabled = false;
+                document.getElementById('realtimeBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('TensorFlow.js 초기화 오류:', error);
+                updateStatus('❌ TensorFlow.js 초기화 실패: ' + error.message, true);
+                updateModelStatus('TensorFlow.js', 'error');
+            }
+        }
+
+        // 카메라 시작
+        async function startCamera() {
+            try {
+                updateStatus('📹 카메라 시작 중...');
+                containerEl.classList.remove('original-size');
+                video.style.display = 'block';
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 800 },
+                        height: { ideal: 600 }
+                    } 
+                });
+                video.srcObject = stream;
+                
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    updateStatus('✅ 카메라가 시작되었습니다!');
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('stopBtn').disabled = false;
+                    // 비디오 모드에서는 뷰에 맞게 표시
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                };
+            } catch (error) {
+                updateStatus('❌ 카메라 접근 실패: ' + error.message, true);
+            }
+        }
+
+        // 카메라 중지
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                updateStatus('⏹️ 카메라가 중지되었습니다.');
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('analyzeBtn').disabled = true;
+                document.getElementById('realtimeBtn').disabled = true;
+                
+                if (isRealtime) {
+                    toggleRealtime();
+                }
+            }
+        }
+
+        // 이미지/비디오 분석
+        async function analyzeImage(sourceEl) {
+            if (isAnalyzing || !cocoSsdModel) return;
+            
+            isAnalyzing = true;
+            showLoading(true);
+            updateStatus('🔍 AI 분석 중...');
+
+            try {
+                // 입력 소스 선택
+                if (!sourceEl) {
+                    if (currentSourceType === 'image' && uploadedImageEl) {
+                        sourceEl = uploadedImageEl;
+                    } else if (uploadedVideoEl) {
+                        sourceEl = uploadedVideoEl;
+                    } else {
+                        sourceEl = video;
+                    }
+                }
+
+                // 프레임을 캔버스에 그리기
+                const drawWidth = sourceEl.naturalWidth || sourceEl.videoWidth || sourceEl.width || canvas.width;
+                const drawHeight = sourceEl.naturalHeight || sourceEl.videoHeight || sourceEl.height || canvas.height;
+                if (drawWidth && drawHeight) {
+                    canvas.width = drawWidth;
+                    canvas.height = drawHeight;
+                }
+                ctx.drawImage(sourceEl, 0, 0, canvas.width, canvas.height);
+                
+                // COCO-SSD 객체 감지
+                let predictions = await cocoSsdModel.detect(sourceEl, 50, minScoreThreshold);
+                let filtered = predictions.filter(p => p.score >= minScoreThreshold);
+                // 임계값이 너무 높아 비는 경우 자동 완화 재시도
+                if (filtered.length === 0) {
+                    const fallbackThreshold = Math.max(0.3, Math.min(minScoreThreshold, 0.5));
+                    if (fallbackThreshold !== minScoreThreshold) {
+                        predictions = await cocoSsdModel.detect(sourceEl, 50, fallbackThreshold);
+                        filtered = predictions.filter(p => p.score >= fallbackThreshold);
+                    }
+                }
+
+                // 자동 임계값 조절
+                if (autoThresholdEnabled) {
+                    const now = performance.now();
+                    const avgScore = filtered.length ? (filtered.reduce((s,p)=>s+p.score,0)/filtered.length) : 0;
+                    autoThresholdState.window.push({ n: filtered.length, avg: avgScore });
+                    if (autoThresholdState.window.length > 10) autoThresholdState.window.shift();
+                    if (now - autoThresholdState.lastAdjustTs > 800) {
+                        const avgN = autoThresholdState.window.reduce((s,e)=>s+e.n,0) / autoThresholdState.window.length;
+                        const avgAvg = autoThresholdState.window.reduce((s,e)=>s+e.avg,0) / (autoThresholdState.window.length||1);
+                        let t = minScoreThreshold;
+                        if (avgN < autoThresholdState.targetObjects*0.6) {
+                            t -= 0.05; // 너무 적게 검출 → 낮춤
+                        } else if (avgN > autoThresholdState.targetObjects*1.6) {
+                            t += 0.05; // 너무 많이 검출 → 올림
+                        } else {
+                            // 개수가 적당하지만 평균 신뢰도 낮으면 소폭 상향
+                            if (avgAvg < 0.45) t += 0.02;
+                        }
+                        t = Math.max(autoThresholdState.min, Math.min(autoThresholdState.max, t));
+                        if (Math.abs(t - minScoreThreshold) >= 0.005) {
+                            minScoreThreshold = t;
+                            const thresholdInput = document.getElementById('thresholdInput');
+                            const thresholdValue = document.getElementById('thresholdValue');
+                            thresholdInput.value = String(minScoreThreshold);
+                            thresholdValue.textContent = minScoreThreshold.toFixed(2);
+                        }
+                        autoThresholdState.lastAdjustTs = now;
+                    }
+                }
+                
+                // 결과 표시
+                detectedObjects = filtered.length;
+                let totalConfidence = 0;
+                
+                if (filtered.length > 0) {
+                    const results = filtered.map(p => `${p.class} (${(p.score * 100).toFixed(1)}%)`);
+                    addResult('🎯 객체 감지 결과', results.join(', '));
+                    
+                    // 클래스별 카운트
+                    const countByClass = {};
+                    filtered.forEach(p => { countByClass[p.class] = (countByClass[p.class] || 0) + 1; });
+                    const summary = Object.entries(countByClass)
+                        .map(([k,v]) => `${k}: ${v}개`).join(', ');
+                    addResult('🧮 요약', summary);
+
+                    // 바운딩 박스 그리기 (클래스별 색상)
+                    for (const prediction of filtered) {
+                        const [x, y, width, height] = prediction.bbox;
+                        totalConfidence += prediction.score;
+                        const color = getColorForClass(prediction.class);
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(x, y, width, height);
+
+                        // 라벨 배경 + 텍스트
+                        const label = `${prediction.class} ${(prediction.score * 100).toFixed(1)}%`;
+                        ctx.font = '16px Arial';
+                        const metrics = ctx.measureText(label);
+                        const padding = 4;
+                        const labelW = metrics.width + padding * 2;
+                        const labelH = 18 + padding * 2;
+                        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                        ctx.fillRect(x, Math.max(0, y - labelH), labelW, labelH);
+                        ctx.fillStyle = color;
+                        // 사람/AI 판별 (person 등 사람 관련 클래스만)
+                        if (/(person|man|woman|boy|girl|people)/i.test(prediction.class)) {
+                            try {
+                                const res = await classifyHumanOrAIForBox(sourceEl, prediction.bbox);
+                                const tag = res.isHuman ? '사람' : 'AI';
+                                const tagColor = res.isHuman ? 'rgba(0, 200, 255, 0.9)' : 'rgba(255, 120, 0, 0.9)';
+                                const tagText = `${tag} ${(res.combined*100).toFixed(0)}%`;
+                                ctx.font = 'bold 14px Arial';
+                                const m2 = ctx.measureText(tagText);
+                                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                                ctx.fillRect(x, Math.max(0, y - labelH - 22), m2.width + 8, 18);
+                                ctx.fillStyle = tagColor;
+                                ctx.fillText(tagText, x + 4, Math.max(14, y - labelH - 8));
+                            } catch {}
+                        }
+
+                        ctx.fillText(label, x + padding, Math.max(14, y - padding));
+                    }
+                    
+                    avgConfidence = totalConfidence / filtered.length;
+                } else {
+                    addResult('🎯 객체 감지 결과', '감지된 객체가 없습니다.');
+                    avgConfidence = 0;
+                }
+
+                // 이미지 분류 (MobileNet)
+                // 실시간 세션 누적 통계 업데이트
+                if (isRealtime) {
+                    realtimeAggregation.analyzedFrameCount += 1;
+                    realtimeAggregation.sumAverageConfidence += (avgConfidence || 0);
+                    realtimeAggregation.sumDetectedObjects += filtered.length || 0;
+                    filtered.forEach(p => {
+                        realtimeAggregation.classNameToCount[p.class] = (realtimeAggregation.classNameToCount[p.class] || 0) + 1;
+                    });
+                }
+
+                if (mobileNetModel) {
+                    const classifications = await mobileNetModel.classify(sourceEl);
+                    const top = classifications.slice(0, 3).map(c => `${c.className} (${(c.probability * 100).toFixed(1)}%)`);
+                    addResult('🧭 분류 결과 (MobileNet)', top.join(', '));
+                }
+
+                // 실사/합성 추정
+                const realism = await estimateRealVsAI(sourceEl);
+                if (realism) {
+                    const pct = (realism.realism*100).toFixed(1);
+                    addResult('🧪 실사 vs 합성 추정', `실사 확률: <b>${pct}%</b><br>
+                        - MobileNet 힌트: ${(realism.mobilenetScore*100).toFixed(1)}%<br>
+                        - EXIF 존재: ${(realism.exifScore*100).toFixed(1)}%<br>
+                        - 압축 흔적: ${(realism.compressionScore*100).toFixed(1)}%<br>
+                        - 에지 자연성: ${(realism.edgeScore*100).toFixed(1)}%`);
+                }
+
+                updateStatus('✅ 분석 완료!');
+            } catch (error) {
+                console.error('분석 오류:', error);
+                updateStatus('❌ 분석 실패: ' + error.message, true);
+            } finally {
+                isAnalyzing = false;
+                showLoading(false);
+            }
+        }
+
+        // 실시간 분석 토글
+        function toggleRealtime() {
+            if (!isRealtime) {
+                isRealtime = true;
+                document.getElementById('realtimeBtn').textContent = '⏸️ 실시간 중지';
+                updateStatus('🔄 실시간 분석 시작...');
+                // 누적 통계 초기화
+                realtimeAggregation = {
+                    analyzedFrameCount: 0,
+                    sumAverageConfidence: 0,
+                    sumDetectedObjects: 0,
+                    classNameToCount: {}
+                };
+                realtimeAnalysis();
+            } else {
+                isRealtime = false;
+                document.getElementById('realtimeBtn').textContent = '🔄 실시간 분석';
+                updateStatus('⏸️ 실시간 분석 중지됨');
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                // 평균치 요약 출력
+                try {
+                    const frames = Math.max(1, realtimeAggregation.analyzedFrameCount);
+                    const avgDetectionsPerFrame = realtimeAggregation.sumDetectedObjects / frames;
+                    const avgConfPct = (realtimeAggregation.sumAverageConfidence / frames) * 100;
+                    const topClasses = Object.entries(realtimeAggregation.classNameToCount)
+                        .sort((a,b)=>b[1]-a[1])
+                        .slice(0,5)
+                        .map(([k,v])=>`${k}: ${v}회`).join(', ');
+                    addResult('📈 실시간 평균 요약', `
+                        총 프레임: <b>${realtimeAggregation.analyzedFrameCount}</b><br>
+                        프레임당 평균 감지 개수: <b>${avgDetectionsPerFrame.toFixed(2)}</b><br>
+                        프레임당 평균 신뢰도: <b>${avgConfPct.toFixed(1)}%</b><br>
+                        많이 나온 클래스 Top5: ${topClasses || '(없음)'}
+                    `);
+                } catch {}
+            }
+        }
+
+        // 실시간 분석 루프
+        function realtimeAnalysis() {
+            if (!isRealtime) return;
+            
+            calculateFPS();
+            
+            // 업로드 비디오가 있으면 재생 중에만 분석
+            const canAnalyzeVideo = uploadedVideoEl ? !uploadedVideoEl.paused && !uploadedVideoEl.ended : true;
+            if (!isAnalyzing && canAnalyzeVideo) {
+                analyzeImage();
+            }
+            
+            animationId = requestAnimationFrame(realtimeAnalysis);
+        }
+
+        // 이미지 업로드
+        function uploadImage() {
+            document.getElementById('fileInput').click();
+        }
+
+        function uploadVideo() {
+            document.getElementById('videoFileInput').click();
+        }
+
+        // 파일 업로드 처리
+        async function handleFileUpload(event) {
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+            let firstId = null;
+            for (const file of files) {
+                try {
+                    updateStatus(`📁 이미지 업로드 중... (${file.name})`);
+                    const id = `${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+                    if (!firstId) firstId = id;
+                    const reader = new FileReader();
+                    await new Promise((resolve, reject) => {
+                        reader.onerror = reject;
+                        reader.onload = () => resolve(null);
+                        reader.readAsDataURL(file);
+                    });
+                    const img = new Image();
+                    await new Promise((resolve, reject) => {
+                        img.onload = resolve;
+                        img.onerror = reject;
+                        img.src = reader.result;
+                    });
+                    uploadedMedia.push({ id, type: 'image', name: file.name, url: reader.result, element: img });
+                    renderMediaList();
+                } catch (error) {
+                    updateStatus('❌ 이미지 업로드 실패: ' + error.message, true);
+                }
+            }
+            // 첫 번째 항목부터 자동 시작 (옵션)
+            if (firstId && document.getElementById('autoStartToggle').checked) {
+                const firstItem = uploadedMedia.find(m => m.id === firstId);
+                setActiveMedia(firstId);
+                if (firstItem?.type === 'image') { try { await analyzeImage(); } catch {} }
+            }
+            // 파일 입력 값 초기화 (같은 파일 재업로드 허용)
+            event.target.value = '';
+        }
+
+        // 업로드 이미지 제거
+        function clearUploadedImage() {
+            try {
+                if (!uploadedImageEl && !activeMediaId) return;
+                // 목록에서 활성 이미지 항목 제거 (또는 단일 상태 정리)
+                if (activeMediaId) {
+                    const idx = uploadedMedia.findIndex(m => m.id === activeMediaId && m.type === 'image');
+                    if (idx >= 0) {
+                        uploadedMedia.splice(idx,1);
+                        renderMediaList();
+                    }
+                }
+                uploadedImageEl = null;
+                activeMediaId = null;
+                currentSourceType = 'video';
+                // 비디오 화면 복원
+                containerEl.classList.remove('original-size');
+                video.style.display = 'block';
+                canvas.style.width = '100%';
+                canvas.style.height = 'auto';
+                // 캔버스 초기화
+                canvas.width = video.videoWidth || canvas.width;
+                canvas.height = video.videoHeight || canvas.height;
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                // 버튼 상태
+                document.getElementById('clearImageBtn').disabled = true;
+                document.getElementById('realtimeBtn').disabled = !cocoSsdModel;
+                updateStatus('🗑️ 업로드 이미지를 제거했습니다.');
+            } catch {}
+        }
+
+        // 동영상 업로드 처리
+        async function handleVideoUpload(event) {
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+            let firstId = null;
+            for (const file of files) {
+                try {
+                    updateStatus(`🎞️ 동영상 업로드 중... (${file.name})`);
+                    const id = `${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+                    if (!firstId) firstId = id;
+                    const objectUrl = URL.createObjectURL(file);
+                    const vid = document.createElement('video');
+                    vid.preload = 'auto'; vid.muted = true; vid.controls = false; vid.playsInline = true; vid.src = objectUrl;
+                    await new Promise((resolve,reject)=>{ vid.onloadedmetadata = resolve; vid.onerror = reject; });
+                    uploadedMedia.push({ id, type: 'video', name: file.name, url: objectUrl, element: vid });
+                    renderMediaList();
+                } catch (e) {
+                    updateStatus('❌ 동영상 업로드 실패: ' + e.message, true);
+                }
+            }
+            if (firstId && document.getElementById('autoStartToggle').checked) {
+                setActiveMedia(firstId); // 비디오는 onplay에서 실시간 자동 시작
+            }
+            event.target.value = '';
+        }
+
+        // 업로드 동영상 제거
+        function clearUploadedVideo() {
+            try {
+                if (!uploadedVideoEl && !uploadedVideoBlobUrl && !activeMediaId) return;
+                // 목록에서 활성 비디오 항목 제거
+                if (activeMediaId) {
+                    const idx = uploadedMedia.findIndex(m => m.id === activeMediaId && m.type === 'video');
+                    if (idx >= 0) {
+                        // blob url 해제
+                        const item = uploadedMedia[idx];
+                        if (item.url?.startsWith('blob:')) { try { URL.revokeObjectURL(item.url); } catch {} }
+                        uploadedMedia.splice(idx,1);
+                        renderMediaList();
+                    }
+                }
+                // 재생 중지 및 DOM 정리
+                try { uploadedVideoEl?.pause(); } catch {}
+                if (uploadedVideoEl) {
+                    uploadedVideoEl.removeAttribute('src');
+                    uploadedVideoEl.load();
+                    try { uploadedVideoEl.parentElement?.removeChild(uploadedVideoEl); } catch {}
+                }
+                if (uploadedVideoBlobUrl) { try { URL.revokeObjectURL(uploadedVideoBlobUrl); } catch {} }
+                uploadedVideoEl = null;
+                uploadedVideoBlobUrl = null;
+                uploadedVideoPlaying = false;
+                activeMediaId = null;
+                currentSourceType = 'video';
+                // 뷰 복원
+                containerEl.classList.remove('original-size');
+                video.style.display = 'block';
+                canvas.style.width = '100%';
+                canvas.style.height = 'auto';
+                // 캔버스 초기화 (카메라/기본 비디오 프레임 크기에 맞춤)
+                canvas.width = video.videoWidth || canvas.width;
+                canvas.height = video.videoHeight || canvas.height;
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                // 버튼 상태
+                document.getElementById('clearVideoBtn').disabled = true;
+                updateStatus('🗑️ 업로드 동영상을 제거했습니다.');
+            } catch {}
+        }
+
+        // API 테스트
+        async function testAPI() {
+            try {
+                updateStatus('🌐 API 연결 테스트 중...');
+                const response = await fetch('http://localhost:5000/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateStatus('✅ 백엔드 API 연결 성공!');
+                    addResult('🌐 API 상태', 
+                        `서버 상태: ${data.status}<br>
+                         시간: ${new Date(data.timestamp).toLocaleString()}<br>
+                         업타임: ${data.uptime.toFixed(2)}초`
+                    );
+                } else {
+                    throw new Error('API 응답 오류');
+                }
+            } catch (error) {
+                updateStatus('❌ API 연결 실패: ' + error.message, true);
+                addResult('❌ API 오류', error.message);
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        window.onload = function() {
+            updateStatus('🚀 AI Vision 시스템 초기화 중...');
+            addResult('🎉 시스템 시작', 'TensorFlow.js 기반 AI Vision 시스템이 로드되었습니다.');
+            
+            // TensorFlow.js 초기화
+            initializeTensorFlow();
+            
+            // 통계 업데이트 시작
+            setInterval(updateStats, 1000);
+
+            // 이벤트 리스너 등록 (inline 핸들러 제거)
+            document.getElementById('startBtn').addEventListener('click', async () => {
+                currentSourceType = 'video';
+                uploadedImageEl = null;
+                await startCamera();
+                // 모델이 준비되었다면 분석/실시간 버튼 활성화
+                document.getElementById('analyzeBtn').disabled = !(cocoSsdModel);
+                document.getElementById('realtimeBtn').disabled = !(cocoSsdModel);
+            });
+            document.getElementById('stopBtn').addEventListener('click', stopCamera);
+            document.getElementById('analyzeBtn').addEventListener('click', () => analyzeImage());
+            document.getElementById('realtimeBtn').addEventListener('click', toggleRealtime);
+            document.getElementById('testApiBtn').addEventListener('click', testAPI);
+            document.getElementById('uploadBtn').addEventListener('click', uploadImage);
+            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+            document.getElementById('uploadVideoBtn').addEventListener('click', uploadVideo);
+            document.getElementById('videoFileInput').addEventListener('change', handleVideoUpload);
+            document.getElementById('clearImageBtn').addEventListener('click', clearUploadedImage);
+            document.getElementById('clearVideoBtn').addEventListener('click', clearUploadedVideo);
+            // 영상 제어 버튼
+            document.getElementById('videoPlayBtn').addEventListener('click', async ()=>{ try { await uploadedVideoEl?.play(); } catch{} });
+            document.getElementById('videoPauseBtn').addEventListener('click', ()=>{ try { uploadedVideoEl?.pause(); } catch{} });
+            document.getElementById('videoStopBtn').addEventListener('click', ()=>{ try { uploadedVideoEl?.pause(); if (uploadedVideoEl) uploadedVideoEl.currentTime = 0; } catch{} });
+            // KNN 학습/예측 이벤트
+            document.getElementById('addSampleBtn').addEventListener('click', async ()=>{
+                try {
+                    const label = (document.getElementById('trainLabelInput').value||'').trim();
+                    if (!label) { addResult('⚠️ KNN','레이블을 입력하세요'); return; }
+                    if (!knnClassifierModel) { addResult('⚠️ KNN','KNN 분류기가 초기화되지 않았습니다'); return; }
+                    if (!mobileNetModel) { addResult('⚠️ KNN','MobileNet 준비 필요'); return; }
+                    const source = (currentSourceType === 'image' && uploadedImageEl) ? uploadedImageEl : (uploadedVideoEl || video);
+                    // 소스 유효성 체크
+                    if (source.tagName === 'VIDEO') {
+                        const v = source;
+                        if (v.readyState < 2) { addResult('⚠️ KNN','비디오가 아직 준비되지 않았습니다'); return; }
+                    }
+                    tf.tidy(() => {
+                        const activation = mobileNetModel.infer(source, true);
+                        knnClassifierModel.addExample(activation, label);
+                    });
+                    const total = knnClassifierModel.getClassExampleCount?.();
+                    const countMsg = total ? ' / 전체 샘플: ' + Object.values(total).reduce((s,n)=>s+n,0) : '';
+                    addResult('✅ KNN 샘플 추가', `레이블: <b>${label}</b>${countMsg}`);
+                } catch (e) { addResult('❌ KNN 오류', e?.message || String(e)); }
+            });
+            document.getElementById('predictKnnBtn').addEventListener('click', async ()=>{
+                try {
+                    if (!knnClassifierModel || knnClassifierModel.getNumClasses() === 0) { addResult('⚠️ KNN','샘플을 먼저 추가하세요'); return; }
+                    if (!mobileNetModel) { addResult('⚠️ KNN','MobileNet 준비 필요'); return; }
+                    const source = (currentSourceType === 'image' && uploadedImageEl) ? uploadedImageEl : (uploadedVideoEl || video);
+                    let res;
+                    await tf.nextFrame();
+                    await tf.nextFrame();
+                    await tf.engine().startScope();
+                    try {
+                        const activation = tf.tidy(() => mobileNetModel.infer(source, true));
+                        res = await knnClassifierModel.predictClass(activation, 5);
+                    } finally {
+                        tf.engine().endScope();
+                    }
+                    const probs = Object.entries(res.confidences)
+                        .sort((a,b)=>b[1]-a[1])
+                        .map(([k,v])=>`${k} ${(v*100).toFixed(1)}%`).join(', ');
+                    addResult('🧠 KNN 예측', `Top: <b>${res.label}</b><br>모든 확률: ${probs}`);
+                } catch (e) { addResult('❌ KNN 오류', e?.message || String(e)); }
+            });
+            document.getElementById('clearKnnBtn').addEventListener('click', ()=>{
+                try { knnClassifierModel?.clearAllClasses(); addResult('🧹 KNN 초기화','모든 샘플 제거'); } catch (e) { addResult('❌ KNN 오류', e?.message || String(e)); }
+            });
+            // OCR 버튼
+            document.getElementById('runOcrBtn').addEventListener('click', async ()=>{
+                try {
+                    const ocrEl = document.getElementById('ocrStatus');
+                    ocrEl.textContent = '인식 중...';
+                    const source = currentSourceType === 'image' && uploadedImageEl ? uploadedImageEl : (uploadedVideoEl || video);
+                    // 현재 프레임을 캔버스에 복사 (너무 큰 프레임은 축소)
+                    const sw = source.naturalWidth || source.videoWidth || source.width;
+                    const sh = source.naturalHeight || source.videoHeight || source.height;
+                    const maxSide = 1600; // OCR 안정성/성능을 위한 캡
+                    const scale = Math.min(1, maxSide / Math.max(sw, sh));
+                    const tw = Math.max(1, Math.round(sw * scale));
+                    const th = Math.max(1, Math.round(sh * scale));
+                    const tmp = document.createElement('canvas'); tmp.width = tw; tmp.height = th;
+                    const tctx = tmp.getContext('2d');
+                    tctx.imageSmoothingEnabled = true;
+                    tctx.imageSmoothingQuality = 'high';
+                    tctx.drawImage(source, 0, 0, tw, th);
+                    // 데이터 URL 대신 캔버스 엘리먼트를 직접 전달 (truncated file 이슈 방지)
+                    const { data: { text } } = await Tesseract.recognize(tmp, 'eng+kor', { logger: () => {} });
+                    ocrEl.textContent = '완료';
+                    addResult('📄 OCR 결과', text ? text.replace(/\n/g,'<br>') : '(인식된 텍스트 없음)');
+                } catch (e) {
+                    document.getElementById('ocrStatus').textContent = '오류';
+                    addResult('❌ OCR 오류', e?.message || String(e));
+                }
+            });
+            const thresholdInput = document.getElementById('thresholdInput');
+            const thresholdValue = document.getElementById('thresholdValue');
+            thresholdInput.addEventListener('input', (e) => {
+                minScoreThreshold = parseFloat(e.target.value);
+                thresholdValue.textContent = minScoreThreshold.toFixed(2);
+                autoThresholdEnabled = false;
+                document.getElementById('autoThresholdToggle').checked = false;
+            });
+            document.getElementById('autoThresholdToggle').addEventListener('change', (e)=>{
+                autoThresholdEnabled = e.target.checked;
+                autoThresholdState.window = [];
+                autoThresholdState.lastAdjustTs = 0;
+            });
+            // 초기값 반영
+            minScoreThreshold = parseFloat(thresholdInput.value);
+            thresholdValue.textContent = minScoreThreshold.toFixed(2);
+
+            // 업로드 목록 렌더러/핸들러
+            window.renderMediaList = function renderMediaList() {
+                const wrap = document.getElementById('mediaItems');
+                if (!wrap) return;
+                wrap.innerHTML = '';
+                uploadedMedia.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'media-item' + (item.id === activeMediaId ? ' active' : '');
+                    row.dataset.id = item.id;
+                    const left = document.createElement('div');
+                    left.innerHTML = `<b>${item.type === 'image' ? '🖼️' : '🎞️'} ${item.name}</b>`;
+                    const right = document.createElement('div');
+                    right.className = 'media-actions';
+                    const useBtn = document.createElement('button'); useBtn.textContent = '사용';
+                    const delBtn = document.createElement('button'); delBtn.textContent = '제거';
+                    right.appendChild(useBtn); right.appendChild(delBtn);
+                    row.appendChild(left); row.appendChild(right);
+                    wrap.appendChild(row);
+
+                    useBtn.addEventListener('click', (ev) => { ev.stopPropagation(); setActiveMedia(item.id); });
+                    delBtn.addEventListener('click', (ev) => { ev.stopPropagation(); removeMedia(item.id); });
+                    row.addEventListener('click', () => setActiveMedia(item.id));
+                });
+            }
+
+            window.setActiveMedia = async function setActiveMedia(id) {
+                const item = uploadedMedia.find(m => m.id === id);
+                if (!item) return;
+                activeMediaId = id;
+                // 이미지/동영상 별로 표시
+                if (item.type === 'image') {
+                    const img = item.element;
+                    // 원본 사이즈 표시
+                    canvas.width = img.naturalWidth || img.width;
+                    canvas.height = img.naturalHeight || img.height;
+                    containerEl.classList.add('original-size');
+                    video.style.display = 'none';
+                    canvas.style.width = canvas.width + 'px';
+                    canvas.style.height = canvas.height + 'px';
+                    ctx.drawImage(img, 0, 0);
+                    uploadedImageEl = img;
+                    uploadedVideoEl = null;
+                    currentSourceType = 'image';
+                    document.getElementById('analyzeBtn').disabled = false;
+                    document.getElementById('realtimeBtn').disabled = true;
+                    document.getElementById('clearImageBtn').disabled = false;
+                    document.getElementById('clearVideoBtn').disabled = true;
+                    // 이미지 선택 시 자동 분석 실행
+                    try { await analyzeImage(); } catch {}
+                } else {
+                    // 비디오 DOM에 배치
+                    if (uploadedVideoEl) {
+                        try { uploadedVideoEl.pause(); } catch {}
+                        try { uploadedVideoEl.parentElement?.removeChild(uploadedVideoEl); } catch {}
+                    }
+                    uploadedVideoEl = item.element;
+                    const container = document.querySelector('.video-container');
+                    uploadedVideoEl.style.maxWidth = '800px';
+                    uploadedVideoEl.style.width = '100%';
+                    uploadedVideoEl.style.borderRadius = '15px';
+                    container.insertBefore(uploadedVideoEl, document.getElementById('canvas'));
+                    // 이벤트: 재생 시 자동 실시간 시작, 종료 시 자동 중지
+                    uploadedVideoEl.onplay = () => {
+                        uploadedVideoPlaying = true;
+                        if (cocoSsdModel && !isRealtime) { toggleRealtime(); }
+                    };
+                    uploadedVideoEl.onpause = () => { uploadedVideoPlaying = false; };
+                    uploadedVideoEl.onended = () => {
+                        uploadedVideoPlaying = false;
+                        // 다음 동영상 자동 진행 (옵션)
+                        if (document.getElementById('autoAdvanceToggle').checked) {
+                            const idx = uploadedMedia.findIndex(m => m.id === activeMediaId);
+                            let next = null;
+                            for (let i = idx + 1; i < uploadedMedia.length; i++) {
+                                if (uploadedMedia[i].type === 'video') { next = uploadedMedia[i]; break; }
+                            }
+                            if (next) {
+                                setActiveMedia(next.id);
+                                return;
+                            }
+                        }
+                        if (isRealtime) { toggleRealtime(); }
+                        updateStatus('⏹️ 동영상 재생 완료');
+                    };
+                    // 크기 맞추기
+                    canvas.width = uploadedVideoEl.videoWidth;
+                    canvas.height = uploadedVideoEl.videoHeight;
+                    containerEl.classList.remove('original-size');
+                    video.style.display = 'none';
+                    uploadedVideoEl.style.display = 'block';
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                    uploadedImageEl = null;
+                    currentSourceType = 'video';
+                    document.getElementById('analyzeBtn').disabled = false;
+                    document.getElementById('realtimeBtn').disabled = false;
+                    document.getElementById('clearImageBtn').disabled = true;
+                    document.getElementById('clearVideoBtn').disabled = false;
+                    try { await uploadedVideoEl.play(); } catch {}
+                }
+                renderMediaList();
+            }
+
+            window.removeMedia = function removeMedia(id) {
+                const idx = uploadedMedia.findIndex(m => m.id === id);
+                if (idx < 0) return;
+                const item = uploadedMedia[idx];
+                if (item.type === 'video' && item.url?.startsWith('blob:')) {
+                    try { URL.revokeObjectURL(item.url); } catch {}
+                }
+                // 활성 항목을 제거하는 경우, 뷰 복원
+                const removingActive = (activeMediaId === id);
+                uploadedMedia.splice(idx,1);
+                if (removingActive) {
+                    if (item.type === 'image') {
+                        clearUploadedImage();
+                    } else {
+                        clearUploadedVideo();
+                    }
+                    activeMediaId = null;
+                }
+                renderMediaList();
+            }
+        };
+    </script>
+</body>
+</html>

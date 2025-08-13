@@ -141,6 +141,10 @@
             align-items: center;
             justify-content: center;
             min-height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            border-radius: 12px;
         }
         
         #video {
@@ -148,6 +152,12 @@
             width: 100%;
             border-radius: 12px;
             height: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        #video:hover {
+            transform: scale(1.01);
         }
         
         .video-container video {
@@ -156,6 +166,12 @@
             border-radius: 12px;
             display: block;
             height: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .video-container video:hover {
+            transform: scale(1.01);
         }
         
         #canvas {
@@ -167,6 +183,12 @@
             width: 100%;
             border-radius: 12px;
             height: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        #canvas:hover {
+            transform: translateX(-50%) scale(1.01);
         }
         
         .video-container.original-size #canvas {
@@ -177,6 +199,13 @@
             width: 100%;
             height: auto;
             object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .video-container.original-size #canvas:hover {
+            transform: scale(1.02);
         }
         
         .video-container.original-size #video {
@@ -3393,37 +3422,74 @@
                 // 이미지/동영상 별로 표시
                 if (item.type === 'image') {
                     const img = item.element;
-                    // 화면에 100% 맞춰서 자동 축소
-                    const containerWidth = window.innerWidth < 768 ? window.innerWidth - 40 : 800;
-                    const containerHeight = window.innerHeight * 0.3; // 화면의 30% 높이로 줄임
+                    
+                    // 반응형 컨테이너 크기 계산 (PC/모바일 최적화)
+                    let containerWidth, containerHeight;
+                    
+                    if (window.innerWidth < 768) {
+                        // 모바일: 화면 너비의 90%, 높이의 25%
+                        containerWidth = window.innerWidth * 0.9;
+                        containerHeight = window.innerHeight * 0.25;
+                    } else if (window.innerWidth < 1024) {
+                        // 태블릿: 화면 너비의 85%, 높이의 30%
+                        containerWidth = window.innerWidth * 0.85;
+                        containerHeight = window.innerHeight * 0.3;
+                    } else {
+                        // PC: 화면 너비의 80%, 높이의 35%
+                        containerWidth = window.innerWidth * 0.8;
+                        containerHeight = window.innerHeight * 0.35;
+                    }
                     
                     const imgWidth = img.naturalWidth || img.width;
                     const imgHeight = img.naturalHeight || img.height;
                     
-                    // 컨테이너에 맞는 비율 계산
+                    // 컨테이너에 맞는 비율 계산 (더 정교한 비율 조정)
                     const widthRatio = containerWidth / imgWidth;
                     const heightRatio = containerHeight / imgHeight;
-                    const scaleRatio = Math.min(widthRatio, heightRatio, 1); // 1을 넘지 않도록
+                    const scaleRatio = Math.min(widthRatio, heightRatio, 1);
                     
-                    const displayWidth = imgWidth * scaleRatio;
-                    const displayHeight = imgHeight * scaleRatio;
+                    const displayWidth = Math.round(imgWidth * scaleRatio);
+                    const displayHeight = Math.round(imgHeight * scaleRatio);
                     
+                    // 캔버스 크기 설정
                     canvas.width = displayWidth;
                     canvas.height = displayHeight;
+                    
+                    // 컨테이너 스타일 적용
                     containerEl.classList.add('original-size');
                     video.style.display = 'none';
+                    
+                    // 캔버스 스타일 최적화
                     canvas.style.width = '100%';
                     canvas.style.height = 'auto';
+                    canvas.style.maxWidth = `${containerWidth}px`;
+                    canvas.style.maxHeight = `${containerHeight}px`;
+                    
+                    // 고품질 이미지 렌더링
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+                    
+                    // 상태 업데이트
                     uploadedImageEl = img;
                     uploadedVideoEl = null;
                     currentSourceType = 'image';
+                    
+                    // 버튼 상태 업데이트
                     document.getElementById('analyzeBtn').disabled = false;
                     document.getElementById('realtimeBtn').disabled = true;
                     document.getElementById('clearImageBtn').disabled = false;
                     document.getElementById('clearVideoBtn').disabled = true;
+                    
                     // 이미지 선택 시 자동 분석 실행
-                    try { await analyzeImage(); } catch {}
+                    try { 
+                        updateStatus('🔄 이미지 분석 중...');
+                        await analyzeImage(); 
+                        updateStatus('✅ 이미지 분석 완료');
+                    } catch (error) {
+                        updateStatus('❌ 이미지 분석 실패');
+                        console.error('이미지 분석 오류:', error);
+                    }
                 } else {
                     // 비디오 DOM에 배치
                     if (uploadedVideoEl) {
@@ -3432,9 +3498,22 @@
                     }
                     uploadedVideoEl = item.element;
                     const container = document.querySelector('.video-container');
-                    uploadedVideoEl.style.maxWidth = '800px';
+                    
+                    // 반응형 비디오 크기 설정
+                    let maxWidth;
+                    if (window.innerWidth < 768) {
+                        maxWidth = window.innerWidth * 0.9;
+                    } else if (window.innerWidth < 1024) {
+                        maxWidth = window.innerWidth * 0.85;
+                    } else {
+                        maxWidth = window.innerWidth * 0.8;
+                    }
+                    
+                    uploadedVideoEl.style.maxWidth = `${maxWidth}px`;
                     uploadedVideoEl.style.width = '100%';
-                    uploadedVideoEl.style.borderRadius = '15px';
+                    uploadedVideoEl.style.borderRadius = '12px';
+                    uploadedVideoEl.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)';
+                    uploadedVideoEl.style.transition = 'transform 0.3s ease';
                     container.insertBefore(uploadedVideoEl, document.getElementById('canvas'));
                     // 이벤트: 재생 시 자동 실시간 시작, 종료 시 자동 중지
                     uploadedVideoEl.onplay = () => {

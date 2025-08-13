@@ -64,7 +64,7 @@
         .controls {
             display: flex;
             gap: 8px;
-            margin: 15px 0;
+            margin: 12px 0;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -126,7 +126,7 @@
         
         .video-container {
             position: relative;
-            margin: 15px 0;
+            margin: 12px 0;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
@@ -186,9 +186,9 @@
         .results {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-            max-height: 300px;
+            padding: 12px;
+            margin: 12px 0;
+            max-height: 280px;
             overflow-y: auto;
             font-size: 0.9em;
         }
@@ -297,8 +297,8 @@
         .stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 15px 0;
+            gap: 8px;
+            margin: 12px 0;
         }
         
         .stat-item {
@@ -384,41 +384,57 @@
             
             .container {
                 max-width: 100%;
-                padding: 25px;
+                padding: 20px;
             }
             
             h1 {
                 font-size: 2.2em;
+                margin-bottom: 15px;
             }
             
             .controls {
-                gap: 12px;
+                gap: 10px;
+                margin: 12px 0;
             }
             
             .controls-inline {
                 flex-direction: row;
+                gap: 15px;
             }
             
             .controls-inline > div {
                 flex-direction: row;
+                gap: 10px;
             }
             
             button {
-                padding: 12px 20px;
-                font-size: 1em;
+                padding: 10px 16px;
+                font-size: 0.95em;
+                min-height: 40px;
             }
             
             .stats {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
+                gap: 12px;
+                margin: 12px 0;
             }
             
             .video-container {
-                margin: 20px 0;
+                margin: 15px 0;
             }
             
             #video, .video-container video, #canvas {
-                max-width: 800px;
+                max-width: 900px;
+            }
+            
+            .results {
+                max-height: 250px;
+                padding: 12px;
+            }
+            
+            .media-list {
+                max-height: 150px;
+                padding: 10px;
             }
         }
         
@@ -426,84 +442,118 @@
         @media (min-width: 1024px) {
             .container {
                 max-width: 100%;
-                padding: 30px;
+                padding: 25px;
             }
             
             h1 {
                 font-size: 2.5em;
+                margin-bottom: 20px;
             }
             
             .controls {
-                gap: 15px;
+                gap: 12px;
+                margin: 15px 0;
+            }
+            
+            .controls-inline {
+                gap: 20px;
+            }
+            
+            .controls-inline > div {
+                gap: 12px;
             }
             
             button {
-                padding: 12px 24px;
+                padding: 12px 20px;
+                font-size: 1em;
+                min-height: 44px;
             }
             
             .stats {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 15px;
+                margin: 15px 0;
+            }
+            
+            #video, .video-container video, #canvas {
+                max-width: 1000px;
+            }
+            
+            .results {
+                max-height: 300px;
+                padding: 15px;
+            }
+            
+            .media-list {
+                max-height: 180px;
+                padding: 12px;
             }
         }
         
         /* 매우 작은 화면 최적화 */
         @media (max-width: 480px) {
             body {
-                padding: 5px;
-                font-size: 13px;
+                padding: 3px;
+                font-size: 12px;
             }
             
             .container {
-                padding: 10px;
-                border-radius: 10px;
-                margin: 5px;
+                padding: 8px;
+                border-radius: 8px;
+                margin: 3px;
             }
             
             h1 {
-                font-size: 1.5em;
-                margin-bottom: 15px;
+                font-size: 1.4em;
+                margin-bottom: 10px;
             }
             
             .controls {
-                gap: 6px;
+                gap: 4px;
+                margin: 8px 0;
             }
             
             button {
-                padding: 8px 12px;
-                font-size: 0.85em;
-                min-height: 40px;
+                padding: 6px 10px;
+                font-size: 0.8em;
+                min-height: 36px;
             }
             
             .controls-inline {
-                gap: 6px;
+                gap: 4px;
             }
             
             .controls-inline > div {
-                gap: 6px;
+                gap: 4px;
             }
             
             .stats {
                 grid-template-columns: 1fr;
-                gap: 8px;
+                gap: 6px;
+                margin: 8px 0;
             }
             
             .model-status {
-                gap: 6px;
+                gap: 4px;
             }
             
             .model-item {
-                padding: 4px 8px;
-                font-size: 0.75em;
+                padding: 3px 6px;
+                font-size: 0.7em;
             }
             
             .results {
-                max-height: 250px;
-                padding: 10px;
+                max-height: 200px;
+                padding: 8px;
             }
             
             .media-list {
-                max-height: 150px;
-                padding: 8px;
+                max-height: 120px;
+                padding: 6px;
+            }
+            
+            .video-container {
+                margin: 8px 0;
             }
         }
         

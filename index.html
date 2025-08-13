@@ -137,6 +137,10 @@
         
         .video-container.original-size {
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
         }
         
         #video {
@@ -172,6 +176,7 @@
             max-width: 100%;
             width: 100%;
             height: auto;
+            object-fit: contain;
         }
         
         .video-container.original-size #video {
@@ -3338,25 +3343,20 @@
                 // 이미지/동영상 별로 표시
                 if (item.type === 'image') {
                     const img = item.element;
-                    // 화면에 맞게 축소된 크기로 표시
-                    const maxWidth = window.innerWidth < 768 ? window.innerWidth - 40 : 800;
-                    const maxHeight = window.innerHeight * 0.6;
+                    // 화면에 100% 맞춰서 자동 축소
+                    const containerWidth = window.innerWidth < 768 ? window.innerWidth - 40 : 800;
+                    const containerHeight = window.innerHeight * 0.5; // 화면의 50% 높이
                     
-                    let displayWidth = img.naturalWidth || img.width;
-                    let displayHeight = img.naturalHeight || img.height;
+                    const imgWidth = img.naturalWidth || img.width;
+                    const imgHeight = img.naturalHeight || img.height;
                     
-                    // 비율을 유지하면서 화면에 맞게 축소
-                    if (displayWidth > maxWidth) {
-                        const ratio = maxWidth / displayWidth;
-                        displayWidth = maxWidth;
-                        displayHeight = displayHeight * ratio;
-                    }
+                    // 컨테이너에 맞는 비율 계산
+                    const widthRatio = containerWidth / imgWidth;
+                    const heightRatio = containerHeight / imgHeight;
+                    const scaleRatio = Math.min(widthRatio, heightRatio, 1); // 1을 넘지 않도록
                     
-                    if (displayHeight > maxHeight) {
-                        const ratio = maxHeight / displayHeight;
-                        displayHeight = maxHeight;
-                        displayWidth = displayWidth * ratio;
-                    }
+                    const displayWidth = imgWidth * scaleRatio;
+                    const displayHeight = imgHeight * scaleRatio;
                     
                     canvas.width = displayWidth;
                     canvas.height = displayHeight;

@@ -15,154 +15,233 @@
     <!-- EXIF for metadata heuristics -->
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <style>
+        /* 모바일 반응형 웹 스타일 */
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             min-height: 100vh;
+            font-size: 14px;
         }
+        
         .container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 15px;
+            padding: 15px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+        
         h1 {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-size: 1.8em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
         }
+        
         .status {
             background: rgba(0, 255, 0, 0.2);
             border: 2px solid #00ff00;
             border-radius: 10px;
-            padding: 15px;
-            margin: 20px 0;
+            padding: 12px;
+            margin: 15px 0;
             text-align: center;
-            font-size: 1.2em;
+            font-size: 1em;
+            word-wrap: break-word;
         }
+        
         .controls {
             display: flex;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 8px;
+            margin: 15px 0;
             flex-wrap: wrap;
             justify-content: center;
         }
+        
         .controls-inline {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
             margin-top: 8px;
+            flex-direction: column;
         }
+        
+        .controls-inline > div {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+        
         .controls-inline label {
-            font-size: 0.95em;
+            font-size: 0.9em;
             opacity: 0.9;
+            white-space: nowrap;
         }
+        
         button {
             background: linear-gradient(45deg, #ff6b6b, #ee5a24);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 10px 16px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 0.9em;
             transition: transform 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-wrap: break-word;
+            white-space: normal;
         }
+        
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
+        
         button:disabled {
             background: #666;
             cursor: not-allowed;
             transform: none;
         }
+        
         .video-container {
             position: relative;
-            margin: 20px 0;
-            border-radius: 15px;
+            margin: 15px 0;
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             display: flex;
             justify-content: center;
+            max-width: 100%;
         }
-        .video-container.original-size { /* 업로드 이미지 원본 크기 보기 모드 */
+        
+        .video-container.original-size {
             overflow: auto;
         }
+        
         #video {
-            max-width: 800px;
+            max-width: 100%;
             width: 100%;
-            border-radius: 15px;
+            border-radius: 12px;
+            height: auto;
         }
-        /* 업로드된 비디오도 동일 스타일로 표시 */
+        
         .video-container video {
-            max-width: 800px;
+            max-width: 100%;
             width: 100%;
-            border-radius: 15px;
+            border-radius: 12px;
             display: block;
+            height: auto;
         }
+        
         #canvas {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            max-width: 800px;
+            max-width: 100%;
             width: 100%;
-            border-radius: 15px;
+            border-radius: 12px;
+            height: auto;
         }
-        .video-container.original-size #canvas { /* 원본 크기일 때는 절대 위치 해제하고 실제 픽셀 크기로 표시 */
+        
+        .video-container.original-size #canvas {
             position: static;
             left: auto;
             transform: none;
             max-width: none;
             width: auto;
         }
-        .video-container.original-size #video { /* 원본 이미지 표시 중에는 비디오 숨김 */
+        
+        .video-container.original-size #video {
             display: none;
         }
+        
         .results {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            max-height: 400px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 300px;
             overflow-y: auto;
+            font-size: 0.9em;
         }
+        
         .media-list {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            padding: 16px;
-            margin: 16px 0;
-            max-height: 220px;
+            padding: 12px;
+            margin: 12px 0;
+            max-height: 180px;
             overflow-y: auto;
         }
-        .media-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
-        .media-item:hover { background: rgba(255,255,255,0.08); }
-        .media-item.active { background: rgba(0,255,0,0.2); border-left: 4px solid #00ff88; }
-        .media-meta { opacity: 0.9; font-size: 0.9em; }
-        .media-actions button { padding: 6px 10px; border-radius: 8px; }
+        
+        .media-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .media-item:hover {
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .media-item.active {
+            background: rgba(0,255,0,0.2);
+            border-left: 4px solid #00ff88;
+        }
+        
+        .media-meta {
+            opacity: 0.9;
+            font-size: 0.85em;
+        }
+        
+        .media-actions button {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+        }
+        
         .result-item {
             background: rgba(255, 255, 255, 0.1);
-            margin: 10px 0;
-            padding: 15px;
+            margin: 8px 0;
+            padding: 12px;
             border-radius: 8px;
             border-left: 4px solid #00ff00;
+            font-size: 0.9em;
+            word-wrap: break-word;
         }
+        
         .loading {
             display: none;
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
         }
+        
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-top: 4px solid #00ff00;
@@ -172,55 +251,301 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
         .model-status {
             display: flex;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 8px;
+            margin: 12px 0;
             flex-wrap: wrap;
             justify-content: center;
         }
+        
         .model-item {
             background: rgba(255, 255, 255, 0.1);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
         }
+        
         .model-loaded {
             background: rgba(0, 255, 0, 0.3);
             border: 1px solid #00ff00;
         }
+        
         .model-loading {
             background: rgba(255, 255, 0, 0.3);
             border: 1px solid #ffff00;
         }
+        
         .model-error {
             background: rgba(255, 0, 0, 0.3);
             border: 1px solid #ff0000;
         }
+        
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
         }
+        
         .stat-item {
             background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
         }
+        
         .stat-value {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #00ff00;
         }
+        
         .stat-label {
-            font-size: 0.9em;
+            font-size: 0.8em;
             opacity: 0.8;
+        }
+        
+        /* 입력 요소들 모바일 최적화 */
+        input[type="range"] {
+            width: 100px;
+            height: 6px;
+        }
+        
+        input[type="text"], input[type="file"], select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9em;
+        }
+        
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        select option {
+            background: #333;
+            color: white;
+        }
+        
+        /* 체크박스와 라디오 버튼 모바일 최적화 */
+        input[type="checkbox"], input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin: 0 4px;
+        }
+        
+        /* 터치 최적화 */
+        button, .media-item, input, select {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        /* 스크롤바 스타일링 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* 태블릿 최적화 */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+                font-size: 16px;
+            }
+            
+            .container {
+                max-width: 1200px;
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+            }
+            
+            .controls {
+                gap: 12px;
+            }
+            
+            .controls-inline {
+                flex-direction: row;
+            }
+            
+            .controls-inline > div {
+                flex-direction: row;
+            }
+            
+            button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+            }
+            
+            .video-container {
+                margin: 20px 0;
+            }
+            
+            #video, .video-container video, #canvas {
+                max-width: 800px;
+            }
+        }
+        
+        /* 데스크톱 최적화 */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1400px;
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            .controls {
+                gap: 15px;
+            }
+            
+            button {
+                padding: 12px 24px;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+        
+        /* 매우 작은 화면 최적화 */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+                font-size: 13px;
+            }
+            
+            .container {
+                padding: 10px;
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+            
+            .controls {
+                gap: 6px;
+            }
+            
+            button {
+                padding: 8px 12px;
+                font-size: 0.85em;
+                min-height: 40px;
+            }
+            
+            .controls-inline {
+                gap: 6px;
+            }
+            
+            .controls-inline > div {
+                gap: 6px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .model-status {
+                gap: 6px;
+            }
+            
+            .model-item {
+                padding: 4px 8px;
+                font-size: 0.75em;
+            }
+            
+            .results {
+                max-height: 250px;
+                padding: 10px;
+            }
+            
+            .media-list {
+                max-height: 150px;
+                padding: 8px;
+            }
+        }
+        
+        /* 가로 모드 최적화 */
+        @media (orientation: landscape) and (max-height: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 10px;
+            }
+            
+            .controls {
+                margin: 10px 0;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                margin: 10px 0;
+            }
+            
+            .stat-item {
+                padding: 8px;
+            }
+            
+            .results {
+                max-height: 200px;
+            }
+            
+            .media-list {
+                max-height: 120px;
+            }
+        }
+        
+        /* 접근성 개선 */
+        @media (prefers-reduced-motion: reduce) {
+            button, .spinner {
+                transition: none;
+                animation: none;
+            }
+        }
+        
+        /* 다크 모드 지원 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            }
         }
     </style>
 </head>
@@ -254,62 +579,99 @@
             <div id="mediaItems"></div>
         </div>
         <div class="controls-inline">
-            <label for="thresholdInput">신뢰도 임계값</label>
-            <input type="range" id="thresholdInput" min="0" max="0.95" step="0.01" value="0.50" />
-            <span id="thresholdValue">0.50</span>
-            <label style="margin-left:12px;">
-                <input type="checkbox" id="autoThresholdToggle" /> 자동 조절
-            </label>
+            <div>
+                <label for="thresholdInput">신뢰도 임계값</label>
+                <input type="range" id="thresholdInput" min="0" max="0.95" step="0.01" value="0.50" />
+                <span id="thresholdValue">0.50</span>
+            </div>
+            <div>
+                <label>
+                    <input type="checkbox" id="autoThresholdToggle" /> 자동 조절
+                </label>
+            </div>
         </div>
+        
         <div class="controls-inline">
-            <label style="min-width:120px">사용자 학습(KNN)</label>
-            <input id="trainLabelInput" placeholder="레이블 (예: 고양이)" style="width:160px" />
-            <button id="addSampleBtn">샘플 추가</button>
-            <button id="predictKnnBtn">KNN 예측</button>
-            <button id="clearKnnBtn">초기화</button>
+            <div>
+                <label>사용자 학습(KNN)</label>
+                <input id="trainLabelInput" placeholder="레이블 (예: 고양이)" />
+            </div>
+            <div>
+                <button id="addSampleBtn">샘플 추가</button>
+                <button id="predictKnnBtn">KNN 예측</button>
+                <button id="clearKnnBtn">초기화</button>
+            </div>
         </div>
+        
         <div class="controls-inline">
-            <label style="min-width:120px">OCR</label>
-            <button id="runOcrBtn">텍스트 인식</button>
-            <button id="runOcrAdvancedBtn">고급 OCR</button>
-            <button id="runInvoiceOcrBtn" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4);">INVOICE 전용</button>
-            <button id="runSignatureOcrBtn" style="background: linear-gradient(45deg, #9b59b6, #e74c3c);">서명/도장/로고 전용</button>
-            <button id="enhanceImageBtn" style="background: linear-gradient(45deg, #9b59b6, #8e44ad);">🔍 이미지 화질 향상</button>
-            <button id="enhanceVideoBtn" style="background: linear-gradient(45deg, #f39c12, #e67e22);">🎬 영상 화질 향상</button>
-            <span id="ocrStatus" style="margin-left:8px; opacity:0.9">대기</span>
+            <div>
+                <label>OCR 기능</label>
+            </div>
+            <div>
+                <button id="runOcrBtn">텍스트 인식</button>
+                <button id="runOcrAdvancedBtn">고급 OCR</button>
+            </div>
+            <div>
+                <button id="runInvoiceOcrBtn" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4);">INVOICE 전용</button>
+                <button id="runSignatureOcrBtn" style="background: linear-gradient(45deg, #9b59b6, #e74c3c);">서명/도장/로고</button>
+            </div>
+            <div>
+                <button id="enhanceImageBtn" style="background: linear-gradient(45deg, #9b59b6, #8e44ad);">🔍 이미지 화질 향상</button>
+                <button id="enhanceVideoBtn" style="background: linear-gradient(45deg, #f39c12, #e67e22);">🎬 영상 화질 향상</button>
+            </div>
+            <div>
+                <span id="ocrStatus" style="opacity:0.9">대기</span>
+            </div>
         </div>
+        
         <div class="controls-inline">
-            <label style="min-width:120px">OCR 설정</label>
-            <select id="ocrLanguageSelect" style="width:120px" aria-label="OCR 언어 선택">
-                <option value="eng+kor">영어+한국어</option>
-                <option value="eng">영어만</option>
-                <option value="kor">한국어만</option>
-                <option value="jpn">일본어</option>
-                <option value="chi_sim">중국어 간체</option>
-                <option value="chi_tra">중국어 번체</option>
-                <option value="rus">러시아어</option>
-                <option value="fra">프랑스어</option>
-                <option value="deu">독일어</option>
-                <option value="spa">스페인어</option>
-                <option value="osd">자동 감지</option>
-            </select>
-            <label style="margin-left:8px">
-                <input type="checkbox" id="ocrPreprocessToggle" checked /> 이미지 전처리
-            </label>
-            <label style="margin-left:8px">
-                <input type="checkbox" id="ocrConfidenceToggle" /> 신뢰도 표시
-            </label>
+            <div>
+                <label>OCR 설정</label>
+                <select id="ocrLanguageSelect" aria-label="OCR 언어 선택">
+                    <option value="eng+kor">영어+한국어</option>
+                    <option value="eng">영어만</option>
+                    <option value="kor">한국어만</option>
+                    <option value="jpn">일본어</option>
+                    <option value="chi_sim">중국어 간체</option>
+                    <option value="chi_tra">중국어 번체</option>
+                    <option value="rus">러시아어</option>
+                    <option value="fra">프랑스어</option>
+                    <option value="deu">독일어</option>
+                    <option value="spa">스페인어</option>
+                    <option value="osd">자동 감지</option>
+                </select>
+            </div>
+            <div>
+                <label>
+                    <input type="checkbox" id="ocrPreprocessToggle" checked /> 이미지 전처리
+                </label>
+                <label>
+                    <input type="checkbox" id="ocrConfidenceToggle" /> 신뢰도 표시
+                </label>
+            </div>
         </div>
+        
         <div class="controls-inline">
-            <label style="min-width:120px">영상 제어</label>
-            <button id="videoPlayBtn">재생</button>
-            <button id="videoPauseBtn">일시정지</button>
-            <button id="videoStopBtn">정지</button>
+            <div>
+                <label>영상 제어</label>
+            </div>
+            <div>
+                <button id="videoPlayBtn">재생</button>
+                <button id="videoPauseBtn">일시정지</button>
+                <button id="videoStopBtn">정지</button>
+            </div>
         </div>
+        
         <div class="controls-inline">
-            <label style="min-width:120px">자동 옵션</label>
-            <label><input type="checkbox" id="autoStartToggle" checked /> 업로드 시 첫 항목 자동 시작</label>
-            <label><input type="checkbox" id="autoAdvanceToggle" /> 동영상 연속 진행</label>
+            <div>
+                <label>자동 옵션</label>
+            </div>
+            <div>
+                <label><input type="checkbox" id="autoStartToggle" checked /> 업로드 시 첫 항목 자동 시작</label>
+            </div>
+            <div>
+                <label><input type="checkbox" id="autoAdvanceToggle" /> 동영상 연속 진행</label>
+            </div>
         </div>
 
         <div class="loading" id="loading">
@@ -2036,6 +2398,98 @@
             }
         }
 
+        // 모바일 터치 제스처 지원
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        
+        // 터치 이벤트 리스너 추가
+        function addTouchGestures() {
+            const container = document.querySelector('.container');
+            
+            container.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            });
+            
+            container.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                handleSwipe();
+            });
+            
+            // 스와이프 제스처 처리
+            function handleSwipe() {
+                const diffX = touchStartX - touchEndX;
+                const diffY = touchStartY - touchEndY;
+                const minSwipeDistance = 50;
+                
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minSwipeDistance) {
+                    // 좌우 스와이프
+                    if (diffX > 0) {
+                        // 왼쪽 스와이프 - 다음 기능
+                        console.log('왼쪽 스와이프');
+                    } else {
+                        // 오른쪽 스와이프 - 이전 기능
+                        console.log('오른쪽 스와이프');
+                    }
+                } else if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > minSwipeDistance) {
+                    // 상하 스와이프
+                    if (diffY > 0) {
+                        // 위쪽 스와이프 - 결과 영역 스크롤
+                        const results = document.getElementById('results');
+                        results.scrollTop -= 100;
+                    } else {
+                        // 아래쪽 스와이프 - 결과 영역 스크롤
+                        const results = document.getElementById('results');
+                        results.scrollTop += 100;
+                    }
+                }
+            }
+        }
+        
+        // 모바일에서 더블 탭으로 줌 기능
+        function addDoubleTapZoom() {
+            const videoContainer = document.querySelector('.video-container');
+            let lastTap = 0;
+            
+            videoContainer.addEventListener('touchend', (e) => {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                
+                if (tapLength < 500 && tapLength > 0) {
+                    // 더블 탭 감지
+                    e.preventDefault();
+                    
+                    if (videoContainer.classList.contains('original-size')) {
+                        videoContainer.classList.remove('original-size');
+                    } else {
+                        videoContainer.classList.add('original-size');
+                    }
+                }
+                lastTap = currentTime;
+            });
+        }
+        
+        // 모바일 성능 최적화
+        function optimizeForMobile() {
+            // 모바일에서 불필요한 애니메이션 제거
+            if (window.innerWidth < 768) {
+                document.body.style.setProperty('--animation-duration', '0.1s');
+            }
+            
+            // 모바일에서 배터리 절약을 위한 설정
+            if ('connection' in navigator) {
+                const connection = navigator.connection;
+                if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+                    // 느린 연결에서는 실시간 분석 비활성화
+                    document.getElementById('realtimeBtn').disabled = true;
+                    addResult('📱 모바일 최적화', '느린 네트워크로 인해 실시간 분석이 비활성화되었습니다.');
+                }
+            }
+        }
+        
         // TensorFlow.js 초기화
         async function initializeTensorFlow() {
             try {
@@ -2077,18 +2531,29 @@
             }
         }
 
-        // 카메라 시작
+        // 카메라 시작 (모바일 최적화)
         async function startCamera() {
             try {
                 updateStatus('📹 카메라 시작 중...');
                 containerEl.classList.remove('original-size');
                 video.style.display = 'block';
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        width: { ideal: 800 },
-                        height: { ideal: 600 }
-                    } 
-                });
+                
+                // 모바일 최적화된 카메라 설정
+                const constraints = {
+                    video: {
+                        width: { ideal: window.innerWidth < 768 ? 640 : 800 },
+                        height: { ideal: window.innerWidth < 768 ? 480 : 600 },
+                        facingMode: 'environment', // 후면 카메라 우선 (모바일)
+                        aspectRatio: { ideal: 4/3 }
+                    }
+                };
+                
+                // 모바일에서 카메라 권한 요청
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('이 브라우저는 카메라를 지원하지 않습니다.');
+                }
+                
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = stream;
                 
                 video.onloadedmetadata = () => {
@@ -2097,12 +2562,51 @@
                     updateStatus('✅ 카메라가 시작되었습니다!');
                     document.getElementById('startBtn').disabled = true;
                     document.getElementById('stopBtn').disabled = false;
-                    // 비디오 모드에서는 뷰에 맞게 표시
-                    canvas.style.width = '100%';
-                    canvas.style.height = 'auto';
+                    
+                    // 모바일에서 비디오 크기 최적화
+                    if (window.innerWidth < 768) {
+                        canvas.style.width = '100%';
+                        canvas.style.height = 'auto';
+                        video.style.width = '100%';
+                        video.style.height = 'auto';
+                    } else {
+                        canvas.style.width = '100%';
+                        canvas.style.height = 'auto';
+                    }
+                    
+                    // 모바일에서 자동 재생 방지
+                    video.play().catch(e => {
+                        console.log('자동 재생 실패, 사용자 상호작용 필요:', e);
+                    });
                 };
+                
+                // 모바일에서 화면 방향 변경 감지
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => {
+                        if (video.videoWidth && video.videoHeight) {
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+                        }
+                    }, 100);
+                });
+                
             } catch (error) {
-                updateStatus('❌ 카메라 접근 실패: ' + error.message, true);
+                console.error('카메라 오류:', error);
+                let errorMessage = '카메라 접근 실패';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage = '카메라 권한이 거부되었습니다. 브라우저 설정에서 카메라 권한을 허용해주세요.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage = '카메라를 찾을 수 없습니다.';
+                } else if (error.name === 'NotReadableError') {
+                    errorMessage = '카메라가 다른 앱에서 사용 중입니다.';
+                } else if (error.name === 'OverconstrainedError') {
+                    errorMessage = '지원하지 않는 카메라 해상도입니다.';
+                } else {
+                    errorMessage = error.message;
+                }
+                
+                updateStatus('❌ ' + errorMessage, true);
             }
         }
 
@@ -2545,9 +3049,51 @@
             document.getElementById('analyzeBtn').addEventListener('click', () => analyzeImage());
             document.getElementById('realtimeBtn').addEventListener('click', toggleRealtime);
             document.getElementById('testApiBtn').addEventListener('click', testAPI);
-            document.getElementById('uploadBtn').addEventListener('click', uploadImage);
+            // 파일 업로드 처리 (모바일 최적화)
+            document.getElementById('uploadBtn').addEventListener('click', () => {
+                // 모바일에서 카메라 접근 옵션 제공
+                if (window.innerWidth < 768 && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    const choice = confirm('모바일에서 사진을 어떻게 가져오시겠습니까?\n\n"확인" - 카메라로 촬영\n"취소" - 갤러리에서 선택');
+                    if (choice) {
+                        // 카메라로 촬영
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.capture = 'camera';
+                        input.onchange = (e) => handleFileUpload(e.target.files[0], 'image');
+                        input.click();
+                    } else {
+                        // 갤러리에서 선택
+                        document.getElementById('fileInput').click();
+                    }
+                } else {
+                    uploadImage();
+                }
+            });
+            
             document.getElementById('fileInput').addEventListener('change', handleFileUpload);
-            document.getElementById('uploadVideoBtn').addEventListener('click', uploadVideo);
+            
+            document.getElementById('uploadVideoBtn').addEventListener('click', () => {
+                // 모바일에서 비디오 촬영 옵션 제공
+                if (window.innerWidth < 768 && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    const choice = confirm('모바일에서 비디오를 어떻게 가져오시겠습니까?\n\n"확인" - 카메라로 촬영\n"취소" - 갤러리에서 선택');
+                    if (choice) {
+                        // 카메라로 촬영
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'video/*';
+                        input.capture = 'camcorder';
+                        input.onchange = (e) => handleVideoUpload(e.target.files[0], 'video');
+                        input.click();
+                    } else {
+                        // 갤러리에서 선택
+                        document.getElementById('videoFileInput').click();
+                    }
+                } else {
+                    uploadVideo();
+                }
+            });
+            
             document.getElementById('videoFileInput').addEventListener('change', handleVideoUpload);
             document.getElementById('clearImageBtn').addEventListener('click', clearUploadedImage);
             document.getElementById('clearVideoBtn').addEventListener('click', clearUploadedVideo);
@@ -2879,6 +3425,23 @@
                 }
                 renderMediaList();
             }
+            
+            // 모바일 최적화 기능 초기화
+            addTouchGestures();
+            addDoubleTapZoom();
+            optimizeForMobile();
+            
+            // 모바일에서 화면 방향 변경 감지
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => {
+                    optimizeForMobile();
+                }, 100);
+            });
+            
+            // 모바일에서 화면 크기 변경 감지
+            window.addEventListener('resize', () => {
+                optimizeForMobile();
+            });
         };
     </script>
 </body>

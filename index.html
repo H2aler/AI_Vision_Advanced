@@ -136,7 +136,7 @@
         }
         
         .video-container.original-size {
-            overflow: auto;
+            overflow: hidden;
         }
         
         #video {
@@ -169,8 +169,9 @@
             position: static;
             left: auto;
             transform: none;
-            max-width: none;
-            width: auto;
+            max-width: 100%;
+            width: 100%;
+            height: auto;
         }
         
         .video-container.original-size #video {
@@ -3337,14 +3338,33 @@
                 // 이미지/동영상 별로 표시
                 if (item.type === 'image') {
                     const img = item.element;
-                    // 원본 사이즈 표시
-                    canvas.width = img.naturalWidth || img.width;
-                    canvas.height = img.naturalHeight || img.height;
+                    // 화면에 맞게 축소된 크기로 표시
+                    const maxWidth = window.innerWidth < 768 ? window.innerWidth - 40 : 800;
+                    const maxHeight = window.innerHeight * 0.6;
+                    
+                    let displayWidth = img.naturalWidth || img.width;
+                    let displayHeight = img.naturalHeight || img.height;
+                    
+                    // 비율을 유지하면서 화면에 맞게 축소
+                    if (displayWidth > maxWidth) {
+                        const ratio = maxWidth / displayWidth;
+                        displayWidth = maxWidth;
+                        displayHeight = displayHeight * ratio;
+                    }
+                    
+                    if (displayHeight > maxHeight) {
+                        const ratio = maxHeight / displayHeight;
+                        displayHeight = maxHeight;
+                        displayWidth = displayWidth * ratio;
+                    }
+                    
+                    canvas.width = displayWidth;
+                    canvas.height = displayHeight;
                     containerEl.classList.add('original-size');
                     video.style.display = 'none';
-                    canvas.style.width = canvas.width + 'px';
-                    canvas.style.height = canvas.height + 'px';
-                    ctx.drawImage(img, 0, 0);
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                    ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
                     uploadedImageEl = img;
                     uploadedVideoEl = null;
                     currentSourceType = 'image';

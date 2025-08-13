@@ -23,7 +23,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 10px;
+            padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             min-height: 100vh;
@@ -32,13 +32,14 @@
         
         .container {
             max-width: 100%;
-            margin: 0 auto;
+            margin: 0;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            border-radius: 0;
             padding: 15px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            min-height: 100vh;
         }
         
         h1 {
@@ -371,12 +372,12 @@
         /* 태블릿 최적화 */
         @media (min-width: 768px) {
             body {
-                padding: 20px;
+                padding: 0;
                 font-size: 16px;
             }
             
             .container {
-                max-width: 1200px;
+                max-width: 100%;
                 padding: 25px;
             }
             
@@ -418,7 +419,7 @@
         /* 데스크톱 최적화 */
         @media (min-width: 1024px) {
             .container {
-                max-width: 1400px;
+                max-width: 100%;
                 padding: 30px;
             }
             
@@ -449,6 +450,7 @@
             .container {
                 padding: 10px;
                 border-radius: 10px;
+                margin: 5px;
             }
             
             h1 {
@@ -503,6 +505,7 @@
         @media (orientation: landscape) and (max-height: 600px) {
             .container {
                 padding: 10px;
+                margin: 0;
             }
             
             h1 {

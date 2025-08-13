@@ -140,7 +140,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 300px;
+            min-height: 200px;
         }
         
         #video {
@@ -3345,7 +3345,7 @@
                     const img = item.element;
                     // 화면에 100% 맞춰서 자동 축소
                     const containerWidth = window.innerWidth < 768 ? window.innerWidth - 40 : 800;
-                    const containerHeight = window.innerHeight * 0.5; // 화면의 50% 높이
+                    const containerHeight = window.innerHeight * 0.3; // 화면의 30% 높이로 줄임
                     
                     const imgWidth = img.naturalWidth || img.width;
                     const imgHeight = img.naturalHeight || img.height;

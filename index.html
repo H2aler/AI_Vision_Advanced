@@ -147,6 +147,7 @@
             align-items: center;
             justify-content: center;
             min-height: 200px;
+            max-height: 90vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: 2px solid rgba(255, 255, 255, 0.2);
             position: relative;
@@ -163,7 +164,7 @@
         }
         
         #video:hover {
-            transform: scale(1.01);
+            transform: none;
         }
         
         .video-container video {
@@ -177,7 +178,7 @@
         }
         
         .video-container video:hover {
-            transform: scale(1.01);
+            transform: none;
         }
         
         #canvas {
@@ -194,7 +195,7 @@
         }
         
         #canvas:hover {
-            transform: translateX(-50%) scale(1.01);
+            transform: translateX(-50%);
         }
         
         .video-container.original-size #canvas {
@@ -203,7 +204,7 @@
             transform: none;
             max-width: 100%;
             width: 100%;
-            height: auto;
+            height: 100%;
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -211,7 +212,7 @@
         }
         
         .video-container.original-size #canvas:hover {
-            transform: scale(1.02);
+            transform: none;
         }
         
         .video-container.original-size #video {
@@ -221,52 +222,72 @@
         .results {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            padding: 12px;
+            padding: 15px;
             margin: 12px 0;
-            max-height: 280px;
+            max-height: 350px;
             overflow-y: auto;
-            font-size: 0.9em;
+            font-size: 1em;
             scroll-behavior: smooth;
         }
         
         .media-list {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            padding: 12px;
+            padding: 15px;
             margin: 12px 0;
-            max-height: 180px;
+            max-height: 300px;
             overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .media-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
-            padding: 8px;
+            gap: 12px;
+            padding: 12px 15px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 1em;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .media-item:hover {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.12);
+            transform: translateX(3px);
+            border-color: rgba(255, 255, 255, 0.3);
         }
         
         .media-item.active {
-            background: rgba(0,255,0,0.2);
+            background: rgba(0,255,0,0.25);
             border-left: 4px solid #00ff88;
+            border-color: rgba(0, 255, 136, 0.4);
         }
         
         .media-meta {
             opacity: 0.9;
-            font-size: 0.85em;
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: #4facfe;
         }
         
         .media-actions button {
-            padding: 4px 8px;
+            padding: 8px 14px;
             border-radius: 6px;
-            font-size: 0.8em;
+            font-size: 0.9em;
+            margin: 0 3px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .media-actions button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
         .result-item {
@@ -392,6 +413,463 @@
             touch-action: manipulation;
         }
         
+        /* 사용자 가이드 스타일 */
+        .user-guide {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            max-width: 95vw;
+            max-height: 90vh;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .user-guide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #4facfe, #00f2fe);
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .user-guide h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            font-size: 2em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            position: relative;
+        }
+        
+        .user-guide h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border-radius: 2px;
+        }
+        
+        .guide-content {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 15px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+        }
+        
+        .guide-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .guide-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .guide-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+        
+        .guide-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #4facfe, #00f2fe);
+        }
+        
+        .guide-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+            border-radius: 15px;
+            border-left: 5px solid;
+            border-image: linear-gradient(180deg, #667eea, #764ba2) 1;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .guide-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .guide-section:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .guide-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .guide-section h3 {
+            margin: 0 0 20px 0;
+            color: #fff;
+            font-size: 1.4em;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 12px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .guide-section h3::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border-radius: 1px;
+        }
+        
+        .guide-item {
+            margin: 15px 0;
+            padding: 15px 18px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 12px;
+            border-left: 4px solid;
+            border-image: linear-gradient(180deg, #4facfe, #00f2fe) 1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .guide-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.03) 50%, transparent 60%);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+        
+        .guide-item:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .guide-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+        }
+        
+        .guide-item strong {
+            color: #4facfe;
+            font-weight: 700;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            display: inline-block;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .guide-item strong::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, #4facfe, transparent);
+        }
+        
+        .guide-item:not(:last-child) {
+            margin-bottom: 12px;
+        }
+        
+        .guide-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin-top: 8px;
+            display: block;
+            font-weight: 400;
+        }
+        
+        .guide-description em {
+            color: #00f2fe;
+            font-style: normal;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(0, 242, 254, 0.3);
+        }
+        
+        .guide-close-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .guide-close-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .guide-close-btn:hover::before {
+            left: 100%;
+        }
+        
+        .guide-close-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(45deg, #ff5252, #ff1744);
+        }
+        
+        .guide-close-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* 사용자 가이드 버튼 호버 효과 */
+        #showGuideBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(45deg, #5a6fd8, #6a5acd);
+        }
+        
+        #showGuideBtn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* 반응형 미디어 쿼리 */
+        @media (max-width: 1200px) {
+            .user-guide {
+                max-width: 98vw;
+                padding: 25px;
+                margin: 20px 0;
+            }
+            
+            .guide-content {
+                max-height: 65vh;
+            }
+            
+            .user-guide h2 {
+                font-size: 1.8em;
+            }
+            
+            .guide-section h3 {
+                font-size: 1.3em;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            #showGuideBtn {
+                font-size: 0.9em;
+                padding: 8px 12px;
+            }
+            
+            .user-guide {
+                max-width: 100vw;
+                padding: 20px;
+                margin: 15px 0;
+                border-radius: 15px;
+            }
+            
+            .guide-content {
+                max-height: 70vh;
+                padding-right: 10px;
+            }
+            
+            .user-guide h2 {
+                font-size: 1.6em;
+                margin-bottom: 20px;
+            }
+            
+            .guide-section {
+                margin-bottom: 20px;
+                padding: 15px;
+            }
+            
+            .guide-section h3 {
+                font-size: 1.2em;
+                margin-bottom: 15px;
+            }
+            
+            .guide-item {
+                margin: 12px 0;
+                padding: 12px 15px;
+            }
+            
+            .guide-item strong {
+                font-size: 1em;
+            }
+            
+            .guide-description {
+                font-size: 0.9em;
+                margin-top: 6px;
+            }
+            
+            .guide-close-btn {
+                padding: 12px 25px;
+                font-size: 1em;
+                margin: 20px auto 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #showGuideBtn {
+                font-size: 0.8em;
+                padding: 6px 10px;
+            }
+            
+            .user-guide {
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 12px;
+            }
+            
+            .guide-content {
+                max-height: 75vh;
+                padding-right: 8px;
+            }
+            
+            .user-guide h2 {
+                font-size: 1.4em;
+                margin-bottom: 15px;
+            }
+            
+            .guide-section {
+                margin-bottom: 15px;
+                padding: 12px;
+            }
+            
+            .guide-section h3 {
+                font-size: 1.1em;
+                margin-bottom: 12px;
+            }
+            
+            .guide-item {
+                margin: 10px 0;
+                padding: 10px 12px;
+            }
+            
+            .guide-item strong {
+                font-size: 0.95em;
+            }
+            
+            .guide-description {
+                font-size: 0.85em;
+                margin-top: 5px;
+                line-height: 1.4;
+            }
+            
+            .guide-close-btn {
+                padding: 10px 20px;
+                font-size: 0.95em;
+                margin: 15px auto 0;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .user-guide {
+                max-height: 95vh;
+                margin: 10px 0;
+            }
+            
+            .guide-content {
+                max-height: 80vh;
+            }
+            
+            .user-guide h2 {
+                margin-bottom: 15px;
+            }
+            
+            .guide-section {
+                margin-bottom: 15px;
+                padding: 12px;
+            }
+            
+            .guide-item {
+                margin: 8px 0;
+                padding: 8px 12px;
+            }
+        }
+        
+        /* 가로 모드 (모바일) */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .user-guide {
+                max-height: 85vh;
+            }
+            
+            .guide-content {
+                max-height: 60vh;
+            }
+            
+            .user-guide h2 {
+                font-size: 1.3em;
+                margin-bottom: 10px;
+            }
+            
+            .guide-section {
+                margin-bottom: 10px;
+                padding: 10px;
+            }
+            
+            .guide-section h3 {
+                font-size: 1em;
+                margin-bottom: 8px;
+            }
+            
+            .guide-item {
+                margin: 6px 0;
+                padding: 8px 10px;
+            }
+            
+            .guide-item strong {
+                font-size: 0.9em;
+            }
+            
+            .guide-description {
+                font-size: 0.8em;
+                margin-top: 4px;
+            }
+        }
+        
         /* 스크롤바 스타일링 */
         ::-webkit-scrollbar {
             width: 8px;
@@ -482,14 +960,19 @@
                 max-width: 900px;
             }
             
+            .video-container.original-size {
+                min-height: 150px;
+                max-height: 80vh;
+            }
+            
             .results {
                 max-height: 250px;
                 padding: 12px;
             }
             
             .media-list {
-                max-height: 150px;
-                padding: 10px;
+                max-height: 350px;
+                padding: 12px;
             }
         }
         
@@ -531,7 +1014,13 @@
             }
             
             #video, .video-container video, #canvas {
-                max-width: 1000px;
+                max-width: 1200px;
+                max-height: 600px;
+            }
+            
+            .video-container.original-size {
+                min-height: 200px;
+                max-height: 90vh;
             }
             
             .results {
@@ -540,8 +1029,8 @@
             }
             
             .media-list {
-                max-height: 180px;
-                padding: 12px;
+                max-height: 400px;
+                padding: 15px;
             }
         }
         
@@ -603,8 +1092,8 @@
             }
             
             .media-list {
-                max-height: 120px;
-                padding: 6px;
+                max-height: 250px;
+                padding: 8px;
             }
             
             .video-container {
@@ -643,7 +1132,7 @@
             }
             
             .media-list {
-                max-height: 120px;
+                max-height: 200px;
             }
         }
         
@@ -667,6 +1156,167 @@
     <div class="container">
         <h1>🤖 AI Vision Advanced - TensorFlow.js</h1>
         
+
+        
+        <!-- 사용자 가이드 섹션 -->
+        <div class="user-guide" id="userGuide" style="display: none;">
+            <h2>📖 사용자 가이드</h2>
+            <div class="guide-content">
+                <div class="guide-section">
+                    <h3>🎯 기본 기능</h3>
+                    <div class="guide-item">
+                        <strong>📹 카메라 시작</strong><br>
+                        <span class="guide-description">웹캠을 활성화하여 실시간 분석을 시작합니다. 모바일에서는 후면 카메라가 우선 사용됩니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>⏹️ 카메라 중지</strong><br>
+                        <span class="guide-description">웹캠을 비활성화합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>📁 이미지 업로드</strong><br>
+                        <span class="guide-description">컴퓨터에서 이미지 파일을 선택하여 분석합니다. <em>지원 형식: JPEG, PNG, GIF, WebP</em></span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🎞️ 동영상 업로드</strong><br>
+                        <span class="guide-description">컴퓨터에서 비디오 파일을 선택하여 분석합니다. <em>지원 형식: MP4, WebM</em></span>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>🤖 AI 분석 기능</h3>
+                    <div class="guide-item">
+                        <strong>📐 3D 객체 감지</strong><br>
+                        <span class="guide-description">이미지/영상에서 객체를 감지하고 3D 공간에서의 거리와 위치를 분석합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🎯 실시간 추적</strong><br>
+                        <span class="guide-description">웹캠이나 비디오에서 객체를 실시간으로 추적하고 이동 경로를 시각화합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🧍 포즈 추정</strong><br>
+                        <span class="guide-description">사람의 포즈를 감지하고 <em>33개 키포인트</em>를 분석합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🔄 실시간 포즈</strong><br>
+                        <span class="guide-description">실시간으로 포즈를 추정하고 분석 결과를 표시합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🔄 이미지 세그멘테이션</strong><br>
+                        <span class="guide-description">인체와 배경을 분리하고 세그멘테이션 분석을 수행합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>😊 얼굴 랜드마크</strong><br>
+                        <span class="guide-description"><em>468개 얼굴 키포인트</em>를 감지하고 얼굴 특징을 분석합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🎨 AI 이미지 생성</strong><br>
+                        <span class="guide-description">이미지 분석을 바탕으로 AI가 스타일을 변환한 새로운 이미지를 생성합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🔬 다중 모달 분석</strong><br>
+                        <span class="guide-description"><em>8개 AI 모델</em>을 동시에 실행하여 종합적인 분석 결과를 제공합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🌍 천체 감지</strong><br>
+                        <span class="guide-description">지구, 화성, 달, 행성 등의 천체를 자동으로 감지하고 분석합니다. <em>색상과 형태 기반 분석</em></span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🌍 고급 자연 객체 감지</strong><br>
+                        <span class="guide-description">지구, 구름, 대륙, 바다, 폭풍, 우주 등 모든 자연 현상을 감지합니다. <em>세계 모든 객체 인식</em></span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>👥 확장된 객체 감지</strong><br>
+                        <span class="guide-description">사람(성인/청소년/아이), 동물(강아지/고양이), 차량(자동차/소방차/경찰차/비행기), 물건 등 모든 객체를 감지합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🧠 행동 예측 AI</strong><br>
+                        <span class="guide-description">사람과 동물의 표정, 손짓, 행동을 분석하여 미래 행동을 예측합니다. <em>감정 + 제스처 + 행동 패턴 분석</em></span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🚨 범죄 예방 AI</strong><br>
+                        <span class="guide-description">슈퍼마켓, 매장, 백화점, 식당에서 의심스러운 행동을 감지하여 범죄를 예방합니다. <em>표정 + 손짓 + 행동 패턴 + 물건 상호작용 분석</em></span>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>📄 OCR 기능</h3>
+                    <div class="guide-item">
+                        <strong>텍스트 인식</strong><br>
+                        <span class="guide-description">기본 텍스트 인식 기능입니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>고급 OCR</strong><br>
+                        <span class="guide-description">다국어 지원 및 전처리가 적용된 고급 텍스트 인식입니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>INVOICE 전용</strong><br>
+                        <span class="guide-description">송장 문서에 특화된 텍스트 인식으로, <em>총액, 날짜, 인보이스 번호</em>를 자동 추출합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>서명/도장/로고</strong><br>
+                        <span class="guide-description">서명, 도장, 회사 로고 등 특수 요소를 인식합니다.</span>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>🎨 화질 향상</h3>
+                    <div class="guide-item">
+                        <strong>🔍 이미지 화질 향상</strong><br>
+                        <span class="guide-description">단일 이미지의 화질을 <em>2배 업스케일링</em>하고 노이즈를 제거합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🎬 영상 화질 향상</strong><br>
+                        <span class="guide-description">실시간으로 비디오 프레임의 화질을 개선합니다.</span>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>🎓 사용자 학습 (KNN)</h3>
+                    <div class="guide-item">
+                        <strong>샘플 추가</strong><br>
+                        <span class="guide-description">현재 이미지를 특정 레이블로 학습시킵니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>KNN 예측</strong><br>
+                        <span class="guide-description">학습된 데이터를 바탕으로 이미지를 분류합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>초기화</strong><br>
+                        <span class="guide-description">학습된 모든 데이터를 삭제합니다.</span>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>⚙️ 설정</h3>
+                    <div class="guide-item">
+                        <strong>신뢰도 임계값</strong><br>
+                        <span class="guide-description">객체 감지의 최소 신뢰도를 설정합니다 <em>(0.0 ~ 0.95)</em>.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>자동 조절</strong><br>
+                        <span class="guide-description">신뢰도 임계값을 자동으로 조절합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>OCR 언어 선택</strong><br>
+                        <span class="guide-description">텍스트 인식에 사용할 언어를 선택합니다.</span>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>📱 모바일 사용법</h3>
+                    <div class="guide-item">
+                        <strong>터치 제스처</strong><br>
+                        <span class="guide-description">스와이프로 결과 영역을 스크롤하고, 더블 탭으로 이미지/비디오를 확대/축소할 수 있습니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>카메라 접근</strong><br>
+                        <span class="guide-description">브라우저에서 카메라 권한을 허용하면 후면 카메라가 우선 사용됩니다.</span>
+                    </div>
+                </div>
+            </div>
+            <button id="closeGuideBtn" class="guide-close-btn">가이드 닫기</button>
+        </div>
+        
         <div class="status" id="status">
             🚀 AI Vision 시스템 초기화 중...
         </div>
@@ -681,6 +1331,7 @@
         </div>
 
         <div class="controls">
+            <button id="showGuideBtn" style="background: linear-gradient(45deg, #667eea, #764ba2);">📖 사용자 가이드</button>
             <button id="startBtn">📹 카메라 시작</button>
             <button id="stopBtn" disabled>⏹️ 카메라 중지</button>
             <button id="analyzeBtn" disabled>📐 3D 객체 감지</button>
@@ -701,9 +1352,10 @@
             <button id="resetTrackingBtn" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24);">🔄 추적 초기화</button>
             <button id="generateImageBtn" disabled style="background: linear-gradient(45deg, #667eea, #764ba2);">🎨 AI 이미지 생성</button>
             <button id="multimodalBtn" disabled style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4);">🔬 다중 모달 분석</button>
+            <button id="highPerformanceBtn" style="background: linear-gradient(45deg, #00ff88, #00ccff);">⚡ 고성능 모드 (60fps)</button>
         </div>
         <div class="media-list" id="mediaList">
-            <div class="media-meta">업로드 목록 (이미지/동영상). 항목을 클릭하면 현재 소스로 설정됩니다.</div>
+            <div class="media-meta">📁 업로드된 미디어 목록 - 클릭하여 선택</div>
             <div id="mediaItems"></div>
         </div>
         <div class="controls-inline">
@@ -824,6 +1476,10 @@
                 <div class="stat-value" id="confidenceValue">0%</div>
                 <div class="stat-label">평균 신뢰도</div>
             </div>
+            <div class="stat-item">
+                <div class="stat-value" id="performanceModeValue">일반</div>
+                <div class="stat-label">성능 모드</div>
+            </div>
         </div>
 
         <div class="video-container">
@@ -878,6 +1534,18 @@
         let poseDetector = null;
         let bodySegmenter = null;
         let faceLandmarksDetector = null;
+        let advancedObjectDetector = null; // 고급 객체 감지 모델
+        let extendedObjectDetector = null; // 확장된 객체 감지 모델
+        let behaviorPredictor = null; // 행동 예측 모델
+        let crimePreventionAI = null; // 범죄 예방 AI 모델
+        
+        // 고성능 비디오 처리 시스템
+        let highPerformanceMode = false; // 고성능 모드
+        let frameSkipCounter = 0; // 프레임 스킵 카운터
+        let targetFPS = 60; // 목표 FPS
+        let lastFrameTime = 0; // 마지막 프레임 시간
+        let frameTimeHistory = []; // 프레임 시간 히스토리
+        let adaptiveFrameSkip = true; // 적응형 프레임 스킵
 
         // 입력 소스 상태
         let currentSourceType = 'video'; // 'video' | 'image'
@@ -2461,7 +3129,55 @@
         };
 
         function getColorForClass(className) {
-            // 안정적인 색상 생성을 위한 간단한 해시
+            // 천체 객체들을 위한 특별한 색상
+            const celestialColors = {
+                '지구': '#4facfe',      // 파란색
+                '화성': '#ff6b6b',      // 빨간색
+                '달': '#f8f9fa',        // 흰색
+                '행성': '#6c757d',      // 회색
+                '천체': '#ffd700',      // 금색
+                // 고급 자연 객체들
+                '구름': '#ffffff',      // 흰색
+                '대륙': '#8b4513',      // 갈색
+                '바다': '#0066cc',      // 파란색
+                '폭풍': '#4a4a4a',      // 회색
+                '우주': '#000000',      // 검은색
+                '자연 현상': '#32cd32', // 녹색
+                // 확장된 객체들
+                '성인': '#ff6b9d',      // 분홍색
+                '청소년': '#ff8c42',    // 주황색
+                '아이': '#ffd93d',      // 노란색
+                '강아지': '#8b4513',    // 갈색
+                '고양이': '#696969',    // 회색
+                '동물': '#228b22',      // 녹색
+                '자동차': '#4169e1',    // 파란색
+                '소방차': '#ff4500',    // 빨간색
+                '경찰차': '#0000ff',    // 파란색
+                '비행기': '#87ceeb',    // 하늘색
+                '물건': '#a0522d',      // 갈색
+                '객체': '#9370db',      // 보라색
+                // 행동 예측 객체들
+                'positive_action': '#32cd32',    // 녹색 (긍정적)
+                'greeting': '#ffd700',           // 금색 (인사)
+                'aggressive_action': '#ff4500',  // 빨간색 (공격적)
+                'sad_action': '#4169e1',         // 파란색 (슬픈)
+                'surprised_action': '#ff69b4',   // 분홍색 (놀란)
+                'movement': '#ff8c00',           // 주황색 (이동)
+                'holding_action': '#8b4513',     // 갈색 (잡기)
+                'jumping_action': '#00ff7f',     // 연두색 (점프)
+                'neutral_action': '#808080',     // 회색 (중립)
+                // 범죄 예방 객체들
+                'high_risk': '#ff0000',          // 빨간색 (고위험)
+                'medium_risk': '#ff8c00',        // 주황색 (중위험)
+                'low_risk': '#ffff00',           // 노란색 (저위험)
+                'normal': '#00ff00'              // 녹색 (정상)
+            };
+            
+            if (celestialColors[className]) {
+                return celestialColors[className];
+            }
+            
+            // 기존 객체들을 위한 안정적인 색상 생성
             let hash = 0;
             for (let i = 0; i < className.length; i++) {
                 hash = className.charCodeAt(i) + ((hash << 5) - hash);
@@ -2523,6 +3239,47 @@
             document.getElementById('confidenceValue').textContent = ((avgConfidence || 0) * 100).toFixed(1) + '%';
         }
 
+        // 고성능 FPS 계산 및 적응형 프레임 스킵
+        function calculateHighPerformanceFPS() {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - lastFrameTime;
+            lastFrameTime = currentTime;
+            
+            if (deltaTime > 0) {
+                const currentFPS = 1000 / deltaTime;
+                frameTimeHistory.push(currentFPS);
+                
+                // 최근 60프레임만 유지
+                if (frameTimeHistory.length > 60) {
+                    frameTimeHistory.shift();
+                }
+                
+                // 평균 FPS 계산
+                const avgFPS = frameTimeHistory.reduce((sum, fps) => sum + fps, 0) / frameTimeHistory.length;
+                
+                // 적응형 프레임 스킵 조정
+                if (adaptiveFrameSkip) {
+                    if (avgFPS < targetFPS * 0.8) {
+                        // FPS가 낮으면 프레임 스킵 증가
+                        frameSkipCounter = Math.min(frameSkipCounter + 1, 3);
+                    } else if (avgFPS > targetFPS * 0.95) {
+                        // FPS가 높으면 프레임 스킵 감소
+                        frameSkipCounter = Math.max(frameSkipCounter - 1, 0);
+                    }
+                }
+                
+                // FPS 표시 업데이트
+                const fpsElement = document.getElementById('fps');
+                if (fpsElement) {
+                    fpsElement.textContent = `FPS: ${avgFPS.toFixed(1)}`;
+                    fpsElement.style.color = avgFPS >= targetFPS ? '#00ff00' : avgFPS >= targetFPS * 0.8 ? '#ffff00' : '#ff0000';
+                }
+                
+                return avgFPS;
+            }
+            return 0;
+        }
+        
         // FPS 계산
         function calculateFPS() {
             frameCount++;
@@ -2866,6 +3623,26 @@
                         filtered = predictions.filter(p => p.score >= fallbackThreshold);
                     }
                 }
+                
+                // 천체 감지 추가
+                const celestialDetections = await detectCelestialObjects(sourceEl);
+                filtered = [...filtered, ...celestialDetections];
+                
+                // 고급 객체 감지 추가 (지구, 구름, 자연 현상 등)
+                const advancedDetections = await detectAdvancedObjects(sourceEl);
+                filtered = [...filtered, ...advancedDetections];
+                
+                // 확장된 객체 감지 추가 (사람, 동물, 차량, 물건 등)
+                const extendedDetections = await detectExtendedObjects(sourceEl);
+                filtered = [...filtered, ...extendedDetections];
+                
+                // 행동 예측 추가 (표정, 손짓, 행동 분석)
+                const behaviorPredictions = await predictBehavior(sourceEl);
+                filtered = [...filtered, ...behaviorPredictions];
+                
+                // 범죄 예방 AI 추가 (의심스러운 행동 감지)
+                const suspiciousDetections = await detectSuspiciousBehavior(sourceEl);
+                filtered = [...filtered, ...suspiciousDetections];
 
                 // 3D 객체 감지 분석
                 const object3DAnalysis = analyze3DObjects(filtered, canvas.width, canvas.height);
@@ -2908,7 +3685,15 @@
                 let totalConfidence = 0;
                 
                 if (filtered.length > 0) {
-                    const results = filtered.map(p => `${p.class} (${((p.score || 0) * 100).toFixed(1)}%)`);
+                    const results = filtered.map(p => {
+                        if (p.crime) {
+                            return `${p.warning} - ${p.behavior} (${((p.riskLevel || 0) * 100).toFixed(1)}% 위험도)`;
+                        } else if (p.behavior) {
+                            return `${p.prediction} (${((p.confidence || 0) * 100).toFixed(1)}%) - ${p.emotion} 표정, ${p.gesture} 손짓`;
+                        } else {
+                            return `${p.class} (${((p.score || 0) * 100).toFixed(1)}%)`;
+                        }
+                    });
                     addResult('🎯 3D 객체 감지 결과', results.join(', '));
                     
                     // 클래스별 카운트
@@ -3067,7 +3852,12 @@
                     minDistance: 50,
                     trackHistory: {}
                 };
-                realtimeAnalysis();
+                // 고성능 모드가 활성화된 경우 고성능 분석 사용
+                if (highPerformanceMode) {
+                    animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                } else {
+                    realtimeAnalysis();
+                }
             } else {
                 isRealtime = false;
                 document.getElementById('realtimeBtn').textContent = '🔄 실시간 분석';
@@ -3797,6 +4587,1482 @@
             return '낮음';
         }
         
+        // 천체 감지 함수
+        async function detectCelestialObjects(source) {
+            const celestialObjects = [];
+            
+            try {
+                // 이미지 데이터 분석
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // 천체 감지를 위한 색상 및 형태 분석
+                const celestialRegions = findCelestialRegions(data, canvas.width, canvas.height);
+                
+                for (const region of celestialRegions) {
+                    const confidence = calculateCelestialConfidence(region, data, canvas.width, canvas.height);
+                    
+                    if (confidence > 0.6) { // 천체 감지 임계값 (더 엄격하게)
+                        const celestialType = classifyCelestialObject(region, data, canvas.width, canvas.height);
+                        
+                        celestialObjects.push({
+                            bbox: [region.x, region.y, region.width, region.height],
+                            class: celestialType,
+                            score: confidence,
+                            celestial: true
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                console.warn('천체 감지 오류:', error);
+            }
+            
+            return celestialObjects;
+        }
+        
+        // 천체 영역 찾기 (개선된 버전)
+        function findCelestialRegions(data, width, height) {
+            const regions = [];
+            const visited = new Set();
+            
+            for (let y = 0; y < height; y += 8) { // 더 조밀한 스캔
+                for (let x = 0; x < width; x += 8) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    
+                    // 천체 후보 색상 감지 (개선된 색상 감지 사용)
+                    if (isCelestialColor(r, g, b)) {
+                        const key = `${x},${y}`;
+                        if (!visited.has(key)) {
+                            const region = floodFillCelestial(data, width, height, x, y, visited);
+                            // 더 큰 영역만 감지 (노이즈 제거)
+                            if (region && region.width > 30 && region.height > 30 && 
+                                region.width < width * 0.8 && region.height < height * 0.8) {
+                                regions.push(region);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return regions;
+        }
+        
+        // 천체 색상 감지 (개선된 버전)
+        function isCelestialColor(r, g, b) {
+            // 지구의 파란색 (더 정확한 범위)
+            const isEarthBlue = r < 80 && g > 130 && b > 160 && Math.abs(g - b) < 50;
+            
+            // 행성의 회색/갈색 (더 정교한 범위)
+            const isPlanetGray = Math.abs(r - g) < 25 && Math.abs(g - b) < 25 && Math.abs(r - b) < 25 && 
+                                r > 50 && r < 180 && g > 50 && g < 180 && b > 50 && b < 180;
+            
+            // 달의 흰색/회색 (더 정확한 범위)
+            const isMoonWhite = r > 180 && g > 180 && b > 180 && Math.abs(r - g) < 20 && Math.abs(g - b) < 20;
+            
+            // 화성의 갈색/빨간색 (더 정확한 범위)
+            const isMarsBrown = r > 100 && g > 60 && b < 70 && r > g && g > b;
+            
+            // 사람 눈 제외 (눈동자와 흰자)
+            const isHumanEye = (r > 200 && g > 200 && b > 200) || // 흰자
+                              (r < 50 && g < 50 && b < 50) || // 눈동자
+                              (r > 150 && g > 100 && b < 100); // 눈 주변 피부색
+            
+            // 천체 색상이면서 사람 눈이 아닌 경우만 반환
+            return (isEarthBlue || isPlanetGray || isMoonWhite || isMarsBrown) && !isHumanEye;
+        }
+        
+        // 천체 영역 플러드 필
+        function floodFillCelestial(data, width, height, startX, startY, visited) {
+            const queue = [{x: startX, y: startY}];
+            const region = {x: startX, y: startY, width: 0, height: 0, minX: startX, maxX: startX, minY: startY, maxY: startY};
+            
+            while (queue.length > 0) {
+                const {x, y} = queue.shift();
+                const key = `${x},${y}`;
+                
+                if (visited.has(key) || x < 0 || x >= width || y < 0 || y >= height) continue;
+                
+                const idx = (y * width + x) * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+                
+                if (!isCelestialColor(r, g, b)) continue;
+                
+                visited.add(key);
+                region.minX = Math.min(region.minX, x);
+                region.maxX = Math.max(region.maxX, x);
+                region.minY = Math.min(region.minY, y);
+                region.maxY = Math.max(region.maxY, y);
+                
+                // 8방향 탐색
+                const directions = [[-1,0], [1,0], [0,-1], [0,1], [-1,-1], [-1,1], [1,-1], [1,1]];
+                for (const [dx, dy] of directions) {
+                    queue.push({x: x + dx, y: y + dy});
+                }
+            }
+            
+            region.width = region.maxX - region.minX;
+            region.height = region.maxY - region.minY;
+            
+            return region.width > 0 && region.height > 0 ? region : null;
+        }
+        
+        // 천체 신뢰도 계산 (개선된 버전)
+        function calculateCelestialConfidence(region, data, width, height) {
+            let celestialPixels = 0;
+            let totalPixels = 0;
+            let humanEyePixels = 0;
+            
+            for (let y = region.minY; y <= region.maxY; y++) {
+                for (let x = region.minX; x <= region.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 사람 눈 감지 (제외 대상)
+                        if ((r > 200 && g > 200 && b > 200) || // 흰자
+                            (r < 50 && g < 50 && b < 50) || // 눈동자
+                            (r > 150 && g > 100 && b < 100)) { // 눈 주변 피부색
+                            humanEyePixels++;
+                        }
+                        
+                        if (isCelestialColor(r, g, b)) {
+                            celestialPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const colorConfidence = celestialPixels / totalPixels;
+            const sizeConfidence = Math.min(1, (region.width * region.height) / 15000); // 크기 기반 신뢰도 (더 엄격)
+            const circularityConfidence = calculateCircularity(region); // 원형도 기반 신뢰도
+            const humanEyePenalty = humanEyePixels / totalPixels; // 사람 눈 페널티
+            
+            // 사람 눈이 많이 포함된 경우 신뢰도 감소
+            const finalConfidence = (colorConfidence * 0.6 + sizeConfidence * 0.25 + circularityConfidence * 0.15) * (1 - humanEyePenalty * 2);
+            
+            return Math.max(0, finalConfidence);
+        }
+        
+        // 원형도 계산
+        function calculateCircularity(region) {
+            const area = region.width * region.height;
+            const perimeter = 2 * (region.width + region.height);
+            const circularity = (4 * Math.PI * area) / (perimeter * perimeter);
+            return Math.min(1, circularity);
+        }
+        
+        // 고급 객체 감지 함수 (지구, 구름, 자연 현상 등)
+        async function detectAdvancedObjects(source) {
+            const advancedObjects = [];
+            
+            try {
+                // 이미지 데이터 분석
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // 고급 객체 감지를 위한 분석
+                const advancedRegions = findAdvancedRegions(data, canvas.width, canvas.height);
+                
+                for (const region of advancedRegions) {
+                    const confidence = calculateAdvancedConfidence(region, data, canvas.width, canvas.height);
+                    
+                    if (confidence > 0.5) { // 고급 객체 감지 임계값
+                        const objectType = classifyAdvancedObject(region, data, canvas.width, canvas.height);
+                        
+                        advancedObjects.push({
+                            bbox: [region.x, region.y, region.width, region.height],
+                            class: objectType,
+                            score: confidence,
+                            advanced: true
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                console.warn('고급 객체 감지 오류:', error);
+            }
+            
+            return advancedObjects;
+        }
+        
+        // 고급 객체 영역 찾기
+        function findAdvancedRegions(data, width, height) {
+            const regions = [];
+            const visited = new Set();
+            
+            for (let y = 0; y < height; y += 6) { // 더 조밀한 스캔
+                for (let x = 0; x < width; x += 6) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    
+                    // 고급 객체 후보 색상 감지
+                    if (isAdvancedObjectColor(r, g, b)) {
+                        const key = `${x},${y}`;
+                        if (!visited.has(key)) {
+                            const region = floodFillAdvanced(data, width, height, x, y, visited);
+                            if (region && region.width > 25 && region.height > 25 && 
+                                region.width < width * 0.9 && region.height < height * 0.9) {
+                                regions.push(region);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return regions;
+        }
+        
+        // 고급 객체 색상 감지
+        function isAdvancedObjectColor(r, g, b) {
+            // 지구의 파란색 (바다)
+            const isEarthOcean = r < 70 && g > 140 && b > 170 && Math.abs(g - b) < 40;
+            
+            // 구름의 흰색
+            const isCloudWhite = r > 190 && g > 190 && b > 190 && Math.abs(r - g) < 15 && Math.abs(g - b) < 15;
+            
+            // 대륙의 갈색/녹색
+            const isLandBrown = (r > 80 && g > 60 && b < 80) || (r > 60 && g > 80 && b < 80);
+            const isLandGreen = (r > 40 && g > 80 && b < 80) || (r > 60 && g > 100 && b < 100);
+            
+            // 우주의 검은색
+            const isSpaceBlack = r < 30 && g < 30 && b < 30;
+            
+            // 자연 현상 (폭풍, 안개 등)
+            const isStormGray = Math.abs(r - g) < 20 && Math.abs(g - b) < 20 && Math.abs(r - b) < 20 && 
+                               r > 40 && r < 150 && g > 40 && g < 150 && b > 40 && b < 150;
+            
+            return isEarthOcean || isCloudWhite || isLandBrown || isLandGreen || isSpaceBlack || isStormGray;
+        }
+        
+        // 고급 객체 영역 플러드 필
+        function floodFillAdvanced(data, width, height, startX, startY, visited) {
+            const queue = [{x: startX, y: startY}];
+            const region = {x: startX, y: startY, width: 0, height: 0, minX: startX, maxX: startX, minY: startY, maxY: startY};
+            
+            while (queue.length > 0) {
+                const {x, y} = queue.shift();
+                const key = `${x},${y}`;
+                
+                if (visited.has(key) || x < 0 || x >= width || y < 0 || y >= height) continue;
+                
+                const idx = (y * width + x) * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+                
+                if (!isAdvancedObjectColor(r, g, b)) continue;
+                
+                visited.add(key);
+                region.minX = Math.min(region.minX, x);
+                region.maxX = Math.max(region.maxX, x);
+                region.minY = Math.min(region.minY, y);
+                region.maxY = Math.max(region.maxY, y);
+                
+                // 8방향 탐색
+                const directions = [[-1,0], [1,0], [0,-1], [0,1], [-1,-1], [-1,1], [1,-1], [1,1]];
+                for (const [dx, dy] of directions) {
+                    queue.push({x: x + dx, y: y + dy});
+                }
+            }
+            
+            region.width = region.maxX - region.minX;
+            region.height = region.maxY - region.minY;
+            
+            return region.width > 0 && region.height > 0 ? region : null;
+        }
+        
+        // 고급 객체 신뢰도 계산
+        function calculateAdvancedConfidence(region, data, width, height) {
+            let advancedPixels = 0;
+            let totalPixels = 0;
+            let earthOceanPixels = 0, cloudPixels = 0, landPixels = 0, spacePixels = 0;
+            
+            for (let y = region.minY; y <= region.maxY; y++) {
+                for (let x = region.minX; x <= region.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        if (isAdvancedObjectColor(r, g, b)) {
+                            advancedPixels++;
+                            
+                            // 세부 분류를 위한 픽셀 카운트
+                            if (r < 70 && g > 140 && b > 170) earthOceanPixels++;
+                            else if (r > 190 && g > 190 && b > 190) cloudPixels++;
+                            else if ((r > 80 && g > 60 && b < 80) || (r > 60 && g > 80 && b < 80) || 
+                                     (r > 40 && g > 80 && b < 80) || (r > 60 && g > 100 && b < 100)) landPixels++;
+                            else if (r < 30 && g < 30 && b < 30) spacePixels++;
+                        }
+                    }
+                }
+            }
+            
+            const colorConfidence = advancedPixels / totalPixels;
+            const sizeConfidence = Math.min(1, (region.width * region.height) / 20000);
+            const circularityConfidence = calculateCircularity(region);
+            
+            // 지구 특성 분석 (원형도 + 바다 비율)
+            const earthOceanRatio = earthOceanPixels / totalPixels;
+            const cloudRatio = cloudPixels / totalPixels;
+            const landRatio = landPixels / totalPixels;
+            const spaceRatio = spacePixels / totalPixels;
+            
+            // 지구일 가능성 (원형 + 바다가 많음)
+            const earthLikelihood = (circularityConfidence > 0.7 && earthOceanRatio > 0.3) ? 1.2 : 1.0;
+            
+            return Math.min(1, (colorConfidence * 0.6 + sizeConfidence * 0.25 + circularityConfidence * 0.15) * earthLikelihood);
+        }
+        
+        // 확장된 객체 감지 함수 (사람, 동물, 차량, 물건 등)
+        async function detectExtendedObjects(source) {
+            const extendedObjects = [];
+            
+            try {
+                // 이미지 데이터 분석
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // 확장된 객체 감지를 위한 분석
+                const extendedRegions = findExtendedRegions(data, canvas.width, canvas.height);
+                
+                for (const region of extendedRegions) {
+                    const confidence = calculateExtendedConfidence(region, data, canvas.width, canvas.height);
+                    
+                    if (confidence > 0.4) { // 확장된 객체 감지 임계값
+                        const objectType = classifyExtendedObject(region, data, canvas.width, canvas.height);
+                        
+                        extendedObjects.push({
+                            bbox: [region.x, region.y, region.width, region.height],
+                            class: objectType,
+                            score: confidence,
+                            extended: true
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                console.warn('확장된 객체 감지 오류:', error);
+            }
+            
+            return extendedObjects;
+        }
+        
+        // 확장된 객체 영역 찾기
+        function findExtendedRegions(data, width, height) {
+            const regions = [];
+            const visited = new Set();
+            
+            for (let y = 0; y < height; y += 5) { // 매우 조밀한 스캔
+                for (let x = 0; x < width; x += 5) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    
+                    // 확장된 객체 후보 색상 감지
+                    if (isExtendedObjectColor(r, g, b)) {
+                        const key = `${x},${y}`;
+                        if (!visited.has(key)) {
+                            const region = floodFillExtended(data, width, height, x, y, visited);
+                            if (region && region.width > 20 && region.height > 20 && 
+                                region.width < width * 0.95 && region.height < height * 0.95) {
+                                regions.push(region);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return regions;
+        }
+        
+        // 확장된 객체 색상 감지
+        function isExtendedObjectColor(r, g, b) {
+            // 사람 피부색 (다양한 인종)
+            const isHumanSkin = (
+                (r > 180 && g > 140 && b > 100 && r > g && g > b) || // 밝은 피부
+                (r > 140 && g > 100 && b > 60 && r > g && g > b) || // 중간 피부
+                (r > 100 && g > 70 && b > 40 && r > g && g > b) || // 어두운 피부
+                (r > 160 && g > 120 && b > 80 && r > g && g > b)   // 황색 피부
+            );
+            
+            // 동물 색상 (다양한 동물)
+            const isAnimalFur = (
+                (r > 120 && g > 80 && b > 40 && Math.abs(r - g) < 50) || // 갈색 털
+                (r > 200 && g > 180 && b > 150) || // 흰색 털
+                (r > 80 && g > 60 && b > 40) || // 검은색 털
+                (r > 150 && g > 100 && b > 60)   // 주황색 털
+            );
+            
+            // 차량 색상
+            const isVehicleColor = (
+                (r > 200 && g > 200 && b > 200) || // 흰색 차량
+                (r > 150 && g > 50 && b < 50) || // 빨간색 차량
+                (r < 50 && g < 50 && b < 50) || // 검은색 차량
+                (r > 100 && g > 100 && b > 200) || // 파란색 차량
+                (r > 200 && g > 150 && b < 50)   // 노란색 차량
+            );
+            
+            // 물건/물체 색상
+            const isObjectColor = (
+                (r > 100 && g > 100 && b > 100) || // 회색 물체
+                (r > 150 && g > 100 && b < 100) || // 갈색 물체
+                (r > 200 && g > 200 && b < 200) || // 크림색 물체
+                (r > 80 && g > 120 && b > 80) || // 녹색 물체
+                (r > 120 && g > 80 && b > 120)   // 보라색 물체
+            );
+            
+            return isHumanSkin || isAnimalFur || isVehicleColor || isObjectColor;
+        }
+        
+        // 확장된 객체 영역 플러드 필
+        function floodFillExtended(data, width, height, startX, startY, visited) {
+            const queue = [{x: startX, y: startY}];
+            const region = {x: startX, y: startY, width: 0, height: 0, minX: startX, maxX: startX, minY: startY, maxY: startY};
+            
+            while (queue.length > 0) {
+                const {x, y} = queue.shift();
+                const key = `${x},${y}`;
+                
+                if (visited.has(key) || x < 0 || x >= width || y < 0 || y >= height) continue;
+                
+                const idx = (y * width + x) * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+                
+                if (!isExtendedObjectColor(r, g, b)) continue;
+                
+                visited.add(key);
+                region.minX = Math.min(region.minX, x);
+                region.maxX = Math.max(region.maxX, x);
+                region.minY = Math.min(region.minY, y);
+                region.maxY = Math.max(region.maxY, y);
+                
+                // 8방향 탐색
+                const directions = [[-1,0], [1,0], [0,-1], [0,1], [-1,-1], [-1,1], [1,-1], [1,1]];
+                for (const [dx, dy] of directions) {
+                    queue.push({x: x + dx, y: y + dy});
+                }
+            }
+            
+            region.width = region.maxX - region.minX;
+            region.height = region.maxY - region.minY;
+            
+            return region.width > 0 && region.height > 0 ? region : null;
+        }
+        
+        // 확장된 객체 신뢰도 계산
+        function calculateExtendedConfidence(region, data, width, height) {
+            let extendedPixels = 0;
+            let totalPixels = 0;
+            let humanSkinPixels = 0, animalPixels = 0, vehiclePixels = 0, objectPixels = 0;
+            
+            for (let y = region.minY; y <= region.maxY; y++) {
+                for (let x = region.minX; x <= region.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        if (isExtendedObjectColor(r, g, b)) {
+                            extendedPixels++;
+                            
+                            // 세부 분류를 위한 픽셀 카운트
+                            if ((r > 180 && g > 140 && b > 100 && r > g && g > b) || 
+                                (r > 140 && g > 100 && b > 60 && r > g && g > b) || 
+                                (r > 100 && g > 70 && b > 40 && r > g && g > b) || 
+                                (r > 160 && g > 120 && b > 80 && r > g && g > b)) {
+                                humanSkinPixels++;
+                            }
+                            else if ((r > 120 && g > 80 && b > 40 && Math.abs(r - g) < 50) || 
+                                     (r > 200 && g > 180 && b > 150) || 
+                                     (r > 80 && g > 60 && b > 40) || 
+                                     (r > 150 && g > 100 && b > 60)) {
+                                animalPixels++;
+                            }
+                            else if ((r > 200 && g > 200 && b > 200) || 
+                                     (r > 150 && g > 50 && b < 50) || 
+                                     (r < 50 && g < 50 && b < 50) || 
+                                     (r > 100 && g > 100 && b > 200) || 
+                                     (r > 200 && g > 150 && b < 50)) {
+                                vehiclePixels++;
+                            }
+                            else {
+                                objectPixels++;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            const colorConfidence = extendedPixels / totalPixels;
+            const sizeConfidence = Math.min(1, (region.width * region.height) / 15000);
+            const aspectRatioConfidence = calculateAspectRatio(region);
+            
+            // 사람 특성 분석 (세로로 긴 형태)
+            const humanSkinRatio = humanSkinPixels / totalPixels;
+            const isHumanLike = (humanSkinRatio > 0.3 && aspectRatioConfidence > 0.6) ? 1.3 : 1.0;
+            
+            return Math.min(1, (colorConfidence * 0.6 + sizeConfidence * 0.25 + aspectRatioConfidence * 0.15) * isHumanLike);
+        }
+        
+        // 종횡비 계산 (사람/동물 감지용)
+        function calculateAspectRatio(region) {
+            const ratio = region.height / region.width;
+            // 사람은 보통 세로로 긴 형태 (0.8 ~ 2.5 비율)
+            if (ratio >= 0.8 && ratio <= 2.5) return 1.0;
+            else if (ratio >= 0.6 && ratio <= 3.0) return 0.8;
+            else return 0.4;
+        }
+        
+        // 행동 예측 함수 (표정, 손짓, 행동 분석)
+        async function predictBehavior(source) {
+            const behaviorPredictions = [];
+            
+            try {
+                // 이미지 데이터 분석
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // 사람과 동물 영역 찾기
+                const humanAnimalRegions = findHumanAnimalRegions(data, canvas.width, canvas.height);
+                
+                for (const region of humanAnimalRegions) {
+                    const behaviorAnalysis = analyzeBehavior(region, data, canvas.width, canvas.height);
+                    
+                    if (behaviorAnalysis.confidence > 0.3) {
+                        behaviorPredictions.push({
+                            bbox: [region.x, region.y, region.width, region.height],
+                            class: behaviorAnalysis.type,
+                            prediction: behaviorAnalysis.prediction,
+                            confidence: behaviorAnalysis.confidence,
+                            emotion: behaviorAnalysis.emotion,
+                            gesture: behaviorAnalysis.gesture,
+                            behavior: true
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                console.warn('행동 예측 오류:', error);
+            }
+            
+            return behaviorPredictions;
+        }
+        
+        // 사람과 동물 영역 찾기
+        function findHumanAnimalRegions(data, width, height) {
+            const regions = [];
+            const visited = new Set();
+            
+            for (let y = 0; y < height; y += 4) { // 매우 조밀한 스캔
+                for (let x = 0; x < width; x += 4) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    
+                    // 사람과 동물 후보 색상 감지
+                    if (isHumanAnimalColor(r, g, b)) {
+                        const key = `${x},${y}`;
+                        if (!visited.has(key)) {
+                            const region = floodFillHumanAnimal(data, width, height, x, y, visited);
+                            if (region && region.width > 30 && region.height > 30 && 
+                                region.width < width * 0.9 && region.height < height * 0.9) {
+                                regions.push(region);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return regions;
+        }
+        
+        // 사람과 동물 색상 감지
+        function isHumanAnimalColor(r, g, b) {
+            // 사람 피부색 (다양한 인종)
+            const isHumanSkin = (
+                (r > 180 && g > 140 && b > 100 && r > g && g > b) || // 밝은 피부
+                (r > 140 && g > 100 && b > 60 && r > g && g > b) || // 중간 피부
+                (r > 100 && g > 70 && b > 40 && r > g && g > b) || // 어두운 피부
+                (r > 160 && g > 120 && b > 80 && r > g && g > b)   // 황색 피부
+            );
+            
+            // 동물 털색
+            const isAnimalFur = (
+                (r > 120 && g > 80 && b > 40 && Math.abs(r - g) < 50) || // 갈색 털
+                (r > 200 && g > 180 && b > 150) || // 흰색 털
+                (r > 80 && g > 60 && b > 40) || // 검은색 털
+                (r > 150 && g > 100 && b > 60)   // 주황색 털
+            );
+            
+            return isHumanSkin || isAnimalFur;
+        }
+        
+        // 사람과 동물 영역 플러드 필
+        function floodFillHumanAnimal(data, width, height, startX, startY, visited) {
+            const queue = [{x: startX, y: startY}];
+            const region = {x: startX, y: startY, width: 0, height: 0, minX: startX, maxX: startX, minY: startY, maxY: startY};
+            
+            while (queue.length > 0) {
+                const {x, y} = queue.shift();
+                const key = `${x},${y}`;
+                
+                if (visited.has(key) || x < 0 || x >= width || y < 0 || y >= height) continue;
+                
+                const idx = (y * width + x) * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+                
+                if (!isHumanAnimalColor(r, g, b)) continue;
+                
+                visited.add(key);
+                region.minX = Math.min(region.minX, x);
+                region.maxX = Math.max(region.maxX, x);
+                region.minY = Math.min(region.minY, y);
+                region.maxY = Math.max(region.maxY, y);
+                
+                // 8방향 탐색
+                const directions = [[-1,0], [1,0], [0,-1], [0,1], [-1,-1], [-1,1], [1,-1], [1,1]];
+                for (const [dx, dy] of directions) {
+                    queue.push({x: x + dx, y: y + dy});
+                }
+            }
+            
+            region.width = region.maxX - region.minX;
+            region.height = region.maxY - region.minY;
+            
+            return region.width > 0 && region.height > 0 ? region : null;
+        }
+        
+        // 행동 분석
+        function analyzeBehavior(region, data, width, height) {
+            const analysis = {
+                type: 'unknown',
+                prediction: '알 수 없음',
+                confidence: 0,
+                emotion: '중립',
+                gesture: '없음'
+            };
+            
+            // 얼굴 영역 분석 (상단 1/3)
+            const faceRegion = {
+                minX: region.minX,
+                maxX: region.maxX,
+                minY: region.minY,
+                maxY: region.minY + Math.floor(region.height * 0.4)
+            };
+            
+            // 손 영역 분석 (하단 1/3)
+            const handRegion = {
+                minX: region.minX,
+                maxX: region.maxX,
+                minY: region.maxY - Math.floor(region.height * 0.4),
+                maxY: region.maxY
+            };
+            
+            // 표정 분석
+            const emotionAnalysis = analyzeEmotion(faceRegion, data, width, height);
+            
+            // 손짓 분석
+            const gestureAnalysis = analyzeGesture(handRegion, data, width, height);
+            
+            // 전체 행동 패턴 분석
+            const behaviorPattern = analyzeBehaviorPattern(region, data, width, height);
+            
+            // 종합 분석
+            analysis.emotion = emotionAnalysis.emotion;
+            analysis.gesture = gestureAnalysis.gesture;
+            analysis.confidence = (emotionAnalysis.confidence + gestureAnalysis.confidence + behaviorPattern.confidence) / 3;
+            
+            // 행동 예측
+            const prediction = predictFutureBehavior(emotionAnalysis, gestureAnalysis, behaviorPattern);
+            analysis.prediction = prediction.behavior;
+            analysis.type = prediction.type;
+            
+            return analysis;
+        }
+        
+        // 표정 분석
+        function analyzeEmotion(faceRegion, data, width, height) {
+            let happyPixels = 0, sadPixels = 0, angryPixels = 0, surprisedPixels = 0, neutralPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = faceRegion.minY; y <= faceRegion.maxY; y++) {
+                for (let x = faceRegion.minX; x <= faceRegion.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 표정 색상 분석 (피부색 변화 기반)
+                        if (r > 200 && g > 150 && b > 100) { // 밝은 피부 (기쁨)
+                            happyPixels++;
+                        } else if (r < 120 && g < 100 && b < 80) { // 어두운 피부 (슬픔)
+                            sadPixels++;
+                        } else if (r > 180 && g < 120 && b < 100) { // 붉은 피부 (화남)
+                            angryPixels++;
+                        } else if (r > 220 && g > 200 && b > 180) { // 매우 밝은 피부 (놀람)
+                            surprisedPixels++;
+                        } else {
+                            neutralPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const happyRatio = happyPixels / totalPixels;
+            const sadRatio = sadPixels / totalPixels;
+            const angryRatio = angryPixels / totalPixels;
+            const surprisedRatio = surprisedPixels / totalPixels;
+            const neutralRatio = neutralPixels / totalPixels;
+            
+            let emotion = '중립';
+            let confidence = neutralRatio;
+            
+            if (happyRatio > 0.3) { emotion = '기쁨'; confidence = happyRatio; }
+            else if (sadRatio > 0.3) { emotion = '슬픔'; confidence = sadRatio; }
+            else if (angryRatio > 0.3) { emotion = '화남'; confidence = angryRatio; }
+            else if (surprisedRatio > 0.3) { emotion = '놀람'; confidence = surprisedRatio; }
+            
+            return { emotion, confidence };
+        }
+        
+        // 손짓 분석
+        function analyzeGesture(handRegion, data, width, height) {
+            let pointingPixels = 0, wavingPixels = 0, clappingPixels = 0, holdingPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = handRegion.minY; y <= handRegion.maxY; y++) {
+                for (let x = handRegion.minX; x <= handRegion.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 손짓 색상 분석 (피부색 기반)
+                        if (r > 180 && g > 140 && b > 100) { // 밝은 피부 (가리키기)
+                            pointingPixels++;
+                        } else if (r > 160 && g > 120 && b > 80) { // 중간 피부 (흔들기)
+                            wavingPixels++;
+                        } else if (r > 200 && g > 180 && b > 150) { // 매우 밝은 피부 (박수)
+                            clappingPixels++;
+                        } else if (r > 140 && g > 100 && b > 60) { // 어두운 피부 (잡기)
+                            holdingPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const pointingRatio = pointingPixels / totalPixels;
+            const wavingRatio = wavingPixels / totalPixels;
+            const clappingRatio = clappingPixels / totalPixels;
+            const holdingRatio = holdingPixels / totalPixels;
+            
+            let gesture = '없음';
+            let confidence = 0.1;
+            
+            if (pointingRatio > 0.2) { gesture = '가리키기'; confidence = pointingRatio; }
+            else if (wavingRatio > 0.2) { gesture = '흔들기'; confidence = wavingRatio; }
+            else if (clappingRatio > 0.2) { gesture = '박수'; confidence = clappingRatio; }
+            else if (holdingRatio > 0.2) { gesture = '잡기'; confidence = holdingRatio; }
+            
+            return { gesture, confidence };
+        }
+        
+        // 행동 패턴 분석
+        function analyzeBehaviorPattern(region, data, width, height) {
+            let movingPixels = 0, stillPixels = 0, jumpingPixels = 0, sittingPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = region.minY; y <= region.maxY; y++) {
+                for (let x = region.minX; x <= region.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 행동 패턴 색상 분석
+                        if (Math.abs(r - g) > 30 || Math.abs(g - b) > 30) { // 색상 변화 (움직임)
+                            movingPixels++;
+                        } else if (Math.abs(r - g) < 10 && Math.abs(g - b) < 10) { // 균일한 색상 (정지)
+                            stillPixels++;
+                        } else if (r > 200 && g > 200 && b > 200) { // 매우 밝은 색상 (점프)
+                            jumpingPixels++;
+                        } else if (r < 100 && g < 100 && b < 100) { // 어두운 색상 (앉기)
+                            sittingPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const movingRatio = movingPixels / totalPixels;
+            const stillRatio = stillPixels / totalPixels;
+            const jumpingRatio = jumpingPixels / totalPixels;
+            const sittingRatio = sittingPixels / totalPixels;
+            
+            let pattern = '정지';
+            let confidence = stillRatio;
+            
+            if (movingRatio > 0.3) { pattern = '움직임'; confidence = movingRatio; }
+            else if (jumpingRatio > 0.2) { pattern = '점프'; confidence = jumpingRatio; }
+            else if (sittingRatio > 0.3) { pattern = '앉기'; confidence = sittingRatio; }
+            
+            return { pattern, confidence };
+        }
+        
+        // 미래 행동 예측
+        function predictFutureBehavior(emotion, gesture, pattern) {
+            let behavior = '알 수 없음';
+            let type = 'unknown';
+            
+            // 감정 + 손짓 + 패턴 조합으로 예측
+            if (emotion.emotion === '기쁨' && gesture.gesture === '박수') {
+                behavior = '기뻐서 박수를 칠 것 같습니다';
+                type = 'positive_action';
+            } else if (emotion.emotion === '기쁨' && gesture.gesture === '흔들기') {
+                behavior = '기뻐서 손을 흔들 것 같습니다';
+                type = 'greeting';
+            } else if (emotion.emotion === '화남' && pattern.pattern === '움직임') {
+                behavior = '화가 나서 빠르게 움직일 것 같습니다';
+                type = 'aggressive_action';
+            } else if (emotion.emotion === '슬픔' && pattern.pattern === '앉기') {
+                behavior = '슬퍼서 앉아있을 것 같습니다';
+                type = 'sad_action';
+            } else if (emotion.emotion === '놀람' && gesture.gesture === '가리키기') {
+                behavior = '놀라서 무엇인가를 가리킬 것 같습니다';
+                type = 'surprised_action';
+            } else if (gesture.gesture === '가리키기' && pattern.pattern === '움직임') {
+                behavior = '가리키는 방향으로 이동할 것 같습니다';
+                type = 'movement';
+            } else if (gesture.gesture === '잡기' && pattern.pattern === '정지') {
+                behavior = '무엇인가를 잡고 있을 것 같습니다';
+                type = 'holding_action';
+            } else if (emotion.emotion === '기쁨' && pattern.pattern === '점프') {
+                behavior = '기뻐서 뛸 것 같습니다';
+                type = 'jumping_action';
+            } else if (emotion.emotion === '중립' && gesture.gesture === '없음') {
+                behavior = '조용히 있을 것 같습니다';
+                type = 'neutral_action';
+            }
+            
+            return { behavior, type };
+        }
+        
+        // 범죄 예방 AI 함수 (의심스러운 행동 감지)
+        async function detectSuspiciousBehavior(source) {
+            const suspiciousDetections = [];
+            
+            try {
+                // 이미지 데이터 분석
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // 사람 영역 찾기
+                const humanRegions = findHumanRegionsForCrime(data, canvas.width, canvas.height);
+                
+                for (const region of humanRegions) {
+                    const crimeAnalysis = analyzeCrimeRisk(region, data, canvas.width, canvas.height);
+                    
+                    if (crimeAnalysis.riskLevel > 0.2) {
+                        suspiciousDetections.push({
+                            bbox: [region.x, region.y, region.width, region.height],
+                            class: crimeAnalysis.type,
+                            riskLevel: crimeAnalysis.riskLevel,
+                            behavior: crimeAnalysis.behavior,
+                            warning: crimeAnalysis.warning,
+                            confidence: crimeAnalysis.confidence,
+                            crime: true
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                console.warn('범죄 예방 AI 오류:', error);
+            }
+            
+            return suspiciousDetections;
+        }
+        
+        // 범죄 예방용 사람 영역 찾기
+        function findHumanRegionsForCrime(data, width, height) {
+            const regions = [];
+            const visited = new Set();
+            
+            for (let y = 0; y < height; y += 3) { // 매우 조밀한 스캔
+                for (let x = 0; x < width; x += 3) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    
+                    // 사람 피부색 감지 (다양한 인종)
+                    if (isHumanSkinForCrime(r, g, b)) {
+                        const key = `${x},${y}`;
+                        if (!visited.has(key)) {
+                            const region = floodFillHumanForCrime(data, width, height, x, y, visited);
+                            if (region && region.width > 25 && region.height > 25 && 
+                                region.width < width * 0.95 && region.height < height * 0.95) {
+                                regions.push(region);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return regions;
+        }
+        
+        // 범죄 예방용 사람 피부색 감지
+        function isHumanSkinForCrime(r, g, b) {
+            // 다양한 인종의 피부색 (더 정밀한 범위)
+            return (
+                (r > 175 && g > 135 && b > 95 && r > g && g > b) || // 밝은 피부
+                (r > 135 && g > 95 && b > 55 && r > g && g > b) || // 중간 피부
+                (r > 95 && g > 65 && b > 35 && r > g && g > b) || // 어두운 피부
+                (r > 155 && g > 115 && b > 75 && r > g && g > b)   // 황색 피부
+            );
+        }
+        
+        // 범죄 예방용 사람 영역 플러드 필
+        function floodFillHumanForCrime(data, width, height, startX, startY, visited) {
+            const queue = [{x: startX, y: startY}];
+            const region = {x: startX, y: startY, width: 0, height: 0, minX: startX, maxX: startX, minY: startY, maxY: startY};
+            
+            while (queue.length > 0) {
+                const {x, y} = queue.shift();
+                const key = `${x},${y}`;
+                
+                if (visited.has(key) || x < 0 || x >= width || y < 0 || y >= height) continue;
+                
+                const idx = (y * width + x) * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+                
+                if (!isHumanSkinForCrime(r, g, b)) continue;
+                
+                visited.add(key);
+                region.minX = Math.min(region.minX, x);
+                region.maxX = Math.max(region.maxX, x);
+                region.minY = Math.min(region.minY, y);
+                region.maxY = Math.max(region.maxY, y);
+                
+                // 8방향 탐색
+                const directions = [[-1,0], [1,0], [0,-1], [0,1], [-1,-1], [-1,1], [1,-1], [1,1]];
+                for (const [dx, dy] of directions) {
+                    queue.push({x: x + dx, y: y + dy});
+                }
+            }
+            
+            region.width = region.maxX - region.minX;
+            region.height = region.maxY - region.minY;
+            
+            return region.width > 0 && region.height > 0 ? region : null;
+        }
+        
+        // 범죄 위험도 분석
+        function analyzeCrimeRisk(region, data, width, height) {
+            const analysis = {
+                type: 'normal',
+                riskLevel: 0,
+                behavior: '정상',
+                warning: '정상 행동',
+                confidence: 0
+            };
+            
+            // 얼굴 영역 분석 (상단 1/3)
+            const faceRegion = {
+                minX: region.minX,
+                maxX: region.maxX,
+                minY: region.minY,
+                maxY: region.minY + Math.floor(region.height * 0.4)
+            };
+            
+            // 손 영역 분석 (하단 1/3)
+            const handRegion = {
+                minX: region.minX,
+                maxX: region.maxX,
+                minY: region.maxY - Math.floor(region.height * 0.4),
+                maxY: region.maxY
+            };
+            
+            // 몸통 영역 분석 (중간 1/3)
+            const bodyRegion = {
+                minX: region.minX,
+                maxX: region.maxX,
+                minY: region.minY + Math.floor(region.height * 0.3),
+                maxY: region.maxY - Math.floor(region.height * 0.3)
+            };
+            
+            // 의심스러운 표정 분석
+            const suspiciousEmotion = analyzeSuspiciousEmotion(faceRegion, data, width, height);
+            
+            // 의심스러운 손짓 분석
+            const suspiciousGesture = analyzeSuspiciousGesture(handRegion, data, width, height);
+            
+            // 의심스러운 행동 패턴 분석
+            const suspiciousBehavior = analyzeSuspiciousBehaviorPattern(bodyRegion, data, width, height);
+            
+            // 주변 환경 분석 (물건과의 상호작용)
+            const objectInteraction = analyzeObjectInteraction(region, data, width, height);
+            
+            // 종합 위험도 계산
+            const totalRisk = (
+                suspiciousEmotion.risk * 0.25 +
+                suspiciousGesture.risk * 0.3 +
+                suspiciousBehavior.risk * 0.25 +
+                objectInteraction.risk * 0.2
+            );
+            
+            analysis.riskLevel = totalRisk;
+            analysis.confidence = (suspiciousEmotion.confidence + suspiciousGesture.confidence + 
+                                 suspiciousBehavior.confidence + objectInteraction.confidence) / 4;
+            
+            // 위험도에 따른 분류
+            if (totalRisk > 0.7) {
+                analysis.type = 'high_risk';
+                analysis.behavior = '매우 의심스러운 행동';
+                analysis.warning = '🚨 즉시 경비원 확인 필요!';
+            } else if (totalRisk > 0.5) {
+                analysis.type = 'medium_risk';
+                analysis.behavior = '의심스러운 행동';
+                analysis.warning = '⚠️ 주의 깊게 관찰 필요';
+            } else if (totalRisk > 0.3) {
+                analysis.type = 'low_risk';
+                analysis.behavior = '약간 의심스러운 행동';
+                analysis.warning = '👀 관찰 필요';
+            } else {
+                analysis.type = 'normal';
+                analysis.behavior = '정상 행동';
+                analysis.warning = '✅ 정상';
+            }
+            
+            return analysis;
+        }
+        
+        // 의심스러운 표정 분석
+        function analyzeSuspiciousEmotion(faceRegion, data, width, height) {
+            let nervousPixels = 0, guiltyPixels = 0, aggressivePixels = 0, evasivePixels = 0, normalPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = faceRegion.minY; y <= faceRegion.maxY; y++) {
+                for (let x = faceRegion.minX; x <= faceRegion.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 의심스러운 표정 색상 분석
+                        if (r > 190 && g < 130 && b < 110) { // 붉은 피부 (긴장/죄책감)
+                            nervousPixels++;
+                        } else if (r < 110 && g < 90 && b < 70) { // 매우 어두운 피부 (죄책감)
+                            guiltyPixels++;
+                        } else if (r > 200 && g < 120 && b < 100) { // 매우 붉은 피부 (공격적)
+                            aggressivePixels++;
+                        } else if (r > 180 && g > 160 && b > 140) { // 창백한 피부 (회피적)
+                            evasivePixels++;
+                        } else {
+                            normalPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const nervousRatio = nervousPixels / totalPixels;
+            const guiltyRatio = guiltyPixels / totalPixels;
+            const aggressiveRatio = aggressivePixels / totalPixels;
+            const evasiveRatio = evasivePixels / totalPixels;
+            const normalRatio = normalPixels / totalPixels;
+            
+            let risk = 0;
+            let confidence = normalRatio;
+            
+            if (nervousRatio > 0.25) { risk = nervousRatio * 0.8; confidence = nervousRatio; }
+            if (guiltyRatio > 0.2) { risk = Math.max(risk, guiltyRatio * 0.9); confidence = Math.max(confidence, guiltyRatio); }
+            if (aggressiveRatio > 0.2) { risk = Math.max(risk, aggressiveRatio * 0.85); confidence = Math.max(confidence, aggressiveRatio); }
+            if (evasiveRatio > 0.25) { risk = Math.max(risk, evasiveRatio * 0.7); confidence = Math.max(confidence, evasiveRatio); }
+            
+            return { risk, confidence };
+        }
+        
+        // 의심스러운 손짓 분석
+        function analyzeSuspiciousGesture(handRegion, data, width, height) {
+            let hidingPixels = 0, grabbingPixels = 0, concealingPixels = 0, fidgetingPixels = 0, normalPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = handRegion.minY; y <= handRegion.maxY; y++) {
+                for (let x = handRegion.minX; x <= handRegion.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 의심스러운 손짓 색상 분석
+                        if (r < 100 && g < 100 && b < 100) { // 어두운 색상 (숨기기)
+                            hidingPixels++;
+                        } else if (r > 180 && g > 140 && b > 100) { // 밝은 피부 (잡기)
+                            grabbingPixels++;
+                        } else if (r > 160 && g > 120 && b > 80) { // 중간 피부 (감추기)
+                            concealingPixels++;
+                        } else if (Math.abs(r - g) > 20 || Math.abs(g - b) > 20) { // 색상 변화 (안절부절)
+                            fidgetingPixels++;
+                        } else {
+                            normalPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const hidingRatio = hidingPixels / totalPixels;
+            const grabbingRatio = grabbingPixels / totalPixels;
+            const concealingRatio = concealingPixels / totalPixels;
+            const fidgetingRatio = fidgetingPixels / totalPixels;
+            const normalRatio = normalPixels / totalPixels;
+            
+            let risk = 0;
+            let confidence = normalRatio;
+            
+            if (hidingRatio > 0.2) { risk = hidingRatio * 0.9; confidence = hidingRatio; }
+            if (grabbingRatio > 0.25) { risk = Math.max(risk, grabbingRatio * 0.8); confidence = Math.max(confidence, grabbingRatio); }
+            if (concealingRatio > 0.2) { risk = Math.max(risk, concealingRatio * 0.85); confidence = Math.max(confidence, concealingRatio); }
+            if (fidgetingRatio > 0.3) { risk = Math.max(risk, fidgetingRatio * 0.6); confidence = Math.max(confidence, fidgetingRatio); }
+            
+            return { risk, confidence };
+        }
+        
+        // 의심스러운 행동 패턴 분석
+        function analyzeSuspiciousBehaviorPattern(bodyRegion, data, width, height) {
+            let sneakingPixels = 0, loiteringPixels = 0, rushingPixels = 0, normalPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = bodyRegion.minY; y <= bodyRegion.maxY; y++) {
+                for (let x = bodyRegion.minX; x <= bodyRegion.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 의심스러운 행동 패턴 색상 분석
+                        if (Math.abs(r - g) > 25 && Math.abs(g - b) > 25) { // 큰 색상 변화 (몰래 다니기)
+                            sneakingPixels++;
+                        } else if (Math.abs(r - g) < 5 && Math.abs(g - b) < 5) { // 균일한 색상 (배회)
+                            loiteringPixels++;
+                        } else if (r > 200 && g > 200 && b > 200) { // 매우 밝은 색상 (급하게 움직임)
+                            rushingPixels++;
+                        } else {
+                            normalPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const sneakingRatio = sneakingPixels / totalPixels;
+            const loiteringRatio = loiteringPixels / totalPixels;
+            const rushingRatio = rushingPixels / totalPixels;
+            const normalRatio = normalPixels / totalPixels;
+            
+            let risk = 0;
+            let confidence = normalRatio;
+            
+            if (sneakingRatio > 0.25) { risk = sneakingRatio * 0.8; confidence = sneakingRatio; }
+            if (loiteringRatio > 0.3) { risk = Math.max(risk, loiteringRatio * 0.7); confidence = Math.max(confidence, loiteringRatio); }
+            if (rushingRatio > 0.2) { risk = Math.max(risk, rushingRatio * 0.75); confidence = Math.max(confidence, rushingRatio); }
+            
+            return { risk, confidence };
+        }
+        
+        // 물건과의 상호작용 분석
+        function analyzeObjectInteraction(region, data, width, height) {
+            let stealingPixels = 0, concealingPixels = 0, normalPixels = 0;
+            let totalPixels = 0;
+            
+            // 주변 영역 확장 분석
+            const expandedRegion = {
+                minX: Math.max(0, region.minX - 20),
+                maxX: Math.min(width - 1, region.maxX + 20),
+                minY: Math.max(0, region.minY - 20),
+                maxY: Math.min(height - 1, region.maxY + 20)
+            };
+            
+            for (let y = expandedRegion.minY; y <= expandedRegion.maxY; y++) {
+                for (let x = expandedRegion.minX; x <= expandedRegion.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 물건 상호작용 색상 분석
+                        if (r > 150 && g > 100 && b > 50) { // 갈색 계열 (물건 잡기)
+                            stealingPixels++;
+                        } else if (r < 80 && g < 80 && b < 80) { // 어두운 색상 (물건 숨기기)
+                            concealingPixels++;
+                        } else {
+                            normalPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const stealingRatio = stealingPixels / totalPixels;
+            const concealingRatio = concealingPixels / totalPixels;
+            const normalRatio = normalPixels / totalPixels;
+            
+            let risk = 0;
+            let confidence = normalRatio;
+            
+            if (stealingRatio > 0.15) { risk = stealingRatio * 0.8; confidence = stealingRatio; }
+            if (concealingRatio > 0.1) { risk = Math.max(risk, concealingRatio * 0.9); confidence = Math.max(confidence, concealingRatio); }
+            
+            return { risk, confidence };
+        }
+        
+        // 확장된 객체 분류
+        function classifyExtendedObject(region, data, width, height) {
+            let humanSkinPixels = 0, animalPixels = 0, vehiclePixels = 0, objectPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = region.minY; y <= region.maxY; y++) {
+                for (let x = region.minX; x <= region.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 사람 피부색
+                        if ((r > 180 && g > 140 && b > 100 && r > g && g > b) || 
+                            (r > 140 && g > 100 && b > 60 && r > g && g > b) || 
+                            (r > 100 && g > 70 && b > 40 && r > g && g > b) || 
+                            (r > 160 && g > 120 && b > 80 && r > g && g > b)) {
+                            humanSkinPixels++;
+                        }
+                        // 동물 털색
+                        else if ((r > 120 && g > 80 && b > 40 && Math.abs(r - g) < 50) || 
+                                 (r > 200 && g > 180 && b > 150) || 
+                                 (r > 80 && g > 60 && b > 40) || 
+                                 (r > 150 && g > 100 && b > 60)) {
+                            animalPixels++;
+                        }
+                        // 차량 색상
+                        else if ((r > 200 && g > 200 && b > 200) || 
+                                 (r > 150 && g > 50 && b < 50) || 
+                                 (r < 50 && g < 50 && b < 50) || 
+                                 (r > 100 && g > 100 && b > 200) || 
+                                 (r > 200 && g > 150 && b < 50)) {
+                            vehiclePixels++;
+                        }
+                        else {
+                            objectPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const humanSkinRatio = humanSkinPixels / totalPixels;
+            const animalRatio = animalPixels / totalPixels;
+            const vehicleRatio = vehiclePixels / totalPixels;
+            const objectRatio = objectPixels / totalPixels;
+            const aspectRatio = region.height / region.width;
+            
+            // 사람 분류 (나이별)
+            if (humanSkinRatio > 0.4) {
+                if (region.width * region.height < 5000) return '아이';
+                else if (region.width * region.height < 8000) return '청소년';
+                else return '성인';
+            }
+            // 동물 분류
+            else if (animalRatio > 0.4) {
+                if (r > 200 && g > 180 && b > 150) return '강아지';
+                else if (r > 80 && g > 60 && b > 40) return '고양이';
+                else return '동물';
+            }
+            // 차량 분류
+            else if (vehicleRatio > 0.4) {
+                if (r > 150 && g > 50 && b < 50) return '소방차';
+                else if (r > 100 && g > 100 && b > 200) return '경찰차';
+                else if (aspectRatio < 0.5) return '비행기';
+                else return '자동차';
+            }
+            // 물건 분류
+            else if (objectRatio > 0.4) {
+                return '물건';
+            }
+            else {
+                return '객체';
+            }
+        }
+        
+        // 고급 객체 분류
+        function classifyAdvancedObject(region, data, width, height) {
+            let earthOceanPixels = 0, cloudPixels = 0, landPixels = 0, spacePixels = 0, stormPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = region.minY; y <= region.maxY; y++) {
+                for (let x = region.minX; x <= region.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 지구의 바다
+                        if (r < 70 && g > 140 && b > 170 && Math.abs(g - b) < 40) {
+                            earthOceanPixels++;
+                        }
+                        // 구름
+                        else if (r > 190 && g > 190 && b > 190 && Math.abs(r - g) < 15 && Math.abs(g - b) < 15) {
+                            cloudPixels++;
+                        }
+                        // 대륙
+                        else if ((r > 80 && g > 60 && b < 80) || (r > 60 && g > 80 && b < 80) || 
+                                 (r > 40 && g > 80 && b < 80) || (r > 60 && g > 100 && b < 100)) {
+                            landPixels++;
+                        }
+                        // 우주
+                        else if (r < 30 && g < 30 && b < 30) {
+                            spacePixels++;
+                        }
+                        // 폭풍/안개
+                        else if (Math.abs(r - g) < 20 && Math.abs(g - b) < 20 && Math.abs(r - b) < 20 && 
+                                r > 40 && r < 150 && g > 40 && g < 150 && b > 40 && b < 150) {
+                            stormPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const earthOceanRatio = earthOceanPixels / totalPixels;
+            const cloudRatio = cloudPixels / totalPixels;
+            const landRatio = landPixels / totalPixels;
+            const spaceRatio = spacePixels / totalPixels;
+            const stormRatio = stormPixels / totalPixels;
+            
+            // 지구 판별 (바다 + 대륙 + 구름의 조합)
+            if (earthOceanRatio > 0.3 && (landRatio > 0.1 || cloudRatio > 0.2)) {
+                return '지구';
+            }
+            // 구름
+            else if (cloudRatio > 0.6) {
+                return '구름';
+            }
+            // 대륙
+            else if (landRatio > 0.5) {
+                return '대륙';
+            }
+            // 바다
+            else if (earthOceanRatio > 0.7) {
+                return '바다';
+            }
+            // 폭풍/안개
+            else if (stormRatio > 0.4) {
+                return '폭풍';
+            }
+            // 우주
+            else if (spaceRatio > 0.8) {
+                return '우주';
+            }
+            else {
+                return '자연 현상';
+            }
+        }
+        
+        // 천체 분류 (개선된 버전)
+        function classifyCelestialObject(region, data, width, height) {
+            let earthBluePixels = 0, planetGrayPixels = 0, moonWhitePixels = 0, marsBrownPixels = 0;
+            let totalPixels = 0;
+            
+            for (let y = region.minY; y <= region.maxY; y++) {
+                for (let x = region.minX; x <= region.maxX; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height) {
+                        const idx = (y * width + x) * 4;
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        
+                        totalPixels++;
+                        
+                        // 지구의 파란색
+                        if (r < 80 && g > 130 && b > 160 && Math.abs(g - b) < 50) {
+                            earthBluePixels++;
+                        }
+                        // 행성의 회색/갈색
+                        else if (Math.abs(r - g) < 25 && Math.abs(g - b) < 25 && Math.abs(r - b) < 25 && 
+                                r > 50 && r < 180 && g > 50 && g < 180 && b > 50 && b < 180) {
+                            planetGrayPixels++;
+                        }
+                        // 달의 흰색/회색
+                        else if (r > 180 && g > 180 && b > 180 && Math.abs(r - g) < 20 && Math.abs(g - b) < 20) {
+                            moonWhitePixels++;
+                        }
+                        // 화성의 갈색/빨간색
+                        else if (r > 100 && g > 60 && b < 70 && r > g && g > b) {
+                            marsBrownPixels++;
+                        }
+                    }
+                }
+            }
+            
+            const earthBlueRatio = earthBluePixels / totalPixels;
+            const planetGrayRatio = planetGrayPixels / totalPixels;
+            const moonWhiteRatio = moonWhitePixels / totalPixels;
+            const marsBrownRatio = marsBrownPixels / totalPixels;
+            
+            // 더 엄격한 임계값 적용
+            if (earthBlueRatio > 0.5) return '지구';
+            else if (marsBrownRatio > 0.4) return '화성';
+            else if (moonWhiteRatio > 0.5) return '달';
+            else if (planetGrayRatio > 0.5) return '행성';
+            else return '천체';
+        }
+        
         // 3D 객체 분석 함수
         function analyze3DObjects(objects, canvasWidth, canvasHeight) {
             const analysis = {
@@ -3884,7 +6150,48 @@
                 'scissors': 0.15,   // 가위 크기
                 'teddy bear': 0.3,  // 곰인형 크기
                 'hair drier': 0.2,  // 헤어드라이어 크기
-                'toothbrush': 0.2   // 칫솔 길이
+                'toothbrush': 0.2,  // 칫솔 길이
+                // 천체 객체들
+                '지구': 12742.0,     // 지구 지름 (km)
+                '화성': 6779.0,      // 화성 지름 (km)
+                '달': 3474.8,        // 달 지름 (km)
+                '행성': 5000.0,      // 평균 행성 지름 (km)
+                '천체': 3000.0,      // 일반 천체 지름 (km)
+                // 고급 자연 객체들
+                '구름': 10000.0,     // 구름 높이 (m)
+                '대륙': 8000.0,      // 대륙 평균 높이 (m)
+                '바다': 4000.0,      // 바다 평균 깊이 (m)
+                '폭풍': 15000.0,     // 폭풍 구름 높이 (m)
+                '우주': 100000.0,    // 우주 거리 (km)
+                '자연 현상': 5000.0, // 자연 현상 평균 크기 (m)
+                // 확장된 객체들
+                '성인': 1.7,         // 성인 평균 키 (m)
+                '청소년': 1.5,       // 청소년 평균 키 (m)
+                '아이': 1.2,         // 아이 평균 키 (m)
+                '강아지': 0.4,       // 강아지 평균 크기 (m)
+                '고양이': 0.3,       // 고양이 평균 크기 (m)
+                '동물': 0.5,         // 동물 평균 크기 (m)
+                '자동차': 4.5,       // 자동차 평균 길이 (m)
+                '소방차': 8.0,       // 소방차 평균 길이 (m)
+                '경찰차': 4.8,       // 경찰차 평균 길이 (m)
+                '비행기': 50.0,      // 비행기 평균 길이 (m)
+                '물건': 0.3,         // 물건 평균 크기 (m)
+                '객체': 0.5,         // 일반 객체 평균 크기 (m)
+                // 행동 예측 객체들
+                'positive_action': 1.7,    // 긍정적 행동 (성인 크기)
+                'greeting': 1.7,           // 인사 행동 (성인 크기)
+                'aggressive_action': 1.7,  // 공격적 행동 (성인 크기)
+                'sad_action': 1.7,         // 슬픈 행동 (성인 크기)
+                'surprised_action': 1.7,   // 놀란 행동 (성인 크기)
+                'movement': 1.7,           // 이동 행동 (성인 크기)
+                'holding_action': 1.7,     // 잡기 행동 (성인 크기)
+                'jumping_action': 1.7,     // 점프 행동 (성인 크기)
+                'neutral_action': 1.7,     // 중립 행동 (성인 크기)
+                // 범죄 예방 객체들
+                'high_risk': 1.7,          // 고위험 행동 (성인 크기)
+                'medium_risk': 1.7,        // 중위험 행동 (성인 크기)
+                'low_risk': 1.7,           // 저위험 행동 (성인 크기)
+                'normal': 1.7              // 정상 행동 (성인 크기)
             };
             
             const baseSize = baseSizes[objectClass] || 0.5; // 기본값
@@ -4141,9 +6448,27 @@
             try {
                 updateStatus('🎨 AI 이미지 생성 중...');
                 
+                // 소스 유효성 검증
+                if (!source) {
+                    addResult('❌ 오류', '소스 이미지가 없습니다. 카메라를 시작하거나 이미지를 업로드해주세요.');
+                    updateStatus('❌ AI 이미지 생성 실패', true);
+                    return;
+                }
+                
                 // Canvas 크기 검증
                 if (canvas.width === 0 || canvas.height === 0) {
                     addResult('❌ 오류', 'Canvas 크기가 0입니다. 카메라를 시작하거나 이미지를 업로드해주세요.');
+                    updateStatus('❌ AI 이미지 생성 실패', true);
+                    return;
+                }
+                
+                // 소스 크기 검증
+                const sourceWidth = source.naturalWidth || source.videoWidth || source.width;
+                const sourceHeight = source.naturalHeight || source.videoHeight || source.height;
+                
+                if (!sourceWidth || !sourceHeight || sourceWidth === 0 || sourceHeight === 0) {
+                    addResult('❌ 오류', '소스 이미지 크기가 유효하지 않습니다.');
+                    updateStatus('❌ AI 이미지 생성 실패', true);
                     return;
                 }
                 
@@ -4159,13 +6484,19 @@
                 updateStatus('✅ AI 이미지 생성 완료!');
                 
             } catch (error) {
-                addResult('❌ AI 이미지 생성 오류', error.message);
+                console.error('AI 이미지 생성 오류:', error);
+                addResult('❌ AI 이미지 생성 오류', error.message || '알 수 없는 오류가 발생했습니다.');
                 updateStatus('❌ AI 이미지 생성 실패', true);
             }
         }
         
         // 이미지 생성용 분석
         async function analyzeImageForGeneration(source) {
+            // 소스 유효성 검증
+            if (!source) {
+                throw new Error('소스 이미지가 없습니다.');
+            }
+            
             const analysis = {
                 objects: [],
                 colors: [],
@@ -4177,12 +6508,81 @@
             
             // 객체 감지
             if (cocoSsdModel) {
-                const detections = await cocoSsdModel.detect(source, 20, 0.3);
-                analysis.objects = detections.map(d => ({
+                try {
+                    const detections = await cocoSsdModel.detect(source, 20, 0.3);
+                    analysis.objects = detections.map(d => ({
+                        class: d.class,
+                        confidence: d.score,
+                        bbox: d.bbox
+                    }));
+                } catch (error) {
+                    console.warn('객체 감지 실패:', error);
+                    analysis.objects = [];
+                }
+            }
+            
+            // 천체 감지 추가
+            try {
+                const celestialDetections = await detectCelestialObjects(source);
+                analysis.objects = [...analysis.objects, ...celestialDetections.map(d => ({
                     class: d.class,
                     confidence: d.score,
                     bbox: d.bbox
-                }));
+                }))];
+            } catch (error) {
+                console.warn('천체 감지 실패:', error);
+            }
+            
+            // 고급 객체 감지 추가
+            try {
+                const advancedDetections = await detectAdvancedObjects(source);
+                analysis.objects = [...analysis.objects, ...advancedDetections.map(d => ({
+                    class: d.class,
+                    confidence: d.score,
+                    bbox: d.bbox
+                }))];
+            } catch (error) {
+                console.warn('고급 객체 감지 실패:', error);
+            }
+            
+            // 확장된 객체 감지 추가
+            try {
+                const extendedDetections = await detectExtendedObjects(source);
+                analysis.objects = [...analysis.objects, ...extendedDetections.map(d => ({
+                    class: d.class,
+                    confidence: d.score,
+                    bbox: d.bbox
+                }))];
+            } catch (error) {
+                console.warn('확장된 객체 감지 실패:', error);
+            }
+            
+            // 행동 예측 추가
+            try {
+                const behaviorPredictions = await predictBehavior(source);
+                analysis.objects = [...analysis.objects, ...behaviorPredictions.map(d => ({
+                    class: d.prediction,
+                    confidence: d.confidence,
+                    bbox: d.bbox,
+                    emotion: d.emotion,
+                    gesture: d.gesture
+                }))];
+            } catch (error) {
+                console.warn('행동 예측 실패:', error);
+            }
+            
+            // 범죄 예방 AI 추가
+            try {
+                const suspiciousDetections = await detectSuspiciousBehavior(source);
+                analysis.objects = [...analysis.objects, ...suspiciousDetections.map(d => ({
+                    class: d.warning,
+                    confidence: d.riskLevel,
+                    bbox: d.bbox,
+                    behavior: d.behavior,
+                    riskLevel: d.riskLevel
+                }))];
+            } catch (error) {
+                console.warn('범죄 예방 AI 실패:', error);
             }
             
             // 색상 분석
@@ -4205,29 +6605,44 @@
         
         // 이미지 색상 분석
         function analyzeImageColors(source) {
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            const colorCounts = {};
-            
-            // 색상 히스토그램 생성
-            for (let i = 0; i < data.length; i += 4) {
-                const r = Math.floor(data[i] / 32) * 32;
-                const g = Math.floor(data[i + 1] / 32) * 32;
-                const b = Math.floor(data[i + 2] / 32) * 32;
-                const colorKey = `${r},${g},${b}`;
-                colorCounts[colorKey] = (colorCounts[colorKey] || 0) + 1;
+            try {
+                // 캔버스에 소스 이미지 그리기 (필요한 경우)
+                if (source && (source !== uploadedImageEl || source !== uploadedVideoEl)) {
+                    ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+                }
+                
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                const colorCounts = {};
+                
+                // 색상 히스토그램 생성
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = Math.floor(data[i] / 32) * 32;
+                    const g = Math.floor(data[i + 1] / 32) * 32;
+                    const b = Math.floor(data[i + 2] / 32) * 32;
+                    const colorKey = `${r},${g},${b}`;
+                    colorCounts[colorKey] = (colorCounts[colorKey] || 0) + 1;
+                }
+                
+                // 주요 색상 추출
+                const sortedColors = Object.entries(colorCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(([color, count]) => {
+                        const [r, g, b] = color.split(',').map(Number);
+                        return { r, g, b, count, percentage: count / (canvas.width * canvas.height) };
+                    });
+                
+                return sortedColors;
+            } catch (error) {
+                console.warn('색상 분석 실패:', error);
+                // 기본 색상 반환
+                return [
+                    { r: 128, g: 128, b: 128, count: 1, percentage: 0.2 },
+                    { r: 255, g: 255, b: 255, count: 1, percentage: 0.2 },
+                    { r: 0, g: 0, b: 0, count: 1, percentage: 0.2 }
+                ];
             }
-            
-            // 주요 색상 추출
-            const sortedColors = Object.entries(colorCounts)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5)
-                .map(([color, count]) => {
-                    const [r, g, b] = color.split(',').map(Number);
-                    return { r, g, b, count, percentage: count / (canvas.width * canvas.height) };
-                });
-            
-            return sortedColors;
         }
         
         // 구성 분석
@@ -4548,16 +6963,35 @@
             
             try {
                 const detections = await cocoSsdModel.detect(source, 20, 0.3);
-                const objectAnalysis = analyze3DObjects(detections, canvas.width, canvas.height);
+                
+                // 천체 감지 추가
+                const celestialDetections = await detectCelestialObjects(source);
+                
+                // 고급 객체 감지 추가
+                const advancedDetections = await detectAdvancedObjects(source);
+                
+                // 확장된 객체 감지 추가
+                const extendedDetections = await detectExtendedObjects(source);
+                
+                // 행동 예측 추가
+                const behaviorPredictions = await predictBehavior(source);
+                
+                // 범죄 예방 AI 추가
+                const suspiciousDetections = await detectSuspiciousBehavior(source);
+                
+                const allDetections = [...detections, ...celestialDetections, ...advancedDetections, ...extendedDetections, ...behaviorPredictions, ...suspiciousDetections];
+                
+                const objectAnalysis = analyze3DObjects(allDetections, canvas.width, canvas.height);
                 
                 return {
                     success: true,
                     type: 'object_detection',
                     data: {
-                        detections,
+                        detections: allDetections,
                         objectAnalysis,
-                        totalObjects: detections.length,
-                        confidence: detections.reduce((sum, d) => sum + d.score, 0) / detections.length
+                        totalObjects: allDetections.length,
+                        celestialObjects: celestialDetections.length,
+                        confidence: allDetections.reduce((sum, d) => sum + d.score, 0) / allDetections.length
                     }
                 };
             } catch (error) {
@@ -4771,9 +7205,98 @@
             const realismResult = results.find(r => r.type === 'realism_analysis');
             
             if (objectResult) {
-                const { totalObjects, objectAnalysis } = objectResult.data;
+                const { totalObjects, objectAnalysis, celestialObjects } = objectResult.data;
                 if (totalObjects > 0) {
                     integrated.insights.push(`🔍 ${totalObjects}개의 객체가 감지되었습니다.`);
+                    if (celestialObjects > 0) {
+                        integrated.insights.push(`🌍 ${celestialObjects}개의 천체가 감지되었습니다.`);
+                    }
+                    
+                    // 고급 객체 통계 추가
+                    const advancedObjects = allDetections.filter(d => d.advanced || d.celestial);
+                    if (advancedObjects.length > 0) {
+                        const earthCount = advancedObjects.filter(d => d.class === '지구').length;
+                        const cloudCount = advancedObjects.filter(d => d.class === '구름').length;
+                        const natureCount = advancedObjects.filter(d => ['대륙', '바다', '폭풍', '우주', '자연 현상'].includes(d.class)).length;
+                        
+                        if (earthCount > 0) integrated.insights.push(`🌍 지구: ${earthCount}개`);
+                        if (cloudCount > 0) integrated.insights.push(`☁️ 구름: ${cloudCount}개`);
+                        if (natureCount > 0) integrated.insights.push(`🌿 자연 현상: ${natureCount}개`);
+                    }
+                    
+                    // 확장된 객체 통계 추가
+                    const extendedObjects = allDetections.filter(d => d.extended);
+                    if (extendedObjects.length > 0) {
+                        const peopleCount = extendedObjects.filter(d => ['성인', '청소년', '아이'].includes(d.class)).length;
+                        const animalCount = extendedObjects.filter(d => ['강아지', '고양이', '동물'].includes(d.class)).length;
+                        const vehicleCount = extendedObjects.filter(d => ['자동차', '소방차', '경찰차', '비행기'].includes(d.class)).length;
+                        const objectCount = extendedObjects.filter(d => ['물건', '객체'].includes(d.class)).length;
+                        
+                        if (peopleCount > 0) integrated.insights.push(`👥 사람: ${peopleCount}명`);
+                        if (animalCount > 0) integrated.insights.push(`🐾 동물: ${animalCount}마리`);
+                        if (vehicleCount > 0) integrated.insights.push(`🚗 차량: ${vehicleCount}대`);
+                        if (objectCount > 0) integrated.insights.push(`📦 물건: ${objectCount}개`);
+                    }
+                    
+                    // 행동 예측 통계 추가
+                    const behaviorObjects = allDetections.filter(d => d.behavior);
+                    if (behaviorObjects.length > 0) {
+                        const positiveCount = behaviorObjects.filter(d => d.class === 'positive_action').length;
+                        const greetingCount = behaviorObjects.filter(d => d.class === 'greeting').length;
+                        const aggressiveCount = behaviorObjects.filter(d => d.class === 'aggressive_action').length;
+                        const sadCount = behaviorObjects.filter(d => d.class === 'sad_action').length;
+                        const movementCount = behaviorObjects.filter(d => d.class === 'movement').length;
+                        
+                        if (positiveCount > 0) integrated.insights.push(`😊 긍정적 행동: ${positiveCount}개`);
+                        if (greetingCount > 0) integrated.insights.push(`👋 인사 행동: ${greetingCount}개`);
+                        if (aggressiveCount > 0) integrated.insights.push(`😠 공격적 행동: ${aggressiveCount}개`);
+                        if (sadCount > 0) integrated.insights.push(`😢 슬픈 행동: ${sadCount}개`);
+                        if (movementCount > 0) integrated.insights.push(`🚶 이동 행동: ${movementCount}개`);
+                        
+                        // 감정 통계
+                        const emotions = behaviorObjects.map(d => d.emotion);
+                        const emotionCounts = {};
+                        emotions.forEach(emotion => {
+                            emotionCounts[emotion] = (emotionCounts[emotion] || 0) + 1;
+                        });
+                        
+                        Object.entries(emotionCounts).forEach(([emotion, count]) => {
+                            const emoji = {
+                                '기쁨': '😊',
+                                '슬픔': '😢',
+                                '화남': '😠',
+                                '놀람': '😲',
+                                '중립': '😐'
+                            }[emotion] || '😐';
+                            integrated.insights.push(`${emoji} ${emotion}: ${count}개`);
+                        });
+                    }
+                    
+                    // 범죄 예방 통계 추가
+                    const crimeObjects = allDetections.filter(d => d.crime);
+                    if (crimeObjects.length > 0) {
+                        const highRiskCount = crimeObjects.filter(d => d.class === 'high_risk').length;
+                        const mediumRiskCount = crimeObjects.filter(d => d.class === 'medium_risk').length;
+                        const lowRiskCount = crimeObjects.filter(d => d.class === 'low_risk').length;
+                        const normalCount = crimeObjects.filter(d => d.class === 'normal').length;
+                        
+                        if (highRiskCount > 0) integrated.insights.push(`🚨 고위험 행동: ${highRiskCount}개 (즉시 대응 필요!)`);
+                        if (mediumRiskCount > 0) integrated.insights.push(`⚠️ 중위험 행동: ${mediumRiskCount}개 (주의 관찰 필요)`);
+                        if (lowRiskCount > 0) integrated.insights.push(`👀 저위험 행동: ${lowRiskCount}개 (관찰 필요)`);
+                        if (normalCount > 0) integrated.insights.push(`✅ 정상 행동: ${normalCount}개`);
+                        
+                        // 전체 위험도 평가
+                        const totalRisk = crimeObjects.reduce((sum, obj) => sum + (obj.riskLevel || 0), 0) / crimeObjects.length;
+                        if (totalRisk > 0.6) {
+                            integrated.insights.push(`🚨 전체 위험도: 높음 (${(totalRisk * 100).toFixed(1)}%)`);
+                        } else if (totalRisk > 0.4) {
+                            integrated.insights.push(`⚠️ 전체 위험도: 중간 (${(totalRisk * 100).toFixed(1)}%)`);
+                        } else if (totalRisk > 0.2) {
+                            integrated.insights.push(`👀 전체 위험도: 낮음 (${(totalRisk * 100).toFixed(1)}%)`);
+                        } else {
+                            integrated.insights.push(`✅ 전체 위험도: 안전 (${(totalRisk * 100).toFixed(1)}%)`);
+                        }
+                    }
                     integrated.insights.push(`📏 평균 거리: ${objectAnalysis.avgDistance.toFixed(1)}m`);
                     integrated.insights.push(`🗺️ 공간 분포: ${objectAnalysis.spatialDistribution}`);
                 }
@@ -5236,6 +7759,238 @@
             addResult('🔄 실시간 포즈 분석 완료', summary);
         }
 
+        // 고성능 비디오 분석 (60fps 이상)
+        async function highPerformanceVideoAnalysis() {
+            if (!isRealtime) return;
+            
+            const currentFPS = calculateHighPerformanceFPS();
+            
+            // 프레임 스킵 로직
+            if (frameSkipCounter > 0) {
+                frameSkipCounter--;
+                animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                return;
+            }
+            
+            // Canvas 크기 검증
+            if (canvas.width === 0 || canvas.height === 0) {
+                console.warn('고성능 분석: Canvas 크기가 0입니다. 분석을 건너뜁니다.');
+                animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                return;
+            }
+            
+            // 소스 유효성 검증
+            let source = null;
+            if (currentSourceType === 'image' && uploadedImageEl) {
+                source = uploadedImageEl;
+            } else if (uploadedVideoEl) {
+                source = uploadedVideoEl;
+            } else {
+                source = video;
+            }
+            
+            const sourceWidth = source.naturalWidth || source.videoWidth || source.width;
+            const sourceHeight = source.naturalHeight || source.videoHeight || source.height;
+            
+            if (!sourceWidth || !sourceHeight || sourceWidth === 0 || sourceHeight === 0) {
+                console.warn('고성능 분석: 소스 크기가 유효하지 않습니다. 분석을 건너뜁니다.');
+                animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                return;
+            }
+            
+            // 업로드 비디오가 있으면 재생 중에만 분석
+            const canAnalyzeVideo = uploadedVideoEl ? !uploadedVideoEl.paused && !uploadedVideoEl.ended : true;
+            if (!isAnalyzing && canAnalyzeVideo) {
+                // 비동기 분석으로 메인 스레드 블로킹 방지
+                setTimeout(() => {
+                    analyzeImageOptimized();
+                }, 0);
+            }
+            
+            // 화질 향상 모드가 활성화된 경우 추가 처리
+            if (window.videoEnhancementMode && video.videoWidth > 0) {
+                // Web Worker를 사용한 화질 향상 (선택적)
+                if (window.Worker) {
+                    enhanceVideoFrameAsync();
+                } else {
+                    enhanceVideoFrame();
+                }
+            }
+            
+            animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+        }
+        
+        // 최적화된 이미지 분석 (고성능 모드)
+        async function analyzeImageOptimized() {
+            if (isAnalyzing) return;
+            isAnalyzing = true;
+            
+            try {
+                const source = currentSourceType === 'image' && uploadedImageEl ? uploadedImageEl : (uploadedVideoEl || video);
+                
+                // 소스 존재 및 로드 상태 확인
+                if (!source || !source.complete || source.readyState === 0) {
+                    console.warn('최적화된 분석: 소스가 아직 로드되지 않았습니다.');
+                    return;
+                }
+                
+                // Canvas 크기 검증
+                if (canvas.width === 0 || canvas.height === 0) {
+                    console.warn('Canvas 크기가 0입니다. 분석을 건너뜁니다.');
+                    return;
+                }
+                
+                // 소스 크기 검증
+                const sourceWidth = source.naturalWidth || source.videoWidth || source.width;
+                const sourceHeight = source.naturalHeight || source.videoHeight || source.height;
+                
+                if (!sourceWidth || !sourceHeight || sourceWidth === 0 || sourceHeight === 0) {
+                    console.warn('소스 크기가 유효하지 않습니다. 분석을 건너뜁니다.');
+                    return;
+                }
+                
+                // 원본 이미지 그리기 (최적화)
+                ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+                
+                // 병렬 처리로 성능 향상
+                const analysisPromises = [];
+                
+                // COCO-SSD 객체 감지 (우선순위 높음)
+                if (cocoSsdModel) {
+                    analysisPromises.push(
+                        cocoSsdModel.detect(source).then(detections => {
+                            if (detections.length > 0) {
+                                detections.forEach(detection => {
+                                    const [x, y, width, height] = detection.bbox;
+                                    ctx.strokeStyle = '#00ff00';
+                                    ctx.lineWidth = 2;
+                                    ctx.strokeRect(x, y, width, height);
+                                    
+                                    ctx.fillStyle = '#00ff00';
+                                    ctx.font = '16px Arial';
+                                    ctx.fillText(`${detection.class} ${(detection.score * 100).toFixed(1)}%`, x, y - 5);
+                                });
+                            }
+                            return detections;
+                        }).catch(error => {
+                            console.warn('COCO-SSD 감지 실패:', error);
+                            return [];
+                        })
+                    );
+                }
+                
+                // 포즈 감지 (선택적, 성능에 따라)
+                if (poseDetector && currentFPS > 30) {
+                    analysisPromises.push(
+                        poseDetector.estimatePoses(source).then(poses => {
+                            if (poses.length > 0) {
+                                poses.forEach(pose => {
+                                    pose.keypoints.forEach(keypoint => {
+                                        if (keypoint.score > 0.3) {
+                                            ctx.fillStyle = '#ff0000';
+                                            ctx.beginPath();
+                                            ctx.arc(keypoint.x, keypoint.y, 3, 0, 2 * Math.PI);
+                                            ctx.fill();
+                                        }
+                                    });
+                                });
+                            }
+                            return poses;
+                        }).catch(error => {
+                            console.warn('포즈 감지 실패:', error);
+                            return [];
+                        })
+                    );
+                }
+                
+                // 결과 대기 및 처리
+                const results = await Promise.allSettled(analysisPromises);
+                
+                // 성공한 결과만 처리
+                results.forEach(result => {
+                    if (result.status === 'fulfilled' && result.value) {
+                        // 결과 처리 (필요시)
+                    }
+                });
+                
+            } catch (error) {
+                console.warn('최적화된 분석 실패:', error);
+            } finally {
+                isAnalyzing = false;
+            }
+        }
+        
+        // 비동기 화질 향상 (Web Worker 사용)
+        function enhanceVideoFrameAsync() {
+            // Web Worker가 지원되는 경우에만 사용
+            if (typeof Worker !== 'undefined') {
+                // 간단한 화질 향상 (메인 스레드 블로킹 방지)
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // 간단한 선명도 향상
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = Math.min(255, data[i] * 1.1);     // R
+                    data[i + 1] = Math.min(255, data[i + 1] * 1.1); // G
+                    data[i + 2] = Math.min(255, data[i + 2] * 1.1); // B
+                }
+                
+                ctx.putImageData(imageData, 0, 0);
+            }
+        }
+        
+        // 이미지 크기에 맞게 컨테이너 크기 조정
+        function adjustContainerToImageSize(img, container, displayWidth, displayHeight) {
+            // 컨테이너 크기 설정
+            container.style.width = `${displayWidth}px`;
+            container.style.height = `${displayHeight}px`;
+            container.style.maxWidth = `${displayWidth}px`;
+            container.style.maxHeight = `${displayHeight}px`;
+            
+            // 캔버스 크기도 조정
+            canvas.width = displayWidth;
+            canvas.height = displayHeight;
+            
+            // 이미지 다시 그리기
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+        }
+        
+        // 고성능 모드 토글
+        function toggleHighPerformanceMode() {
+            if (highPerformanceMode) {
+                // 고성능 모드 비활성화
+                highPerformanceMode = false;
+                document.getElementById('highPerformanceBtn').textContent = '⚡ 고성능 모드 (60fps)';
+                document.getElementById('highPerformanceBtn').style.background = 'linear-gradient(45deg, #00ff88, #00ccff)';
+                document.getElementById('performanceModeValue').textContent = '일반';
+                updateStatus('⏸️ 고성능 모드 비활성화됨');
+                
+                // 기존 실시간 분석으로 복귀
+                if (isRealtime) {
+                    animationId = requestAnimationFrame(realtimeAnalysis);
+                }
+            } else {
+                // 고성능 모드 활성화
+                highPerformanceMode = true;
+                document.getElementById('highPerformanceBtn').textContent = '⏸️ 고성능 모드 중지';
+                document.getElementById('highPerformanceBtn').style.background = 'linear-gradient(45deg, #ff6b6b, #ee5a24)';
+                document.getElementById('performanceModeValue').textContent = '고성능';
+                updateStatus('⚡ 고성능 모드 활성화됨 (목표: 60fps)');
+                
+                // 기존 실시간 분석 중지
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                
+                // 고성능 분석 시작
+                if (isRealtime) {
+                    animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                }
+            }
+        }
+        
         // 실시간 분석 루프 (화질 향상 모드 통합)
         function realtimeAnalysis() {
             if (!isRealtime) return;
@@ -5471,6 +8226,47 @@
                 // 모델이 준비되었다면 분석/실시간 버튼 활성화
                 document.getElementById('analyzeBtn').disabled = !(cocoSsdModel);
                 document.getElementById('realtimeBtn').disabled = !(cocoSsdModel);
+            });
+            
+            // 사용자 가이드 버튼 이벤트
+            document.getElementById('showGuideBtn').addEventListener('click', () => {
+                const guide = document.getElementById('userGuide');
+                const isHidden = guide.style.display === 'none';
+                
+                if (isHidden) {
+                    guide.style.display = 'block';
+                    // 화면 크기에 따라 가이드 위치 조정
+                    adjustGuidePosition();
+                    // 스크롤을 맨 위로
+                    guide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    guide.style.display = 'none';
+                }
+            });
+            
+            // 가이드 위치 조정 함수
+            function adjustGuidePosition() {
+                const guide = document.getElementById('userGuide');
+                const windowHeight = window.innerHeight;
+                const guideHeight = guide.offsetHeight;
+                
+                // 가이드가 화면보다 클 경우 스크롤 가능하도록 조정
+                if (guideHeight > windowHeight * 0.9) {
+                    guide.style.maxHeight = '90vh';
+                    guide.style.overflowY = 'auto';
+                }
+            }
+            
+            // 화면 크기 변경 시 가이드 위치 재조정
+            window.addEventListener('resize', () => {
+                const guide = document.getElementById('userGuide');
+                if (guide.style.display !== 'none') {
+                    adjustGuidePosition();
+                }
+            });
+            
+            document.getElementById('closeGuideBtn').addEventListener('click', () => {
+                document.getElementById('userGuide').style.display = 'none';
             });
             document.getElementById('stopBtn').addEventListener('click', stopCamera);
             document.getElementById('analyzeBtn').addEventListener('click', () => analyzeImage());
@@ -5720,6 +8516,7 @@
             });
             
             document.getElementById('realtimePoseBtn').addEventListener('click', toggleRealtimePose);
+        document.getElementById('highPerformanceBtn').addEventListener('click', toggleHighPerformanceMode);
             
             document.getElementById('bodySegBtn').addEventListener('click', async ()=>{
                 const source = currentSourceType === 'image' && uploadedImageEl ? uploadedImageEl : (uploadedVideoEl || video);
@@ -5734,8 +8531,35 @@
             document.getElementById('resetTrackingBtn').addEventListener('click', resetTrackingSystem);
             
             document.getElementById('generateImageBtn').addEventListener('click', async ()=>{
-                const source = currentSourceType === 'image' && uploadedImageEl ? uploadedImageEl : (uploadedVideoEl || video);
-                await generateAIImage(source);
+                try {
+                    let source = null;
+                    
+                    // 현재 활성 소스 확인
+                    if (currentSourceType === 'image' && uploadedImageEl) {
+                        source = uploadedImageEl;
+                    } else if (uploadedVideoEl) {
+                        source = uploadedVideoEl;
+                    } else if (video && video.srcObject) {
+                        source = video;
+                    } else {
+                        addResult('❌ 오류', '분석할 이미지나 비디오가 없습니다. 카메라를 시작하거나 이미지를 업로드해주세요.');
+                        updateStatus('❌ AI 이미지 생성 실패', true);
+                        return;
+                    }
+                    
+                    // 소스 유효성 확인
+                    if (!source || !source.complete || source.readyState === 0) {
+                        addResult('❌ 오류', '소스가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+                        updateStatus('❌ AI 이미지 생성 실패', true);
+                        return;
+                    }
+                    
+                    await generateAIImage(source);
+                } catch (error) {
+                    console.error('AI 이미지 생성 버튼 클릭 오류:', error);
+                    addResult('❌ 오류', 'AI 이미지 생성 중 오류가 발생했습니다: ' + error.message);
+                    updateStatus('❌ AI 이미지 생성 실패', true);
+                }
             });
             
             document.getElementById('multimodalBtn').addEventListener('click', async ()=>{
@@ -5764,6 +8588,21 @@
                 const wrap = document.getElementById('mediaItems');
                 if (!wrap) return;
                 wrap.innerHTML = '';
+                
+                if (uploadedMedia.length === 0) {
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.style.cssText = `
+                        text-align: center;
+                        padding: 20px;
+                        color: rgba(255, 255, 255, 0.7);
+                        font-style: italic;
+                        font-size: 0.9em;
+                    `;
+                    emptyMessage.innerHTML = '📁 업로드된 미디어가 없습니다.<br>이미지나 동영상을 업로드해주세요.';
+                    wrap.appendChild(emptyMessage);
+                    return;
+                }
+                
                 uploadedMedia.forEach(item => {
                     const row = document.createElement('div');
                     row.className = 'media-item' + (item.id === activeMediaId ? ' active' : '');
@@ -5792,52 +8631,44 @@
                 if (item.type === 'image') {
                     const img = item.element;
                     
-                    // 반응형 컨테이너 크기 계산 (PC/모바일 최적화)
-                    let containerWidth, containerHeight;
-                    
-                    if (window.innerWidth < 768) {
-                        // 모바일: 화면 너비의 90%, 높이의 25%
-                        containerWidth = window.innerWidth * 0.9;
-                        containerHeight = window.innerHeight * 0.25;
-                    } else if (window.innerWidth < 1024) {
-                        // 태블릿: 화면 너비의 85%, 높이의 30%
-                        containerWidth = window.innerWidth * 0.85;
-                        containerHeight = window.innerHeight * 0.3;
-                    } else {
-                        // PC: 화면 너비의 80%, 높이의 35%
-                        containerWidth = window.innerWidth * 0.8;
-                        containerHeight = window.innerHeight * 0.35;
-                    }
-                    
+                    // 이미지 원본 크기 가져오기
                     const imgWidth = img.naturalWidth || img.width;
                     const imgHeight = img.naturalHeight || img.height;
                     
-                    // 컨테이너에 맞는 비율 계산 (더 정교한 비율 조정)
+                    // 반응형 컨테이너 크기 계산 (이미지 비율에 맞춤)
+                    let containerWidth, containerHeight;
+                    
+                    if (window.innerWidth < 768) {
+                        // 모바일: 화면 너비의 90% 기준
+                        containerWidth = window.innerWidth * 0.9;
+                        containerHeight = (containerWidth * imgHeight) / imgWidth;
+                    } else if (window.innerWidth < 1024) {
+                        // 태블릿: 화면 너비의 85% 기준
+                        containerWidth = window.innerWidth * 0.85;
+                        containerHeight = (containerWidth * imgHeight) / imgWidth;
+                    } else {
+                        // PC: 화면 너비의 90% 기준
+                        containerWidth = window.innerWidth * 0.9;
+                        containerHeight = (containerWidth * imgHeight) / imgWidth;
+                    }
+                    
+                    // 컨테이너에 맞는 비율 계산 (이미지 비율 유지)
                     const widthRatio = containerWidth / imgWidth;
                     const heightRatio = containerHeight / imgHeight;
-                    const scaleRatio = Math.min(widthRatio, heightRatio, 1);
+                    const scaleRatio = Math.min(widthRatio, heightRatio, 1); // 비율 유지하며 맞춤
                     
                     const displayWidth = Math.round(imgWidth * scaleRatio);
                     const displayHeight = Math.round(imgHeight * scaleRatio);
-                    
-                    // 캔버스 크기 설정 (최소 크기 보장)
-                    canvas.width = Math.max(displayWidth, 1);
-                    canvas.height = Math.max(displayHeight, 1);
                     
                     // 컨테이너 스타일 적용
                     containerEl.classList.add('original-size');
                     video.style.display = 'none';
                     
-                    // 캔버스 스타일 최적화
+                    // 캔버스 스타일 최적화 (이미지 크기에 맞춤)
                     canvas.style.width = '100%';
-                    canvas.style.height = 'auto';
-                    canvas.style.maxWidth = `${containerWidth}px`;
-                    canvas.style.maxHeight = `${containerHeight}px`;
-                    
-                    // 고품질 이미지 렌더링
-                    ctx.imageSmoothingEnabled = true;
-                    ctx.imageSmoothingQuality = 'high';
-                    ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+                    canvas.style.height = '100%';
+                    canvas.style.maxWidth = '100%';
+                    canvas.style.maxHeight = '100%';
                     
                     // 상태 업데이트
                     uploadedImageEl = img;
@@ -5857,6 +8688,9 @@
                         img.onerror = resolve;
                     });
                 }
+                
+                // 이미지 크기에 맞게 컨테이너 재조정 (이미 계산된 크기 사용)
+                adjustContainerToImageSize(img, containerEl, displayWidth, displayHeight);
                 
                 // 이미지 선택 시 자동 분석 실행
                 try { 

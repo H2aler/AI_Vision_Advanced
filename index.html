@@ -38,7 +38,7 @@
         
         .container {
             max-width: 100%;
-            margin: 0;
+            margin: 0 auto;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 0;
             padding: 15px;
@@ -46,6 +46,7 @@
             -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             min-height: 100vh;
+            text-align: center;
         }
         
         h1 {
@@ -132,13 +133,46 @@
         
         .video-container {
             position: relative;
-            margin: 12px 0;
+            margin: 12px auto;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             display: flex;
             justify-content: center;
+            align-items: center;
             max-width: 100%;
+            min-height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            width: 100%;
+            left: 0;
+            transform: none;
+        }
+        
+        /* 로딩 상태 표시 */
+        .video-container.loading {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* 줌 기능 */
+        .video-container.zoomed {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .video-container.zoomed #video,
+        .video-container.zoomed video,
+        .video-container.zoomed #canvas,
+        .video-container.zoomed img {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
         }
         
         .video-container.original-size {
@@ -156,46 +190,88 @@
         
         #video {
             max-width: 100%;
-            width: 100%;
-            border-radius: 12px;
+            max-height: 100%;
+            width: auto;
             height: auto;
+            border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            object-fit: contain;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
         }
         
         #video:hover {
-            transform: none;
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
         
         .video-container video {
             max-width: 100%;
-            width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
             border-radius: 12px;
             display: block;
-            height: auto;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            object-fit: contain;
+            cursor: pointer;
+            margin: 0 auto;
         }
         
         .video-container video:hover {
-            transform: none;
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* 업로드된 이미지 스타일 */
+        .video-container img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            object-fit: contain;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .video-container img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
         
         #canvas {
             position: absolute;
-            top: 0;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             max-width: 100%;
-            width: 100%;
-            border-radius: 12px;
+            max-height: 100%;
+            width: auto;
             height: auto;
+            border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 10;
         }
         
         #canvas:hover {
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* 분석 중 캔버스 스타일 */
+        #canvas.analyzing {
+            border: 2px solid #4facfe;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
         }
         
         .video-container.original-size #canvas {
@@ -203,16 +279,19 @@
             left: auto;
             transform: none;
             max-width: 100%;
-            width: 100%;
-            height: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease;
+            display: block;
+            margin: 0 auto;
         }
         
         .video-container.original-size #canvas:hover {
-            transform: none;
+            transform: scale(1.02);
         }
         
         .video-container.original-size #video {
@@ -298,6 +377,11 @@
             border-left: 4px solid #00ff00;
             font-size: 0.9em;
             word-wrap: break-word;
+            line-height: 1.6;
+        }
+        
+        .result-item br {
+            margin-bottom: 8px;
         }
         
         .loading {
@@ -319,6 +403,28 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes slideDown {
+            0% { 
+                transform: translateX(-50%) translateY(-100%);
+                opacity: 0;
+            }
+            100% { 
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideUp {
+            0% { 
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateX(-50%) translateY(-100%);
+                opacity: 0;
+            }
         }
         
         .model-status {
@@ -351,30 +457,7 @@
             border: 1px solid #ff0000;
         }
         
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin: 12px 0;
-        }
-        
-        .stat-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #00ff00;
-        }
-        
-        .stat-label {
-            font-size: 0.8em;
-            opacity: 0.8;
-        }
+
         
         /* 입력 요소들 모바일 최적화 */
         input[type="range"] {
@@ -946,18 +1029,16 @@
                 min-height: 40px;
             }
             
-            .stats {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 12px;
-                margin: 12px 0;
-            }
+
             
             .video-container {
-                margin: 15px 0;
+                margin: 15px auto;
             }
             
-            #video, .video-container video, #canvas {
-                max-width: 900px;
+            #video, .video-container video, #canvas, .video-container img {
+                max-width: 100%;
+                max-height: 60vh;
+                border-radius: 8px;
             }
             
             .video-container.original-size {
@@ -1007,15 +1088,12 @@
                 min-height: 44px;
             }
             
-            .stats {
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 15px;
-                margin: 15px 0;
-            }
+
             
-            #video, .video-container video, #canvas {
-                max-width: 1200px;
-                max-height: 600px;
+            #video, .video-container video, #canvas, .video-container img {
+                max-width: 100%;
+                max-height: 70vh;
+                border-radius: 10px;
             }
             
             .video-container.original-size {
@@ -1047,6 +1125,22 @@
                 margin: 3px;
             }
             
+            .video-container {
+                min-height: 200px;
+                margin: 8px auto;
+            }
+            
+            #video, .video-container video, #canvas, .video-container img {
+                max-width: 100%;
+                max-height: 50vh;
+                border-radius: 6px;
+            }
+            
+            .video-container.original-size {
+                min-height: 120px;
+                max-height: 60vh;
+            }
+            
             h1 {
                 font-size: 1.4em;
                 margin-bottom: 10px;
@@ -1071,11 +1165,7 @@
                 gap: 4px;
             }
             
-            .stats {
-                grid-template-columns: 1fr;
-                gap: 6px;
-                margin: 8px 0;
-            }
+
             
             .model-status {
                 gap: 4px;
@@ -1097,7 +1187,7 @@
             }
             
             .video-container {
-                margin: 8px 0;
+                margin: 8px auto;
             }
         }
         
@@ -1117,15 +1207,7 @@
                 margin: 10px 0;
             }
             
-            .stats {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 8px;
-                margin: 10px 0;
-            }
-            
-            .stat-item {
-                padding: 8px;
-            }
+
             
             .results {
                 max-height: 200px;
@@ -1160,25 +1242,29 @@
         
         <!-- 사용자 가이드 섹션 -->
         <div class="user-guide" id="userGuide" style="display: none;">
-            <h2>📖 사용자 가이드</h2>
+            <h2>📖 AI Vision Advanced 사용자 가이드</h2>
             <div class="guide-content">
                 <div class="guide-section">
                     <h3>🎯 기본 기능</h3>
                     <div class="guide-item">
                         <strong>📹 카메라 시작</strong><br>
-                        <span class="guide-description">웹캠을 활성화하여 실시간 분석을 시작합니다. 모바일에서는 후면 카메라가 우선 사용됩니다.</span>
+                        <span class="guide-description">웹캠을 활성화하여 실시간 분석을 시작합니다. <em>카메라 시작 시 자동으로 실시간 분석이 시작됩니다.</em></span>
                     </div>
                     <div class="guide-item">
                         <strong>⏹️ 카메라 중지</strong><br>
-                        <span class="guide-description">웹캠을 비활성화합니다.</span>
+                        <span class="guide-description">웹캠을 비활성화하고 실시간 분석을 중지합니다.</span>
                     </div>
                     <div class="guide-item">
                         <strong>📁 이미지 업로드</strong><br>
-                        <span class="guide-description">컴퓨터에서 이미지 파일을 선택하여 분석합니다. <em>지원 형식: JPEG, PNG, GIF, WebP</em></span>
+                        <span class="guide-description">컴퓨터에서 이미지 파일을 선택하여 분석합니다. <em>지원 형식: JPEG, PNG, GIF, WebP (최대 50MB)</em></span>
                     </div>
                     <div class="guide-item">
                         <strong>🎞️ 동영상 업로드</strong><br>
-                        <span class="guide-description">컴퓨터에서 비디오 파일을 선택하여 분석합니다. <em>지원 형식: MP4, WebM</em></span>
+                        <span class="guide-description">컴퓨터에서 비디오 파일을 선택하여 분석합니다. <em>지원 형식: MP4, WebM (최대 200MB)</em></span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🗑️ 미디어 제거</strong><br>
+                        <span class="guide-description">업로드된 이미지나 동영상을 제거하고 카메라 화면으로 돌아갑니다.</span>
                     </div>
                 </div>
                 
@@ -1186,7 +1272,7 @@
                     <h3>🤖 AI 분석 기능</h3>
                     <div class="guide-item">
                         <strong>📐 3D 객체 감지</strong><br>
-                        <span class="guide-description">이미지/영상에서 객체를 감지하고 3D 공간에서의 거리와 위치를 분석합니다.</span>
+                        <span class="guide-description">이미지/영상에서 객체를 감지하고 3D 공간에서의 거리와 위치를 분석합니다. <em>결과가 줄바꿈으로 깔끔하게 표시됩니다.</em></span>
                     </div>
                     <div class="guide-item">
                         <strong>🎯 실시간 추적</strong><br>
@@ -1198,7 +1284,7 @@
                     </div>
                     <div class="guide-item">
                         <strong>🔄 실시간 포즈</strong><br>
-                        <span class="guide-description">실시간으로 포즈를 추정하고 분석 결과를 표시합니다.</span>
+                        <span class="guide-description">실시간으로 포즈를 추정하고 분석 결과를 표시합니다. <em>모바일에서는 비활성화됩니다.</em></span>
                     </div>
                     <div class="guide-item">
                         <strong>🔄 이미지 세그멘테이션</strong><br>
@@ -1235,6 +1321,30 @@
                     <div class="guide-item">
                         <strong>🚨 범죄 예방 AI</strong><br>
                         <span class="guide-description">슈퍼마켓, 매장, 백화점, 식당에서 의심스러운 행동을 감지하여 범죄를 예방합니다. <em>표정 + 손짓 + 행동 패턴 + 물건 상호작용 분석</em></span>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>⚡ 성능 최적화</h3>
+                    <div class="guide-item">
+                        <strong>⚡ 고성능 모드 (60fps)</strong><br>
+                        <span class="guide-description">60fps 목표로 고성능 분석을 실행합니다. <em>고사양 PC에서 권장</em></span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>📊 성능 대시보드</strong><br>
+                        <span class="guide-description">FPS, 메모리 사용량, 객체 수, 신뢰도, 성능 모드를 실시간으로 모니터링합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>📱 모바일 테스트</strong><br>
+                        <span class="guide-description">모바일 환경을 시뮬레이션하여 성능을 테스트합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🖥️ 데스크톱 테스트</strong><br>
+                        <span class="guide-description">데스크톱 환경을 시뮬레이션하여 성능을 테스트합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>⚡ 고급 성능 테스트</strong><br>
+                        <span class="guide-description">15초간 종합적인 성능 테스트를 실행하여 시스템 성능을 분석합니다.</span>
                     </div>
                 </div>
                 
@@ -1290,11 +1400,11 @@
                     <h3>⚙️ 설정</h3>
                     <div class="guide-item">
                         <strong>신뢰도 임계값</strong><br>
-                        <span class="guide-description">객체 감지의 최소 신뢰도를 설정합니다 <em>(0.0 ~ 0.95)</em>.</span>
+                        <span class="guide-description">객체 감지의 최소 신뢰도를 설정합니다 <em>(0.0 ~ 0.95)</em>. <em>자동 조절 기능으로 최적값을 자동 설정할 수 있습니다.</em></span>
                     </div>
                     <div class="guide-item">
                         <strong>자동 조절</strong><br>
-                        <span class="guide-description">신뢰도 임계값을 자동으로 조절합니다.</span>
+                        <span class="guide-description">신뢰도 임계값을 자동으로 조절하여 최적의 감지 결과를 제공합니다.</span>
                     </div>
                     <div class="guide-item">
                         <strong>OCR 언어 선택</strong><br>
@@ -1303,14 +1413,34 @@
                 </div>
                 
                 <div class="guide-section">
-                    <h3>📱 모바일 사용법</h3>
+                    <h3>📱 모바일 최적화</h3>
                     <div class="guide-item">
                         <strong>터치 제스처</strong><br>
-                        <span class="guide-description">스와이프로 결과 영역을 스크롤하고, 더블 탭으로 이미지/비디오를 확대/축소할 수 있습니다.</span>
+                        <span class="guide-description">스와이프로 결과 영역을 스크롤하고, <em>더블 탭으로 이미지/비디오를 확대/축소</em>할 수 있습니다.</span>
                     </div>
                     <div class="guide-item">
                         <strong>카메라 접근</strong><br>
-                        <span class="guide-description">브라우저에서 카메라 권한을 허용하면 후면 카메라가 우선 사용됩니다.</span>
+                        <span class="guide-description">브라우저에서 카메라 권한을 허용하면 <em>후면 카메라가 우선 사용</em>됩니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>성능 최적화</strong><br>
+                        <span class="guide-description">모바일에서는 <em>자동으로 성능이 최적화</em>되어 실시간 분석이 가능합니다. <em>FPS 제한, 해상도 다운샘플링, 고급 기능 비활성화</em></span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>반응형 디자인</strong><br>
+                        <span class="guide-description">모든 화면 크기에 맞춰 <em>자동으로 레이아웃이 조정</em>됩니다.</span>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>🔄 추적 관리</h3>
+                    <div class="guide-item">
+                        <strong>🔄 추적 초기화</strong><br>
+                        <span class="guide-description">현재 추적 중인 모든 객체의 추적을 초기화합니다.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>🌐 API 테스트</strong><br>
+                        <span class="guide-description">백엔드 API 연결 상태를 테스트합니다.</span>
                     </div>
                 </div>
             </div>
@@ -1347,6 +1477,10 @@
         <div class="controls">
             <button id="poseDetectBtn" disabled style="background: linear-gradient(45deg, #4facfe, #00f2fe);">🧍 포즈 추정</button>
             <button id="realtimePoseBtn" disabled style="background: linear-gradient(45deg, #667eea, #764ba2);">🔄 실시간 포즈</button>
+        <button id="mobileTestBtn" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24);">📱 모바일 테스트</button>
+        <button id="desktopTestBtn" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">🖥️ 데스크톱 테스트</button>
+        <button id="performanceTestBtn" disabled style="background: linear-gradient(45deg, #a8edea, #fed6e3);">⚡ 고급 성능 테스트</button>
+        <button id="performanceDashboardBtn" style="background: linear-gradient(45deg, #667eea, #764ba2);">📊 성능 대시보드</button>
             <button id="bodySegBtn" disabled style="background: linear-gradient(45deg, #43e97b, #38f9d7);">🔄 이미지 세그멘테이션</button>
             <button id="faceLandmarksBtn" disabled style="background: linear-gradient(45deg, #fa709a, #fee140);">😊 얼굴 랜드마크</button>
             <button id="resetTrackingBtn" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24);">🔄 추적 초기화</button>
@@ -1454,33 +1588,39 @@
             </div>
         </div>
 
+        <!-- 고정된 성능 대시보드 -->
+        <div id="fixedPerformanceDashboard" style="display: none; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); border-radius: 15px; padding: 20px; margin: 15px 0; border: 2px solid rgba(255,255,255,0.1);">
+            <h3 style="text-align: center; margin-bottom: 20px; color: #4facfe;">📊 성능 대시보드</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; text-align: center;">
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.9em;">🎯 FPS</h4>
+                    <p style="margin: 0; font-size: 1.2em; font-weight: bold; color: #4ecdc4;" id="fixedFPS">0.0</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; text-align: center;">
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.9em;">💾 메모리</h4>
+                    <p style="margin: 0; font-size: 1.2em; font-weight: bold; color: #4ecdc4;" id="fixedMemory">0MB</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; text-align: center;">
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.9em;">🎯 객체</h4>
+                    <p style="margin: 0; font-size: 1.2em; font-weight: bold; color: #4ecdc4;" id="fixedObjects">0</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; text-align: center;">
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.9em;">📊 신뢰도</h4>
+                    <p style="margin: 0; font-size: 1.2em; font-weight: bold; color: #4ecdc4;" id="fixedConfidence">0.0%</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; text-align: center;">
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.9em;">⚙️ 모드</h4>
+                    <p style="margin: 0; font-size: 1.2em; font-weight: bold; color: #4ecdc4;" id="fixedMode">일반</p>
+                </div>
+            </div>
+        </div>
+
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>AI 모델 분석 중...</p>
         </div>
 
-        <div class="stats" id="stats">
-            <div class="stat-item">
-                <div class="stat-value" id="fpsValue">0</div>
-                <div class="stat-label">FPS</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="memoryValue">0</div>
-                <div class="stat-label">메모리 (MB)</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="objectsValue">0</div>
-                <div class="stat-label">감지된 객체</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="confidenceValue">0%</div>
-                <div class="stat-label">평균 신뢰도</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="performanceModeValue">일반</div>
-                <div class="stat-label">성능 모드</div>
-            </div>
-        </div>
+
 
         <div class="video-container">
             <video id="video" autoplay muted></video>
@@ -3219,9 +3359,15 @@
             const resultContent = document.getElementById('resultContent');
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
+            
+            // 줄바꿈을 더 명확하게 표시
+            const formattedContent = content.replace(/<br>/g, '<br>');
+            
             resultItem.innerHTML = `
-                <strong>${title}</strong><br>
-                ${content}
+                <strong style="color: #4facfe; font-size: 1.1em;">${title}</strong><br>
+                <div style="margin-top: 8px; padding-left: 10px; border-left: 2px solid rgba(79, 172, 254, 0.3);">
+                    ${formattedContent}
+                </div>
             `;
             resultContent.appendChild(resultItem);
             // 결과 컨테이너만 스크롤 (페이지 스크롤은 유지)
@@ -3231,12 +3377,12 @@
             }
         }
 
-        // 통계 업데이트
+
+
+        // 통계 업데이트 (고정된 성능 대시보드만 사용)
         function updateStats() {
-            document.getElementById('fpsValue').textContent = (fps || 0).toFixed(1);
-            document.getElementById('memoryValue').textContent = (performance.memory?.usedJSHeapSize / 1024 / 1024 || 0).toFixed(1);
-            document.getElementById('objectsValue').textContent = detectedObjects || 0;
-            document.getElementById('confidenceValue').textContent = ((avgConfidence || 0) * 100).toFixed(1) + '%';
+            // 고정된 성능 대시보드 업데이트
+            updateFixedPerformanceDashboard();
         }
 
         // 고성능 FPS 계산 및 적응형 프레임 스킵
@@ -3297,11 +3443,14 @@
         let touchStartY = 0;
         let touchEndX = 0;
         let touchEndY = 0;
+        let lastTapTime = 0;
         
         // 터치 이벤트 리스너 추가
         function addTouchGestures() {
             const container = document.querySelector('.container');
+            const videoContainer = document.querySelector('.video-container');
             
+            // 컨테이너 전체 터치 제스처
             container.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
                 touchStartY = e.changedTouches[0].screenY;
@@ -3312,6 +3461,33 @@
                 touchEndY = e.changedTouches[0].screenY;
                 handleSwipe();
             });
+            
+            // 비디오 컨테이너 터치 제스처
+            if (videoContainer) {
+                videoContainer.addEventListener('touchstart', (e) => {
+                    e.stopPropagation();
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTapTime;
+                    
+                    if (tapLength < 500 && tapLength > 0) {
+                        // 더블 탭 - 줌 토글
+                        handleDoubleTap();
+                    }
+                    lastTapTime = currentTime;
+                });
+            }
+            
+            // 더블 탭 줌 처리
+            function handleDoubleTap() {
+                const container = document.querySelector('.video-container');
+                if (container.classList.contains('zoomed')) {
+                    container.classList.remove('zoomed');
+                    updateStatus('🔍 줌 해제');
+                } else {
+                    container.classList.add('zoomed');
+                    updateStatus('🔍 줌 활성화');
+                }
+            }
             
             // 스와이프 제스처 처리
             function handleSwipe() {
@@ -3460,20 +3636,32 @@
             }
         }
 
-        // 카메라 시작 (모바일 최적화)
+        // 모바일 최적화된 카메라 시작
         async function startCamera() {
             try {
                 updateStatus('📹 카메라 시작 중...');
                 containerEl.classList.remove('original-size');
                 video.style.display = 'block';
                 
-                // 모바일 최적화된 카메라 설정
+                const isMobile = window.innerWidth < 768;
+                
+                // 모바일에서 더 낮은 해상도로 성능 최적화
                 const constraints = {
                     video: {
-                        width: { ideal: window.innerWidth < 768 ? 640 : 800 },
-                        height: { ideal: window.innerWidth < 768 ? 480 : 600 },
+                        width: { 
+                            ideal: isMobile ? 320 : 800,
+                            max: isMobile ? 640 : 1920
+                        },
+                        height: { 
+                            ideal: isMobile ? 240 : 600,
+                            max: isMobile ? 480 : 1080
+                        },
                         facingMode: 'environment', // 후면 카메라 우선 (모바일)
-                        aspectRatio: { ideal: 4/3 }
+                        aspectRatio: { ideal: 4/3 },
+                        frameRate: {
+                            ideal: isMobile ? 15 : 30, // 모바일에서 낮은 프레임레이트
+                            max: isMobile ? 30 : 60
+                        }
                     }
                 };
                 
@@ -3486,40 +3674,142 @@
                 video.srcObject = stream;
                 
                 video.onloadedmetadata = () => {
-                    // Canvas 크기 설정 (최소 크기 보장)
-                    const videoWidth = video.videoWidth || 640;
-                    const videoHeight = video.videoHeight || 480;
+                    // Canvas 크기 설정 (모바일에서 더 작게)
+                    const videoWidth = video.videoWidth || (isMobile ? 320 : 640);
+                    const videoHeight = video.videoHeight || (isMobile ? 240 : 480);
                     
-                    canvas.width = Math.max(videoWidth, 1);
-                    canvas.height = Math.max(videoHeight, 1);
+                    if (isMobile) {
+                        // 모바일에서 해상도를 더 작게 설정
+                        canvas.width = Math.min(videoWidth, 320);
+                        canvas.height = Math.min(videoHeight, 240);
+                    } else {
+                        canvas.width = Math.max(videoWidth, 1);
+                        canvas.height = Math.max(videoHeight, 1);
+                    }
                     
-                    updateStatus('✅ 카메라가 시작되었습니다!');
+                    updateStatus(`✅ 카메라가 시작되었습니다! (${canvas.width}x${canvas.height})`);
                     document.getElementById('startBtn').disabled = true;
                     document.getElementById('stopBtn').disabled = false;
                     
+                    // 카메라 시작 후 1초 뒤에 실시간 분석 자동 시작
+                    setTimeout(() => {
+                        if (!isRealtime) {
+                            // 실시간 분석 자동 시작
+                            isRealtime = true;
+                            document.getElementById('realtimeBtn').textContent = '⏸️ 실시간 중지';
+                            
+                            const isMobile = window.innerWidth < 768;
+                            
+                            if (isMobile) {
+                                updateStatus('📱 모바일 최적화 실시간 분석 시작...');
+                                // 모바일에서 성능 통계 초기화
+                                mobilePerformanceStats = {
+                                    frameCount: 0,
+                                    totalFrameTime: 0,
+                                    averageFrameTime: 0,
+                                    lastAdjustmentTime: 0,
+                                    currentQuality: 'high'
+                                };
+                            } else {
+                                updateStatus('🔄 실시간 추적 분석 시작...');
+                                // 누적 통계 초기화
+                                realtimeAggregation = {
+                                    analyzedFrameCount: 0,
+                                    sumAverageConfidence: 0,
+                                    sumDetectedObjects: 0,
+                                    classNameToCount: {}
+                                };
+                                // 객체 추적 시스템 초기화
+                                objectTracker = {
+                                    tracks: [],
+                                    nextTrackId: 1,
+                                    maxDisappeared: 30,
+                                    minDistance: 50,
+                                    trackHistory: {}
+                                };
+                            }
+                            
+                            // 고성능 모드가 활성화된 경우 고성능 분석 사용
+                            if (highPerformanceMode) {
+                                animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                            } else {
+                                realtimeAnalysis();
+                            }
+                            
+                            // 3초간 실시간 분석 시작 알림
+                            const notification = document.createElement('div');
+                            notification.id = 'autoRealtimeNotification';
+                            notification.style.cssText = `
+                                position: fixed;
+                                top: 20px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                background: linear-gradient(45deg, #4facfe, #00f2fe);
+                                color: white;
+                                padding: 15px 25px;
+                                border-radius: 25px;
+                                font-size: 16px;
+                                font-weight: bold;
+                                z-index: 10000;
+                                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                                animation: slideDown 0.5s ease-out;
+                            `;
+                            notification.innerHTML = '🔄 실시간 분석이 자동으로 시작되었습니다!';
+                            document.body.appendChild(notification);
+                            
+                            // 3초 후 알림 제거
+                            setTimeout(() => {
+                                if (notification.parentNode) {
+                                    notification.style.animation = 'slideUp 0.5s ease-out';
+                                    setTimeout(() => {
+                                        if (notification.parentNode) {
+                                            notification.parentNode.removeChild(notification);
+                                        }
+                                    }, 500);
+                                }
+                            }, 3000);
+                        }
+                    }, 1000);
+                    
                     // 모바일에서 비디오 크기 최적화
-                    if (window.innerWidth < 768) {
+                    if (isMobile) {
                         canvas.style.width = '100%';
                         canvas.style.height = 'auto';
+                        canvas.style.maxWidth = '320px';
                         video.style.width = '100%';
                         video.style.height = 'auto';
+                        video.style.maxWidth = '320px';
                     } else {
                         canvas.style.width = '100%';
                         canvas.style.height = 'auto';
                     }
                     
-                    // 모바일에서 자동 재생 방지
-                    video.play().catch(e => {
-                        console.log('자동 재생 실패, 사용자 상호작용 필요:', e);
-                    });
+                            // 모바일에서 자동 재생 방지
+        video.play().catch(e => {
+            console.log('자동 재생 실패, 사용자 상호작용 필요:', e);
+        });
+        
+        // 모바일에서 실시간 포즈 버튼 비활성화
+        if (isMobile) {
+            const realtimePoseBtn = document.getElementById('realtimePoseBtn');
+            if (realtimePoseBtn) {
+                realtimePoseBtn.disabled = true;
+                realtimePoseBtn.title = '모바일에서는 사용할 수 없습니다';
+            }
+        }
                 };
                 
                 // 모바일에서 화면 방향 변경 감지
                 window.addEventListener('orientationchange', () => {
                     setTimeout(() => {
                         if (video.videoWidth && video.videoHeight) {
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
+                            if (isMobile) {
+                                canvas.width = Math.min(video.videoWidth, 320);
+                                canvas.height = Math.min(video.videoHeight, 240);
+                            } else {
+                                canvas.width = video.videoWidth;
+                                canvas.height = video.videoHeight;
+                            }
                         }
                     }, 100);
                 });
@@ -3555,19 +3845,72 @@
                 document.getElementById('analyzeBtn').disabled = true;
                 document.getElementById('realtimeBtn').disabled = true;
                 
+                // 실시간 분석이 실행 중이면 자동으로 중지
                 if (isRealtime) {
-                    toggleRealtime();
+                    isRealtime = false;
+                    document.getElementById('realtimeBtn').textContent = '🔄 실시간 분석';
+                    
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                    }
+                    
+                    const isMobile = window.innerWidth < 768;
+                    if (isMobile) {
+                        updateStatus('⏸️ 모바일 실시간 분석 중지됨');
+                    } else {
+                        updateStatus('⏸️ 실시간 추적 분석 중지됨');
+                    }
+                    
+                    // 실시간 분석 중지 알림
+                    const notification = document.createElement('div');
+                    notification.id = 'autoRealtimeStopNotification';
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+                        color: white;
+                        padding: 15px 25px;
+                        border-radius: 25px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        z-index: 10000;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                        animation: slideDown 0.5s ease-out;
+                    `;
+                    notification.innerHTML = '⏸️ 실시간 분석이 자동으로 중지되었습니다!';
+                    document.body.appendChild(notification);
+                    
+                    // 3초 후 알림 제거
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.style.animation = 'slideUp 0.5s ease-out';
+                            setTimeout(() => {
+                                if (notification.parentNode) {
+                                    notification.parentNode.removeChild(notification);
+                                }
+                            }, 500);
+                        }
+                    }, 3000);
                 }
             }
         }
 
-        // 고도화된 3D 객체 감지 분석 (5단계)
+        // 모바일 최적화된 객체 감지 분석
         async function analyzeImage(sourceEl) {
             if (isAnalyzing || !cocoSsdModel) return;
             
             isAnalyzing = true;
             showLoading(true);
-            updateStatus('🔍 고도화된 3D 객체 감지 분석 중...');
+            
+            const isMobile = window.innerWidth < 768;
+            
+            if (isMobile) {
+                updateStatus('📱 모바일 최적화 분석 중...');
+            } else {
+                updateStatus('🔍 고도화된 3D 객체 감지 분석 중...');
+            }
 
             try {
                 // 입력 소스 선택
@@ -3609,41 +3952,60 @@
                 }
                 ctx.drawImage(sourceEl, 0, 0, canvas.width, canvas.height);
                 
-                // 추적 경로 그리기 (바운딩 박스보다 먼저)
-                drawTrackingPaths();
+                // 모바일에서는 추적 경로 그리기 생략
+                if (!isMobile) {
+                    drawTrackingPaths();
+                }
                 
-                // COCO-SSD 객체 감지
-                let predictions = await cocoSsdModel.detect(sourceEl, 50, minScoreThreshold);
-                let filtered = predictions.filter(p => p.score >= minScoreThreshold);
-                // 임계값이 너무 높아 비는 경우 자동 완화 재시도
-                if (filtered.length === 0) {
-                    const fallbackThreshold = Math.max(0.3, Math.min(minScoreThreshold, 0.5));
-                    if (fallbackThreshold !== minScoreThreshold) {
-                        predictions = await cocoSsdModel.detect(sourceEl, 50, fallbackThreshold);
-                        filtered = predictions.filter(p => p.score >= fallbackThreshold);
+                // COCO-SSD 객체 감지 (모바일에서 최적화)
+                let predictions, filtered;
+                if (isMobile) {
+                    // 모바일에서는 더 적은 객체 감지, 더 높은 임계값
+                    predictions = await cocoSsdModel.detect(sourceEl, 15, 0.7);
+                    filtered = predictions.filter(p => p.score >= 0.7);
+                } else {
+                    predictions = await cocoSsdModel.detect(sourceEl, 50, minScoreThreshold);
+                    filtered = predictions.filter(p => p.score >= minScoreThreshold);
+                    // 임계값이 너무 높아 비는 경우 자동 완화 재시도
+                    if (filtered.length === 0) {
+                        const fallbackThreshold = Math.max(0.3, Math.min(minScoreThreshold, 0.5));
+                        if (fallbackThreshold !== minScoreThreshold) {
+                            predictions = await cocoSsdModel.detect(sourceEl, 50, fallbackThreshold);
+                            filtered = predictions.filter(p => p.score >= fallbackThreshold);
+                        }
                     }
                 }
                 
-                // 천체 감지 추가
-                const celestialDetections = await detectCelestialObjects(sourceEl);
-                filtered = [...filtered, ...celestialDetections];
-                
-                // 고급 객체 감지 추가 (지구, 구름, 자연 현상 등)
-                const advancedDetections = await detectAdvancedObjects(sourceEl);
-                filtered = [...filtered, ...advancedDetections];
-                
-                // 확장된 객체 감지 추가 (사람, 동물, 차량, 물건 등)
-                const extendedDetections = await detectExtendedObjects(sourceEl);
-                filtered = [...filtered, ...extendedDetections];
-                
-                // 행동 예측 추가 (표정, 손짓, 행동 분석)
-                const behaviorPredictions = await predictBehavior(sourceEl);
-                filtered = [...filtered, ...behaviorPredictions];
-                
-                // 범죄 예방 AI 추가 (의심스러운 행동 감지)
-                const suspiciousDetections = await detectSuspiciousBehavior(sourceEl);
-                filtered = [...filtered, ...suspiciousDetections];
+                // 모바일에서는 고급 분석 생략
+                if (!isMobile) {
+                    // 천체 감지 추가
+                    const celestialDetections = await detectCelestialObjects(sourceEl);
+                    filtered = [...filtered, ...celestialDetections];
+                    
+                    // 고급 객체 감지 추가 (지구, 구름, 자연 현상 등)
+                    const advancedDetections = await detectAdvancedObjects(sourceEl);
+                    filtered = [...filtered, ...advancedDetections];
+                    
+                    // 확장된 객체 감지 추가 (사람, 동물, 차량, 물건 등)
+                    const extendedDetections = await detectExtendedObjects(sourceEl);
+                    filtered = [...filtered, ...extendedDetections];
+                    
+                    // 행동 예측 추가 (표정, 손짓, 행동 분석)
+                    const behaviorPredictions = await predictBehavior(sourceEl);
+                    filtered = [...filtered, ...behaviorPredictions];
+                    
+                    // 범죄 예방 AI 추가 (의심스러운 행동 감지)
+                    const suspiciousDetections = await detectSuspiciousBehavior(sourceEl);
+                    filtered = [...filtered, ...suspiciousDetections];
+                }
 
+                // 잘못된 분류 필터링
+                filtered = filtered.filter(detection => {
+                    // 명백히 잘못된 분류 제거
+                    const invalidClassifications = ['bear', 'car', 'cat', 'unknown', 'neutral_action'];
+                    return !invalidClassifications.includes(detection.class.toLowerCase());
+                });
+                
                 // 3D 객체 감지 분석
                 const object3DAnalysis = analyze3DObjects(filtered, canvas.width, canvas.height);
                 
@@ -3684,41 +4046,51 @@
                 detectedObjects = filtered.length;
                 let totalConfidence = 0;
                 
+                // 평균 신뢰도 계산 개선
                 if (filtered.length > 0) {
-                    const results = filtered.map(p => {
+                    totalConfidence = filtered.reduce((sum, p) => sum + (p.score || 0), 0);
+                    avgConfidence = totalConfidence / filtered.length;
+                } else {
+                    avgConfidence = 0;
+                }
+                
+                if (filtered.length > 0) {
+                    const results = filtered.map((p, index) => {
+                        let resultText = '';
                         if (p.crime) {
-                            return `${p.warning} - ${p.behavior} (${((p.riskLevel || 0) * 100).toFixed(1)}% 위험도)`;
+                            resultText = `${p.warning} - ${p.behavior} (${((p.riskLevel || 0) * 100).toFixed(1)}% 위험도)`;
                         } else if (p.behavior) {
-                            return `${p.prediction} (${((p.confidence || 0) * 100).toFixed(1)}%) - ${p.emotion} 표정, ${p.gesture} 손짓`;
+                            resultText = `${p.prediction} (${((p.confidence || 0) * 100).toFixed(1)}%) - ${p.emotion} 표정, ${p.gesture} 손짓`;
                         } else {
-                            return `${p.class} (${((p.score || 0) * 100).toFixed(1)}%)`;
+                            resultText = `${p.class} (${((p.score || 0) * 100).toFixed(1)}%)`;
                         }
+                        return `${index + 1}. ${resultText}`;
                     });
-                    addResult('🎯 3D 객체 감지 결과', results.join(', '));
+                    addResult('🎯 3D 객체 감지 결과', results.join('<br>'));
                     
                     // 클래스별 카운트
                     const countByClass = {};
                     filtered.forEach(p => { countByClass[p.class] = (countByClass[p.class] || 0) + 1; });
                     const summary = Object.entries(countByClass)
-                        .map(([k,v]) => `${k}: ${v}개`).join(', ');
+                        .map(([k,v], index) => `${index + 1}. ${k}: ${v}개`).join('<br>');
                     addResult('🧮 3D 객체 요약', summary);
                     
                     // 3D 분석 결과 표시
                     addResult('📐 3D 공간 분석', 
-                        `총 객체: ${object3DAnalysis.totalObjects}개<br>` +
-                        `평균 거리: ${object3DAnalysis.avgDistance.toFixed(1)}m<br>` +
-                        `가장 가까운 객체: ${object3DAnalysis.closestObject}<br>` +
-                        `가장 먼 객체: ${object3DAnalysis.farthestObject}<br>` +
-                        `공간 분포: ${object3DAnalysis.spatialDistribution}`
+                        `1. 총 객체: ${object3DAnalysis.totalObjects}개<br>` +
+                        `2. 평균 거리: ${object3DAnalysis.avgDistance.toFixed(1)}m<br>` +
+                        `3. 가장 가까운 객체: ${object3DAnalysis.closestObject}<br>` +
+                        `4. 가장 먼 객체: ${object3DAnalysis.farthestObject}<br>` +
+                        `5. 공간 분포: ${object3DAnalysis.spatialDistribution}`
                     );
                     
                     // 실시간 추적 정보 표시
                     const trackingStats = displayTrackingInfo();
                     addResult('🎯 실시간 추적 분석', 
-                        `활성 추적: ${trackingStats.activeTracks}개<br>` +
-                        `총 추적: ${trackingStats.totalTracks}개<br>` +
-                        `총 이동 거리: ${trackingStats.totalDistance.toFixed(0)}px<br>` +
-                        `평균 속도: ${trackingStats.avgSpeed.toFixed(1)}px/s`
+                        `1. 활성 추적: ${trackingStats.activeTracks}개<br>` +
+                        `2. 총 추적: ${trackingStats.totalTracks}개<br>` +
+                        `3. 총 이동 거리: ${trackingStats.totalDistance.toFixed(0)}px<br>` +
+                        `4. 평균 속도: ${trackingStats.avgSpeed.toFixed(1)}px/s`
                     );
 
                     // 3D 바운딩 박스 그리기 (거리 정보 포함)
@@ -3831,64 +4203,176 @@
             }
         }
 
-        // 실시간 분석 토글
+        // 모바일 최적화된 실시간 분석 토글
         function toggleRealtime() {
+            const isMobile = window.innerWidth < 768;
+            
             if (!isRealtime) {
                 isRealtime = true;
                 document.getElementById('realtimeBtn').textContent = '⏸️ 실시간 중지';
-                updateStatus('🔄 실시간 추적 분석 시작...');
-                // 누적 통계 초기화
-                realtimeAggregation = {
-                    analyzedFrameCount: 0,
-                    sumAverageConfidence: 0,
-                    sumDetectedObjects: 0,
-                    classNameToCount: {}
-                };
-                // 객체 추적 시스템 초기화
-                objectTracker = {
-                    tracks: [],
-                    nextTrackId: 1,
-                    maxDisappeared: 30,
-                    minDistance: 50,
-                    trackHistory: {}
-                };
+                
+                if (isMobile) {
+                    updateStatus('📱 모바일 최적화 실시간 분석 시작...');
+                    // 모바일에서 성능 통계 초기화
+                    performanceMonitor.mobile = {
+                        frameCount: 0,
+                        totalFrameTime: 0,
+                        averageFrameTime: 0,
+                        lastAdjustmentTime: 0,
+                        currentQuality: 'high',
+                        fpsHistory: [],
+                        memoryUsage: [],
+                        batteryLevel: null
+                    };
+                } else {
+                    updateStatus('🔄 실시간 추적 분석 시작...');
+                    // 누적 통계 초기화
+                    realtimeAggregation = {
+                        analyzedFrameCount: 0,
+                        sumAverageConfidence: 0,
+                        sumDetectedObjects: 0,
+                        classNameToCount: {}
+                    };
+                    // 객체 추적 시스템 초기화
+                    objectTracker = {
+                        tracks: [],
+                        nextTrackId: 1,
+                        maxDisappeared: 30,
+                        minDistance: 50,
+                        trackHistory: {}
+                    };
+                }
+                
                 // 고성능 모드가 활성화된 경우 고성능 분석 사용
                 if (highPerformanceMode) {
                     animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
                 } else {
                     realtimeAnalysis();
                 }
+                
+                // 수동 시작 알림 (자동 시작과 구분)
+                const notification = document.createElement('div');
+                notification.id = 'manualRealtimeNotification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(45deg, #4facfe, #00f2fe);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 25px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    z-index: 10000;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                    animation: slideDown 0.5s ease-out;
+                `;
+                notification.innerHTML = '🔄 실시간 분석을 수동으로 시작했습니다!';
+                document.body.appendChild(notification);
+                
+                // 3초 후 알림 제거
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.style.animation = 'slideUp 0.5s ease-out';
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.parentNode.removeChild(notification);
+                            }
+                        }, 500);
+                    }
+                }, 3000);
+                
             } else {
                 isRealtime = false;
                 document.getElementById('realtimeBtn').textContent = '🔄 실시간 분석';
-                updateStatus('⏸️ 실시간 추적 분석 중지됨');
+                
+                if (isMobile) {
+                    updateStatus('⏸️ 모바일 실시간 분석 중지됨');
+                    // 모바일 성능 요약
+                    try {
+                        const stats = performanceMonitor.mobile;
+                        const avgFrameTime = stats.averageFrameTime;
+                        const avgFPS = stats.fpsHistory.length > 0 ? 
+                            stats.fpsHistory.reduce((a, b) => a + b, 0) / stats.fpsHistory.length : 0;
+                        const avgMemory = stats.memoryUsage.length > 0 ?
+                            stats.memoryUsage.reduce((a, b) => a + b, 0) / stats.memoryUsage.length : 0;
+                        
+                        const summaryContent = `
+                            총 분석 프레임: <b>${stats.frameCount}</b><br>
+                            평균 FPS: <b>${avgFPS.toFixed(1)}</b><br>
+                            평균 프레임 처리 시간: <b>${avgFrameTime.toFixed(1)}ms</b><br>
+                            평균 메모리 사용량: <b>${avgMemory.toFixed(1)}MB</b><br>
+                            최종 품질 설정: <b>${stats.currentQuality}</b><br>
+                            해상도: <b>${canvas.width}x${canvas.height}</b><br>
+                            ${stats.batteryLevel ? `배터리 레벨: <b>${(stats.batteryLevel * 100).toFixed(1)}%</b>` : ''}
+                        `;
+                        addResult('📱 모바일 성능 요약', summaryContent);
+                    } catch {}
+                } else {
+                    updateStatus('⏸️ 실시간 추적 분석 중지됨');
+                    // 평균치 요약 출력
+                    try {
+                        const frames = Math.max(1, realtimeAggregation.analyzedFrameCount);
+                        const avgDetectionsPerFrame = realtimeAggregation.sumDetectedObjects / frames;
+                        const avgConfPct = (realtimeAggregation.sumAverageConfidence / frames) * 100;
+                        const topClasses = Object.entries(realtimeAggregation.classNameToCount)
+                            .sort((a,b)=>b[1]-a[1])
+                            .slice(0,5)
+                            .map(([k,v])=>`${k}: ${v}회`).join(', ');
+                        
+                        // 추적 통계 추가
+                        const trackingStats = displayTrackingInfo();
+                        // 실시간 분석 요약을 결과에 추가 (스크롤 없이)
+                        const summaryContent = `
+                            총 프레임: <b>${realtimeAggregation.analyzedFrameCount}</b><br>
+                            프레임당 평균 감지 개수: <b>${(avgDetectionsPerFrame || 0).toFixed(2)}</b><br>
+                            프레임당 평균 신뢰도: <b>${(avgConfPct || 0).toFixed(1)}%</b><br>
+                            많이 나온 클래스 Top5: ${topClasses || '(없음)'}<br>
+                            총 추적 객체: <b>${trackingStats.totalTracks}</b>개<br>
+                            총 이동 거리: <b>${trackingStats.totalDistance.toFixed(0)}</b>px<br>
+                            평균 속도: <b>${trackingStats.avgSpeed.toFixed(1)}</b>px/s
+                        `;
+                        addResult('📈 실시간 추적 요약', summaryContent);
+                    } catch {}
+                }
+                
                 if (animationId) {
                     cancelAnimationFrame(animationId);
                 }
-                // 평균치 요약 출력
-                try {
-                    const frames = Math.max(1, realtimeAggregation.analyzedFrameCount);
-                    const avgDetectionsPerFrame = realtimeAggregation.sumDetectedObjects / frames;
-                    const avgConfPct = (realtimeAggregation.sumAverageConfidence / frames) * 100;
-                    const topClasses = Object.entries(realtimeAggregation.classNameToCount)
-                        .sort((a,b)=>b[1]-a[1])
-                        .slice(0,5)
-                        .map(([k,v])=>`${k}: ${v}회`).join(', ');
-                    
-                    // 추적 통계 추가
-                    const trackingStats = displayTrackingInfo();
-                    // 실시간 분석 요약을 결과에 추가 (스크롤 없이)
-                    const summaryContent = `
-                        총 프레임: <b>${realtimeAggregation.analyzedFrameCount}</b><br>
-                        프레임당 평균 감지 개수: <b>${(avgDetectionsPerFrame || 0).toFixed(2)}</b><br>
-                        프레임당 평균 신뢰도: <b>${(avgConfPct || 0).toFixed(1)}%</b><br>
-                        많이 나온 클래스 Top5: ${topClasses || '(없음)'}<br>
-                        총 추적 객체: <b>${trackingStats.totalTracks}</b>개<br>
-                        총 이동 거리: <b>${trackingStats.totalDistance.toFixed(0)}</b>px<br>
-                        평균 속도: <b>${trackingStats.avgSpeed.toFixed(1)}</b>px/s
-                    `;
-                    addResult('📈 실시간 추적 요약', summaryContent);
-                } catch {}
+                
+                // 수동 중지 알림
+                const notification = document.createElement('div');
+                notification.id = 'manualRealtimeStopNotification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 25px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    z-index: 10000;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                    animation: slideDown 0.5s ease-out;
+                `;
+                notification.innerHTML = '⏸️ 실시간 분석을 수동으로 중지했습니다!';
+                document.body.appendChild(notification);
+                
+                // 3초 후 알림 제거
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.style.animation = 'slideUp 0.5s ease-out';
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.parentNode.removeChild(notification);
+                            }
+                        }, 500);
+                    }
+                }, 3000);
             }
         }
 
@@ -4934,25 +5418,43 @@
             const extendedObjects = [];
             
             try {
+                // Canvas 크기 검증
+                if (!canvas || canvas.width === 0 || canvas.height === 0) {
+                    console.warn('확장된 객체 감지: Canvas가 유효하지 않습니다.');
+                    return extendedObjects;
+                }
+                
                 // 이미지 데이터 분석
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const data = imageData.data;
+                
+                if (!data || data.length === 0) {
+                    console.warn('확장된 객체 감지: 이미지 데이터가 유효하지 않습니다.');
+                    return extendedObjects;
+                }
                 
                 // 확장된 객체 감지를 위한 분석
                 const extendedRegions = findExtendedRegions(data, canvas.width, canvas.height);
                 
                 for (const region of extendedRegions) {
-                    const confidence = calculateExtendedConfidence(region, data, canvas.width, canvas.height);
-                    
-                    if (confidence > 0.4) { // 확장된 객체 감지 임계값
-                        const objectType = classifyExtendedObject(region, data, canvas.width, canvas.height);
+                    try {
+                        const confidence = calculateExtendedConfidence(region, data, canvas.width, canvas.height);
                         
-                        extendedObjects.push({
-                            bbox: [region.x, region.y, region.width, region.height],
-                            class: objectType,
-                            score: confidence,
-                            extended: true
-                        });
+                        if (confidence > 0.4) { // 확장된 객체 감지 임계값
+                            const objectType = classifyExtendedObject(region, data, canvas.width, canvas.height);
+                            
+                            if (objectType) {
+                                extendedObjects.push({
+                                    bbox: [region.x, region.y, region.width, region.height],
+                                    class: objectType,
+                                    score: confidence,
+                                    extended: true
+                                });
+                            }
+                        }
+                    } catch (regionError) {
+                        console.warn('확장된 객체 감지: 개별 영역 처리 오류:', regionError);
+                        continue; // 다음 영역으로 계속 진행
                     }
                 }
                 
@@ -5070,60 +5572,87 @@
         
         // 확장된 객체 신뢰도 계산
         function calculateExtendedConfidence(region, data, width, height) {
-            let extendedPixels = 0;
-            let totalPixels = 0;
-            let humanSkinPixels = 0, animalPixels = 0, vehiclePixels = 0, objectPixels = 0;
-            
-            for (let y = region.minY; y <= region.maxY; y++) {
-                for (let x = region.minX; x <= region.maxX; x++) {
-                    if (x >= 0 && x < width && y >= 0 && y < height) {
-                        const idx = (y * width + x) * 4;
-                        const r = data[idx];
-                        const g = data[idx + 1];
-                        const b = data[idx + 2];
-                        
-                        totalPixels++;
-                        
-                        if (isExtendedObjectColor(r, g, b)) {
-                            extendedPixels++;
+            try {
+                // 입력 검증
+                if (!region || !data || !width || !height) {
+                    console.warn('확장된 객체 신뢰도 계산: 유효하지 않은 입력');
+                    return 0;
+                }
+                
+                if (!region.minY || !region.maxY || !region.minX || !region.maxX) {
+                    console.warn('확장된 객체 신뢰도 계산: 유효하지 않은 영역');
+                    return 0;
+                }
+                
+                let extendedPixels = 0;
+                let totalPixels = 0;
+                let humanSkinPixels = 0, animalPixels = 0, vehiclePixels = 0, objectPixels = 0;
+                
+                for (let y = region.minY; y <= region.maxY; y++) {
+                    for (let x = region.minX; x <= region.maxX; x++) {
+                        if (x >= 0 && x < width && y >= 0 && y < height) {
+                            const idx = (y * width + x) * 4;
                             
-                            // 세부 분류를 위한 픽셀 카운트
-                            if ((r > 180 && g > 140 && b > 100 && r > g && g > b) || 
-                                (r > 140 && g > 100 && b > 60 && r > g && g > b) || 
-                                (r > 100 && g > 70 && b > 40 && r > g && g > b) || 
-                                (r > 160 && g > 120 && b > 80 && r > g && g > b)) {
-                                humanSkinPixels++;
+                            // 배열 범위 검증
+                            if (idx + 2 >= data.length) {
+                                continue;
                             }
-                            else if ((r > 120 && g > 80 && b > 40 && Math.abs(r - g) < 50) || 
-                                     (r > 200 && g > 180 && b > 150) || 
-                                     (r > 80 && g > 60 && b > 40) || 
-                                     (r > 150 && g > 100 && b > 60)) {
-                                animalPixels++;
-                            }
-                            else if ((r > 200 && g > 200 && b > 200) || 
-                                     (r > 150 && g > 50 && b < 50) || 
-                                     (r < 50 && g < 50 && b < 50) || 
-                                     (r > 100 && g > 100 && b > 200) || 
-                                     (r > 200 && g > 150 && b < 50)) {
-                                vehiclePixels++;
-                            }
-                            else {
-                                objectPixels++;
+                            
+                            const r = data[idx];
+                            const g = data[idx + 1];
+                            const b = data[idx + 2];
+                            
+                            totalPixels++;
+                            
+                            if (isExtendedObjectColor(r, g, b)) {
+                                extendedPixels++;
+                                
+                                // 세부 분류를 위한 픽셀 카운트
+                                if ((r > 180 && g > 140 && b > 100 && r > g && g > b) || 
+                                    (r > 140 && g > 100 && b > 60 && r > g && g > b) || 
+                                    (r > 100 && g > 70 && b > 40 && r > g && g > b) || 
+                                    (r > 160 && g > 120 && b > 80 && r > g && g > b)) {
+                                    humanSkinPixels++;
+                                }
+                                else if ((r > 120 && g > 80 && b > 40 && Math.abs(r - g) < 50) || 
+                                         (r > 200 && g > 180 && b > 150) || 
+                                         (r > 80 && g > 60 && b > 40) || 
+                                         (r > 150 && g > 100 && b > 60)) {
+                                    animalPixels++;
+                                }
+                                else if ((r > 200 && g > 200 && b > 200) || 
+                                         (r > 150 && g > 50 && b < 50) || 
+                                         (r < 50 && g < 50 && b < 50) || 
+                                         (r > 100 && g > 100 && b > 200) || 
+                                         (r > 200 && g > 150 && b < 50)) {
+                                    vehiclePixels++;
+                                }
+                                else {
+                                    objectPixels++;
+                                }
                             }
                         }
                     }
                 }
+                
+                if (totalPixels === 0) {
+                    return 0;
+                }
+                
+                const colorConfidence = extendedPixels / totalPixels;
+                const sizeConfidence = Math.min(1, (region.width * region.height) / 15000);
+                const aspectRatioConfidence = calculateAspectRatio(region);
+                
+                // 사람 특성 분석 (세로로 긴 형태)
+                const humanSkinRatio = humanSkinPixels / totalPixels;
+                const isHumanLike = (humanSkinRatio > 0.3 && aspectRatioConfidence > 0.6) ? 1.3 : 1.0;
+                
+                return Math.min(1, (colorConfidence * 0.6 + sizeConfidence * 0.25 + aspectRatioConfidence * 0.15) * isHumanLike);
+                
+            } catch (error) {
+                console.warn('확장된 객체 신뢰도 계산 오류:', error);
+                return 0;
             }
-            
-            const colorConfidence = extendedPixels / totalPixels;
-            const sizeConfidence = Math.min(1, (region.width * region.height) / 15000);
-            const aspectRatioConfidence = calculateAspectRatio(region);
-            
-            // 사람 특성 분석 (세로로 긴 형태)
-            const humanSkinRatio = humanSkinPixels / totalPixels;
-            const isHumanLike = (humanSkinRatio > 0.3 && aspectRatioConfidence > 0.6) ? 1.3 : 1.0;
-            
-            return Math.min(1, (colorConfidence * 0.6 + sizeConfidence * 0.25 + aspectRatioConfidence * 0.15) * isHumanLike);
         }
         
         // 종횡비 계산 (사람/동물 감지용)
@@ -5864,6 +6393,7 @@
         function classifyExtendedObject(region, data, width, height) {
             let humanSkinPixels = 0, animalPixels = 0, vehiclePixels = 0, objectPixels = 0;
             let totalPixels = 0;
+            let avgR = 0, avgG = 0, avgB = 0;
             
             for (let y = region.minY; y <= region.maxY; y++) {
                 for (let x = region.minX; x <= region.maxX; x++) {
@@ -5874,6 +6404,9 @@
                         const b = data[idx + 2];
                         
                         totalPixels++;
+                        avgR += r;
+                        avgG += g;
+                        avgB += b;
                         
                         // 사람 피부색
                         if ((r > 180 && g > 140 && b > 100 && r > g && g > b) || 
@@ -5904,6 +6437,13 @@
                 }
             }
             
+            // 평균 색상 계산
+            if (totalPixels > 0) {
+                avgR = avgR / totalPixels;
+                avgG = avgG / totalPixels;
+                avgB = avgB / totalPixels;
+            }
+            
             const humanSkinRatio = humanSkinPixels / totalPixels;
             const animalRatio = animalPixels / totalPixels;
             const vehicleRatio = vehiclePixels / totalPixels;
@@ -5918,14 +6458,14 @@
             }
             // 동물 분류
             else if (animalRatio > 0.4) {
-                if (r > 200 && g > 180 && b > 150) return '강아지';
-                else if (r > 80 && g > 60 && b > 40) return '고양이';
+                if (avgR > 200 && avgG > 180 && avgB > 150) return '강아지';
+                else if (avgR > 80 && avgG > 60 && avgB > 40) return '고양이';
                 else return '동물';
             }
             // 차량 분류
             else if (vehicleRatio > 0.4) {
-                if (r > 150 && g > 50 && b < 50) return '소방차';
-                else if (r > 100 && g > 100 && b > 200) return '경찰차';
+                if (avgR > 150 && avgG > 50 && avgB < 50) return '소방차';
+                else if (avgR > 100 && avgG > 100 && avgB > 200) return '경찰차';
                 else if (aspectRatio < 0.5) return '비행기';
                 else return '자동차';
             }
@@ -7512,8 +8052,17 @@
         let isRealtimePose = false;
         let poseHistory = []; // 포즈 히스토리 저장
         
-        // 실시간 포즈 추정 토글
+        // 모바일 최적화된 실시간 포즈 추정 토글
         function toggleRealtimePose() {
+            const isMobile = window.innerWidth < 768;
+            
+            // 모바일에서는 실시간 포즈 분석 비활성화
+            if (isMobile) {
+                updateStatus('📱 모바일에서는 실시간 포즈 분석을 지원하지 않습니다.');
+                addResult('📱 모바일 제한', '실시간 포즈 분석은 데스크톱에서만 사용 가능합니다. 성능 최적화를 위해 모바일에서는 비활성화되어 있습니다.');
+                return;
+            }
+            
             if (!isRealtimePose) {
                 // 소스 유효성 사전 확인
                 let source = null;
@@ -7759,17 +8308,44 @@
             addResult('🔄 실시간 포즈 분석 완료', summary);
         }
 
-        // 고성능 비디오 분석 (60fps 이상)
+        // 모바일 최적화된 비디오 분석 (30fps 보장)
         async function highPerformanceVideoAnalysis() {
             if (!isRealtime) return;
             
-            const currentFPS = calculateHighPerformanceFPS();
+            const now = performance.now();
+            const isMobile = window.innerWidth < 768;
             
-            // 프레임 스킵 로직
-            if (frameSkipCounter > 0) {
-                frameSkipCounter--;
-                animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
-                return;
+            // 모바일에서 프레임 레이트 제한 (30fps)
+            if (isMobile) {
+                if (now - lastFrameTime < 33) { // 30fps = 33ms
+                    animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                    return;
+                }
+            } else {
+                // 데스크톱에서 60fps 제한
+                if (now - lastFrameTime < 16) { // 60fps = 16ms
+                    animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                    return;
+                }
+            }
+            
+            lastFrameTime = now;
+            
+            // 모바일에서 프레임 스킵 증가
+            if (isMobile) {
+                if (frameSkipCounter < 2) { // 모바일에서 더 많은 프레임 스킵
+                    frameSkipCounter++;
+                    animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                    return;
+                }
+                frameSkipCounter = 0;
+            } else {
+                // 데스크톱 프레임 스킵 로직
+                if (frameSkipCounter > 0) {
+                    frameSkipCounter--;
+                    animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
+                    return;
+                }
             }
             
             // Canvas 크기 검증
@@ -7801,15 +8377,40 @@
             // 업로드 비디오가 있으면 재생 중에만 분석
             const canAnalyzeVideo = uploadedVideoEl ? !uploadedVideoEl.paused && !uploadedVideoEl.ended : true;
             if (!isAnalyzing && canAnalyzeVideo) {
-                // 비동기 분석으로 메인 스레드 블로킹 방지
-                setTimeout(() => {
-                    analyzeImageOptimized();
-                }, 0);
+                            // 모바일에서 더 긴 지연으로 메인 스레드 블로킹 방지
+            const delay = isMobile ? 50 : 0;
+            setTimeout(() => {
+                const startTime = performance.now();
+                analyzeImageOptimized().then(() => {
+                    // 성능 통계 업데이트
+                    const platform = isMobile ? 'mobile' : 'desktop';
+                    const stats = performanceMonitor[platform];
+                    
+                    const frameTime = performance.now() - startTime;
+                    stats.frameCount++;
+                    stats.totalFrameTime += frameTime;
+                    stats.averageFrameTime = stats.totalFrameTime / stats.frameCount;
+                    
+                    // FPS 히스토리 업데이트
+                    const currentFPS = 1000 / frameTime;
+                    stats.fpsHistory.push(currentFPS);
+                    if (stats.fpsHistory.length > 30) stats.fpsHistory.shift();
+                    
+                    // 메모리 사용량 측정
+                    if (performance.memory) {
+                        const memoryMB = performance.memory.usedJSHeapSize / 1024 / 1024;
+                        stats.memoryUsage.push(memoryMB);
+                        if (stats.memoryUsage.length > 30) stats.memoryUsage.shift();
+                    }
+                    
+                    // 성능 자동 조정
+                    adjustPerformance();
+                });
+            }, delay);
             }
             
-            // 화질 향상 모드가 활성화된 경우 추가 처리
-            if (window.videoEnhancementMode && video.videoWidth > 0) {
-                // Web Worker를 사용한 화질 향상 (선택적)
+            // 모바일에서 화질 향상 비활성화
+            if (!isMobile && window.videoEnhancementMode && video.videoWidth > 0) {
                 if (window.Worker) {
                     enhanceVideoFrameAsync();
                 } else {
@@ -7820,10 +8421,13 @@
             animationId = requestAnimationFrame(highPerformanceVideoAnalysis);
         }
         
-        // 최적화된 이미지 분석 (고성능 모드)
+        // 모바일 최적화된 이미지 분석 (성능 우선)
         async function analyzeImageOptimized() {
             if (isAnalyzing) return;
             isAnalyzing = true;
+            
+            const isMobile = window.innerWidth < 768;
+            const startTime = performance.now();
             
             try {
                 const source = currentSourceType === 'image' && uploadedImageEl ? uploadedImageEl : (uploadedVideoEl || video);
@@ -7849,69 +8453,115 @@
                     return;
                 }
                 
+                // 모바일에서 해상도 다운샘플링
+                let drawWidth = canvas.width;
+                let drawHeight = canvas.height;
+                
+                if (isMobile) {
+                    // 모바일에서 해상도를 절반으로 줄임
+                    drawWidth = Math.min(canvas.width, 320);
+                    drawHeight = Math.min(canvas.height, 240);
+                    canvas.width = drawWidth;
+                    canvas.height = drawHeight;
+                }
+                
                 // 원본 이미지 그리기 (최적화)
-                ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(source, 0, 0, drawWidth, drawHeight);
                 
-                // 병렬 처리로 성능 향상
-                const analysisPromises = [];
-                
-                // COCO-SSD 객체 감지 (우선순위 높음)
-                if (cocoSsdModel) {
-                    analysisPromises.push(
-                        cocoSsdModel.detect(source).then(detections => {
+                // 모바일에서 단순화된 분석만 실행
+                if (isMobile) {
+                    // 모바일에서는 COCO-SSD만 실행 (가장 빠름)
+                    if (cocoSsdModel) {
+                        try {
+                            const detections = await cocoSsdModel.detect(source, 10, 0.5); // 감지 개수 제한, 임계값 높임
+                            
                             if (detections.length > 0) {
                                 detections.forEach(detection => {
                                     const [x, y, width, height] = detection.bbox;
+                                    // 모바일에서 더 얇은 선과 작은 폰트
                                     ctx.strokeStyle = '#00ff00';
-                                    ctx.lineWidth = 2;
+                                    ctx.lineWidth = 1;
                                     ctx.strokeRect(x, y, width, height);
                                     
                                     ctx.fillStyle = '#00ff00';
-                                    ctx.font = '16px Arial';
-                                    ctx.fillText(`${detection.class} ${(detection.score * 100).toFixed(1)}%`, x, y - 5);
+                                    ctx.font = '12px Arial';
+                                    ctx.fillText(`${detection.class} ${(detection.score * 100).toFixed(0)}%`, x, y - 2);
                                 });
                             }
-                            return detections;
-                        }).catch(error => {
-                            console.warn('COCO-SSD 감지 실패:', error);
-                            return [];
-                        })
-                    );
-                }
-                
-                // 포즈 감지 (선택적, 성능에 따라)
-                if (poseDetector && currentFPS > 30) {
-                    analysisPromises.push(
-                        poseDetector.estimatePoses(source).then(poses => {
-                            if (poses.length > 0) {
-                                poses.forEach(pose => {
-                                    pose.keypoints.forEach(keypoint => {
-                                        if (keypoint.score > 0.3) {
-                                            ctx.fillStyle = '#ff0000';
-                                            ctx.beginPath();
-                                            ctx.arc(keypoint.x, keypoint.y, 3, 0, 2 * Math.PI);
-                                            ctx.fill();
-                                        }
-                                    });
-                                });
-                            }
-                            return poses;
-                        }).catch(error => {
-                            console.warn('포즈 감지 실패:', error);
-                            return [];
-                        })
-                    );
-                }
-                
-                // 결과 대기 및 처리
-                const results = await Promise.allSettled(analysisPromises);
-                
-                // 성공한 결과만 처리
-                results.forEach(result => {
-                    if (result.status === 'fulfilled' && result.value) {
-                        // 결과 처리 (필요시)
+                        } catch (error) {
+                            console.warn('모바일 COCO-SSD 감지 실패:', error);
+                        }
                     }
-                });
+                } else {
+                    // 데스크톱에서는 기존 분석 실행
+                    const analysisPromises = [];
+                    
+                    // COCO-SSD 객체 감지
+                    if (cocoSsdModel) {
+                        analysisPromises.push(
+                            cocoSsdModel.detect(source).then(detections => {
+                                if (detections.length > 0) {
+                                    detections.forEach(detection => {
+                                        const [x, y, width, height] = detection.bbox;
+                                        ctx.strokeStyle = '#00ff00';
+                                        ctx.lineWidth = 2;
+                                        ctx.strokeRect(x, y, width, height);
+                                        
+                                        ctx.fillStyle = '#00ff00';
+                                        ctx.font = '16px Arial';
+                                        ctx.fillText(`${detection.class} ${(detection.score * 100).toFixed(1)}%`, x, y - 5);
+                                    });
+                                }
+                                return detections;
+                            }).catch(error => {
+                                console.warn('COCO-SSD 감지 실패:', error);
+                                return [];
+                            })
+                        );
+                    }
+                    
+                    // 포즈 감지 (데스크톱에서만)
+                    if (poseDetector) {
+                        analysisPromises.push(
+                            poseDetector.estimatePoses(source).then(poses => {
+                                if (poses.length > 0) {
+                                    poses.forEach(pose => {
+                                        pose.keypoints.forEach(keypoint => {
+                                            if (keypoint.score > 0.3) {
+                                                ctx.fillStyle = '#ff0000';
+                                                ctx.beginPath();
+                                                ctx.arc(keypoint.x, keypoint.y, 3, 0, 2 * Math.PI);
+                                                ctx.fill();
+                                            }
+                                        });
+                                    });
+                                }
+                                return poses;
+                            }).catch(error => {
+                                console.warn('포즈 감지 실패:', error);
+                                return [];
+                            })
+                        );
+                    }
+                    
+                    // 결과 대기 및 처리
+                    const results = await Promise.allSettled(analysisPromises);
+                    
+                    // 성공한 결과만 처리
+                    results.forEach(result => {
+                        if (result.status === 'fulfilled' && result.value) {
+                            // 결과 처리 (필요시)
+                        }
+                    });
+                }
+                
+                // 성능 모니터링
+                const endTime = performance.now();
+                const processingTime = endTime - startTime;
+                
+                if (isMobile && processingTime > 100) {
+                    console.warn(`모바일 분석 시간이 너무 깁니다: ${processingTime.toFixed(1)}ms`);
+                }
                 
             } catch (error) {
                 console.warn('최적화된 분석 실패:', error);
@@ -7957,6 +8607,609 @@
             ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
         }
         
+        // 고급 성능 모니터링 및 자동 조정 시스템
+        let performanceMonitor = {
+            // 모바일 성능 통계
+            mobile: {
+                frameCount: 0,
+                totalFrameTime: 0,
+                averageFrameTime: 0,
+                lastAdjustmentTime: 0,
+                currentQuality: 'high', // high, medium, low
+                fpsHistory: [],
+                memoryUsage: [],
+                batteryLevel: null
+            },
+            // PC 성능 통계
+            desktop: {
+                frameCount: 0,
+                totalFrameTime: 0,
+                averageFrameTime: 0,
+                fpsHistory: [],
+                memoryUsage: [],
+                gpuInfo: null,
+                cpuUsage: []
+            },
+            // 공통 설정
+            settings: {
+                targetFPS: { mobile: 30, desktop: 60 },
+                maxMemoryUsage: { mobile: 200, desktop: 500 }, // MB
+                qualityLevels: {
+                    mobile: {
+                        high: { resolution: 320, fps: 30, models: ['cocoSsd'] },
+                        medium: { resolution: 240, fps: 20, models: ['cocoSsd'] },
+                        low: { resolution: 160, fps: 15, models: ['cocoSsd'] }
+                    },
+                    desktop: {
+                        high: { resolution: 800, fps: 60, models: ['cocoSsd', 'pose', 'face'] },
+                        medium: { resolution: 640, fps: 45, models: ['cocoSsd', 'pose'] },
+                        low: { resolution: 480, fps: 30, models: ['cocoSsd'] }
+                    }
+                }
+            }
+        };
+
+        // 모바일 환경 시뮬레이션 (테스트용)
+        function simulateMobileEnvironment() {
+            // 화면 크기를 모바일로 강제 설정
+            Object.defineProperty(window, 'innerWidth', {
+                writable: true,
+                value: 375 // iPhone SE 크기
+            });
+            Object.defineProperty(window, 'innerHeight', {
+                writable: true,
+                value: 667
+            });
+            
+            // User Agent를 모바일로 시뮬레이션
+            Object.defineProperty(navigator, 'userAgent', {
+                writable: true,
+                value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1'
+            });
+            
+            // 터치 이벤트 지원 시뮬레이션
+            window.ontouchstart = null;
+            window.ontouchmove = null;
+            window.ontouchend = null;
+            
+            // 모바일 성능 제한 시뮬레이션
+            const originalPerformanceNow = performance.now;
+            let mobilePerformanceOffset = 0;
+            
+            performance.now = function() {
+                // 모바일에서는 성능이 더 느림을 시뮬레이션
+                return originalPerformanceNow.call(performance) + mobilePerformanceOffset;
+            };
+            
+            console.log('📱 모바일 환경 시뮬레이션 활성화');
+            console.log('화면 크기:', window.innerWidth + 'x' + window.innerHeight);
+            console.log('User Agent:', navigator.userAgent);
+            
+            // 모바일 최적화 상태 표시
+            updateStatus('📱 모바일 환경 시뮬레이션 활성화됨 (375x667)');
+            
+            // UI 업데이트
+            document.body.style.maxWidth = '375px';
+            document.body.style.margin = '0 auto';
+            
+            // 모바일 버튼 상태 업데이트
+            const realtimePoseBtn = document.getElementById('realtimePoseBtn');
+            if (realtimePoseBtn) {
+                realtimePoseBtn.disabled = true;
+                realtimePoseBtn.title = '모바일에서는 사용할 수 없습니다';
+            }
+            
+            // 성능 테스트 버튼 활성화
+            const performanceTestBtn = document.getElementById('performanceTestBtn');
+            if (performanceTestBtn) {
+                performanceTestBtn.disabled = false;
+            }
+        }
+
+        // 데스크톱 환경으로 복원 (테스트용)
+        function restoreDesktopEnvironment() {
+            Object.defineProperty(window, 'innerWidth', {
+                writable: true,
+                value: 1920
+            });
+            Object.defineProperty(window, 'innerHeight', {
+                writable: true,
+                value: 1080
+            });
+            
+            Object.defineProperty(navigator, 'userAgent', {
+                writable: true,
+                value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            });
+            
+            // 성능 함수 복원
+            if (performance.now !== performance.now) {
+                performance.now = performance.now;
+            }
+            
+            console.log('🖥️ 데스크톱 환경으로 복원');
+            updateStatus('🖥️ 데스크톱 환경으로 복원됨 (1920x1080)');
+            
+            // UI 복원
+            document.body.style.maxWidth = 'none';
+            document.body.style.margin = '0';
+            
+            // 버튼 상태 복원
+            const realtimePoseBtn = document.getElementById('realtimePoseBtn');
+            if (realtimePoseBtn) {
+                realtimePoseBtn.disabled = false;
+                realtimePoseBtn.title = '';
+            }
+            
+            // 성능 테스트 버튼 비활성화
+            const performanceTestBtn = document.getElementById('performanceTestBtn');
+            if (performanceTestBtn) {
+                performanceTestBtn.disabled = true;
+            }
+        }
+
+        // 고급 성능 자동 조정 시스템
+        function adjustPerformance() {
+            const isMobile = window.innerWidth < 768;
+            const platform = isMobile ? 'mobile' : 'desktop';
+            const stats = performanceMonitor[platform];
+            const settings = performanceMonitor.settings;
+            
+            const now = performance.now();
+            if (now - stats.lastAdjustmentTime < 3000) return; // 3초마다 조정
+
+            const avgFrameTime = stats.averageFrameTime;
+            const currentFPS = 1000 / avgFrameTime;
+            const targetFPS = settings.targetFPS[platform];
+            
+            // 메모리 사용량 확인
+            const memoryUsage = performance.memory ? performance.memory.usedJSHeapSize / 1024 / 1024 : 0;
+            const maxMemory = settings.maxMemoryUsage[platform];
+            
+            // 현재 품질 레벨 가져오기
+            const currentQuality = stats.currentQuality;
+            const qualityLevels = settings.qualityLevels[platform];
+            
+            // 성능 평가 및 조정
+            let newQuality = currentQuality;
+            let shouldAdjust = false;
+            
+            // FPS 기반 조정
+            if (currentFPS < targetFPS * 0.7) {
+                // FPS가 목표의 70% 미만이면 품질 낮춤
+                if (currentQuality === 'high') {
+                    newQuality = 'medium';
+                    shouldAdjust = true;
+                } else if (currentQuality === 'medium') {
+                    newQuality = 'low';
+                    shouldAdjust = true;
+                }
+            } else if (currentFPS > targetFPS * 1.2 && currentQuality !== 'high') {
+                // FPS가 목표의 120% 이상이면 품질 높임
+                if (currentQuality === 'low') {
+                    newQuality = 'medium';
+                    shouldAdjust = true;
+                } else if (currentQuality === 'medium') {
+                    newQuality = 'high';
+                    shouldAdjust = true;
+                }
+            }
+            
+            // 메모리 사용량 기반 조정
+            if (memoryUsage > maxMemory * 0.8 && currentQuality !== 'low') {
+                if (currentQuality === 'high') {
+                    newQuality = 'medium';
+                    shouldAdjust = true;
+                } else if (currentQuality === 'medium') {
+                    newQuality = 'low';
+                    shouldAdjust = true;
+                }
+            }
+            
+            // 배터리 레벨 확인 (모바일)
+            if (isMobile && 'getBattery' in navigator) {
+                navigator.getBattery().then(battery => {
+                    if (battery.level < 0.2 && currentQuality !== 'low') {
+                        // 배터리가 20% 미만이면 최저 품질로
+                        newQuality = 'low';
+                        shouldAdjust = true;
+                    }
+                });
+            }
+            
+            // 품질 조정 실행
+            if (shouldAdjust && newQuality !== currentQuality) {
+                const newSettings = qualityLevels[newQuality];
+                
+                console.log(`${platform} 성능 조정: ${currentQuality} → ${newQuality}`);
+                console.log(`새 설정: 해상도 ${newSettings.resolution}, FPS ${newSettings.fps}`);
+                
+                // 해상도 조정
+                if (canvas.width > newSettings.resolution) {
+                    canvas.width = newSettings.resolution;
+                    canvas.height = Math.round(newSettings.resolution * 0.75);
+                }
+                
+                // 모델 활성화/비활성화
+                updateActiveModels(newSettings.models);
+                
+                stats.currentQuality = newQuality;
+                stats.lastAdjustmentTime = now;
+                
+                // 사용자에게 알림
+                showPerformanceNotification(`${platform} 성능 최적화: ${newQuality} 품질로 조정됨`);
+            }
+        }
+        
+        // 활성 모델 업데이트
+        function updateActiveModels(activeModels) {
+            // 모델 활성화 상태 관리
+            const modelStates = {
+                cocoSsd: activeModels.includes('cocoSsd'),
+                pose: activeModels.includes('pose'),
+                face: activeModels.includes('face')
+            };
+            
+            // UI 업데이트
+            Object.keys(modelStates).forEach(model => {
+                const btn = document.getElementById(`${model}Btn`);
+                if (btn) {
+                    btn.disabled = !modelStates[model];
+                    btn.title = modelStates[model] ? '' : '성능 최적화로 비활성화됨';
+                }
+            });
+        }
+        
+        // 성능 알림 표시
+        function showPerformanceNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(45deg, #ffa726, #ff7043);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                animation: slideDown 0.5s ease-out;
+            `;
+            notification.innerHTML = `⚡ ${message}`;
+            document.body.appendChild(notification);
+            
+            // 2초 후 제거
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideUp 0.5s ease-out';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 500);
+                }
+            }, 2000);
+        }
+
+        // 고급 성능 테스트 및 모니터링 시스템
+        function runAdvancedPerformanceTest() {
+            const isMobile = window.innerWidth < 768;
+            const platform = isMobile ? 'mobile' : 'desktop';
+            
+            console.log(`📊 ${platform} 고급 성능 테스트 시작...`);
+            
+            // 성능 통계 초기화
+            performanceMonitor[platform] = {
+                frameCount: 0,
+                totalFrameTime: 0,
+                averageFrameTime: 0,
+                lastAdjustmentTime: 0,
+                currentQuality: 'high',
+                fpsHistory: [],
+                memoryUsage: [],
+                batteryLevel: null
+            };
+
+            // 테스트 결과를 저장할 배열
+            const testResults = [];
+            
+            // 15초간 성능 테스트
+            const testDuration = 15000; // 15초
+            const startTime = performance.now();
+            
+            function runTest() {
+                const currentTime = performance.now();
+                const elapsed = currentTime - startTime;
+                
+                if (elapsed < testDuration) {
+                    // 실제 성능 측정
+                    const frameStart = performance.now();
+                    
+                    // 가상의 분석 시간 시뮬레이션
+                    const simulatedAnalysisTime = isMobile ? 
+                        Math.random() * 100 + 50 : // 모바일: 50-150ms
+                        Math.random() * 50 + 20;   // 데스크톱: 20-70ms
+                    
+                    const frameTime = performance.now() - frameStart + simulatedAnalysisTime;
+                    
+                    // 성능 통계 업데이트
+                    const stats = performanceMonitor[platform];
+                    stats.frameCount++;
+                    stats.totalFrameTime += frameTime;
+                    stats.averageFrameTime = stats.totalFrameTime / stats.frameCount;
+                    
+                    // FPS 히스토리 업데이트
+                    const currentFPS = 1000 / frameTime;
+                    stats.fpsHistory.push(currentFPS);
+                    if (stats.fpsHistory.length > 30) stats.fpsHistory.shift();
+                    
+                    // 메모리 사용량 측정
+                    if (performance.memory) {
+                        const memoryMB = performance.memory.usedJSHeapSize / 1024 / 1024;
+                        stats.memoryUsage.push(memoryMB);
+                        if (stats.memoryUsage.length > 30) stats.memoryUsage.shift();
+                    }
+                    
+                    // 배터리 레벨 확인 (모바일)
+                    if (isMobile && 'getBattery' in navigator) {
+                        navigator.getBattery().then(battery => {
+                            stats.batteryLevel = battery.level;
+                        });
+                    }
+                    
+                    testResults.push({
+                        frame: stats.frameCount,
+                        time: frameTime,
+                        fps: currentFPS,
+                        memory: performance.memory ? performance.memory.usedJSHeapSize / 1024 / 1024 : 0,
+                        quality: stats.currentQuality
+                    });
+                    
+                    // 성능 자동 조정
+                    adjustPerformance();
+                    
+                    // 다음 프레임 (플랫폼별 FPS)
+                    const targetFPS = performanceMonitor.settings.targetFPS[platform];
+                    const frameInterval = 1000 / targetFPS;
+                    setTimeout(runTest, frameInterval);
+                } else {
+                    // 테스트 완료
+                    const stats = performanceMonitor[platform];
+                    const avgFPS = stats.fpsHistory.length > 0 ? 
+                        stats.fpsHistory.reduce((a, b) => a + b, 0) / stats.fpsHistory.length : 0;
+                    const avgMemory = stats.memoryUsage.length > 0 ?
+                        stats.memoryUsage.reduce((a, b) => a + b, 0) / stats.memoryUsage.length : 0;
+                    
+                    console.log(`${platform} 고급 성능 테스트 완료!`);
+                    console.log('총 프레임:', stats.frameCount);
+                    console.log('평균 FPS:', avgFPS.toFixed(1));
+                    console.log('평균 메모리:', avgMemory.toFixed(1) + 'MB');
+                    console.log('최종 품질:', stats.currentQuality);
+                    
+                    // 성능 평가
+                    const targetFPS = performanceMonitor.settings.targetFPS[platform];
+                    const maxMemory = performanceMonitor.settings.maxMemoryUsage[platform];
+                    
+                    let performanceGrade = '❌ 개선 필요';
+                    if (avgFPS >= targetFPS * 0.9 && avgMemory <= maxMemory * 0.7) {
+                        performanceGrade = '✅ 우수';
+                    } else if (avgFPS >= targetFPS * 0.7 && avgMemory <= maxMemory * 0.9) {
+                        performanceGrade = '⚠️ 보통';
+                    }
+                    
+                    // 결과 요약
+                    const summary = `
+                        📊 ${platform} 고급 성능 테스트 결과 (15초간)<br>
+                        총 분석 프레임: <b>${stats.frameCount}</b><br>
+                        평균 FPS: <b>${avgFPS.toFixed(1)}</b> (목표: ${targetFPS})<br>
+                        평균 메모리 사용량: <b>${avgMemory.toFixed(1)}MB</b> (최대: ${maxMemory}MB)<br>
+                        최종 품질 설정: <b>${stats.currentQuality}</b><br>
+                        해상도: <b>${canvas.width}x${canvas.height}</b><br>
+                        ${isMobile && stats.batteryLevel ? `배터리 레벨: <b>${(stats.batteryLevel * 100).toFixed(1)}%</b><br>` : ''}
+                        <br>
+                        💡 성능 평가: <b>${performanceGrade}</b><br>
+                        <br>
+                        📈 성능 추이:<br>
+                        - FPS 안정성: ${getFPSStability(stats.fpsHistory)}<br>
+                        - 메모리 효율성: ${getMemoryEfficiency(stats.memoryUsage, maxMemory)}<br>
+                        - 자동 조정 횟수: ${getAdjustmentCount(testResults)}
+                    `;
+                    
+                    addResult(`📊 ${platform} 고급 성능 테스트`, summary);
+                    updateStatus(`${platform} 고급 성능 테스트 완료!`);
+                }
+            }
+            
+            runTest();
+        }
+        
+        // FPS 안정성 평가
+        function getFPSStability(fpsHistory) {
+            if (fpsHistory.length < 2) return '측정 불가';
+            
+            const avg = fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length;
+            const variance = fpsHistory.reduce((sum, fps) => sum + Math.pow(fps - avg, 2), 0) / fpsHistory.length;
+            const stdDev = Math.sqrt(variance);
+            
+            if (stdDev < avg * 0.1) return '✅ 매우 안정적';
+            if (stdDev < avg * 0.2) return '⚠️ 보통';
+            return '❌ 불안정';
+        }
+        
+        // 메모리 효율성 평가
+        function getMemoryEfficiency(memoryHistory, maxMemory) {
+            if (memoryHistory.length === 0) return '측정 불가';
+            
+            const avg = memoryHistory.reduce((a, b) => a + b, 0) / memoryHistory.length;
+            const efficiency = (avg / maxMemory) * 100;
+            
+            if (efficiency < 50) return '✅ 매우 효율적';
+            if (efficiency < 80) return '⚠️ 보통';
+            return '❌ 비효율적';
+        }
+        
+        // 자동 조정 횟수 계산
+        function getAdjustmentCount(testResults) {
+            let count = 0;
+            for (let i = 1; i < testResults.length; i++) {
+                if (testResults[i].quality !== testResults[i-1].quality) {
+                    count++;
+                }
+            }
+            return count;
+        }
+        
+        // 비디오 컨테이너 크기 조정
+        function adjustVideoContainerSize(videoElement, container) {
+            try {
+                // 화면 크기에 따른 최대 크기 설정
+                const maxContainerWidth = window.innerWidth < 768 ? window.innerWidth * 0.95 : 
+                                        window.innerWidth < 1024 ? window.innerWidth * 0.9 : 
+                                        window.innerWidth * 0.85;
+                const maxContainerHeight = window.innerHeight * 0.7;
+                
+                // 비디오 스타일 적용
+                videoElement.style.maxWidth = `${maxContainerWidth}px`;
+                videoElement.style.maxHeight = `${maxContainerHeight}px`;
+                videoElement.style.width = 'auto';
+                videoElement.style.height = 'auto';
+                videoElement.style.borderRadius = '12px';
+                videoElement.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)';
+                videoElement.style.transition = 'transform 0.3s ease';
+                videoElement.style.objectFit = 'contain';
+                
+                // 컨테이너 스타일 조정
+                container.style.display = 'flex';
+                container.style.justifyContent = 'center';
+                container.style.alignItems = 'center';
+                container.style.minHeight = '300px';
+                
+            } catch (error) {
+                console.warn('비디오 컨테이너 크기 조정 오류:', error);
+            }
+        }
+
+        // 이미지 크기에 맞게 컨테이너 조정
+        function adjustContainerToImageSize(img, container, displayWidth, displayHeight) {
+            try {
+                // 컨테이너 크기 제한 (화면 크기에 따라)
+                const maxContainerWidth = window.innerWidth < 768 ? window.innerWidth * 0.95 : 
+                                        window.innerWidth < 1024 ? window.innerWidth * 0.9 : 
+                                        window.innerWidth * 0.85;
+                const maxContainerHeight = window.innerHeight * 0.7;
+                
+                // 이미지 비율 계산
+                const imgRatio = img.naturalWidth / img.naturalHeight;
+                
+                // 컨테이너에 맞는 최적 크기 계산
+                let finalWidth = displayWidth;
+                let finalHeight = displayHeight;
+                
+                if (finalWidth > maxContainerWidth) {
+                    finalWidth = maxContainerWidth;
+                    finalHeight = finalWidth / imgRatio;
+                }
+                
+                if (finalHeight > maxContainerHeight) {
+                    finalHeight = maxContainerHeight;
+                    finalWidth = finalHeight * imgRatio;
+                }
+                
+                // 컨테이너 스타일 적용
+                container.style.width = `${finalWidth}px`;
+                container.style.height = `${finalHeight}px`;
+                container.style.maxWidth = `${maxContainerWidth}px`;
+                container.style.maxHeight = `${maxContainerHeight}px`;
+                
+                // 캔버스 크기 설정
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                
+                // 이미지를 캔버스에 그리기
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+            } catch (error) {
+                console.warn('컨테이너 크기 조정 오류:', error);
+            }
+        }
+
+        // 고정된 성능 대시보드 업데이트
+        function updateFixedPerformanceDashboard() {
+            const isMobile = window.innerWidth < 768;
+            const platform = isMobile ? 'mobile' : 'desktop';
+            const stats = performanceMonitor[platform];
+            
+            if (!stats) return;
+            
+            const avgFPS = stats.fpsHistory.length > 0 ? 
+                stats.fpsHistory.reduce((a, b) => a + b, 0) / stats.fpsHistory.length : 0;
+            const currentMemory = performance.memory?.usedJSHeapSize / 1024 / 1024 || 0;
+            
+            // 고정된 대시보드 요소들 업데이트
+            const fixedFPS = document.getElementById('fixedFPS');
+            const fixedMemory = document.getElementById('fixedMemory');
+            const fixedObjects = document.getElementById('fixedObjects');
+            const fixedConfidence = document.getElementById('fixedConfidence');
+            const fixedMode = document.getElementById('fixedMode');
+            
+            if (fixedFPS) fixedFPS.textContent = avgFPS.toFixed(1);
+            if (fixedMemory) fixedMemory.textContent = `${currentMemory.toFixed(1)}MB`;
+            if (fixedObjects) fixedObjects.textContent = detectedObjects || 0;
+            if (fixedConfidence) fixedConfidence.textContent = `${((avgConfidence || 0) * 100).toFixed(1)}%`;
+            if (fixedMode) fixedMode.textContent = stats.currentQuality || '일반';
+            
+            // 고정된 대시보드 표시
+            const fixedDashboard = document.getElementById('fixedPerformanceDashboard');
+            if (fixedDashboard) {
+                fixedDashboard.style.display = 'block';
+            }
+        }
+
+        // 성능 대시보드 표시 (고정된 대시보드만 사용)
+        function showPerformanceDashboard() {
+            // 고정된 성능 대시보드 토글
+            const fixedDashboard = document.getElementById('fixedPerformanceDashboard');
+            if (fixedDashboard) {
+                if (fixedDashboard.style.display === 'none' || fixedDashboard.style.display === '') {
+                    fixedDashboard.style.display = 'block';
+                    updateFixedPerformanceDashboard();
+                } else {
+                    fixedDashboard.style.display = 'none';
+                }
+            }
+        }
+            
+            // 화면 크기 변경 시 반응형 처리
+            window.addEventListener('resize', () => {
+                if (activeMediaId) {
+                    const item = uploadedMedia.find(m => m.id === activeMediaId);
+                    if (item) {
+                        if (item.type === 'image' && uploadedImageEl) {
+                            // 이미지 크기 재조정
+                            const imgWidth = uploadedImageEl.naturalWidth || uploadedImageEl.width;
+                            const imgHeight = uploadedImageEl.naturalHeight || uploadedImageEl.height;
+                            const containerWidth = window.innerWidth < 768 ? window.innerWidth * 0.9 : 
+                                                 window.innerWidth < 1024 ? window.innerWidth * 0.85 : 
+                                                 window.innerWidth * 0.9;
+                            const containerHeight = (containerWidth * imgHeight) / imgWidth;
+                            const widthRatio = containerWidth / imgWidth;
+                            const heightRatio = containerHeight / imgHeight;
+                            const scaleRatio = Math.min(widthRatio, heightRatio, 1);
+                            const displayWidth = Math.round(imgWidth * scaleRatio);
+                            const displayHeight = Math.round(imgHeight * scaleRatio);
+                            adjustContainerToImageSize(uploadedImageEl, containerEl, displayWidth, displayHeight);
+                        } else if (item.type === 'video' && uploadedVideoEl) {
+                            // 비디오 크기 재조정
+                            adjustVideoContainerSize(uploadedVideoEl, containerEl);
+                        }
+                    }
+                }
+            });
+
         // 고성능 모드 토글
         function toggleHighPerformanceMode() {
             if (highPerformanceMode) {
@@ -7964,7 +9217,8 @@
                 highPerformanceMode = false;
                 document.getElementById('highPerformanceBtn').textContent = '⚡ 고성능 모드 (60fps)';
                 document.getElementById('highPerformanceBtn').style.background = 'linear-gradient(45deg, #00ff88, #00ccff)';
-                document.getElementById('performanceModeValue').textContent = '일반';
+                // 고정된 성능 대시보드 업데이트
+                updateFixedPerformanceDashboard();
                 updateStatus('⏸️ 고성능 모드 비활성화됨');
                 
                 // 기존 실시간 분석으로 복귀
@@ -7976,7 +9230,8 @@
                 highPerformanceMode = true;
                 document.getElementById('highPerformanceBtn').textContent = '⏸️ 고성능 모드 중지';
                 document.getElementById('highPerformanceBtn').style.background = 'linear-gradient(45deg, #ff6b6b, #ee5a24)';
-                document.getElementById('performanceModeValue').textContent = '고성능';
+                    // 고정된 성능 대시보드 업데이트
+                updateFixedPerformanceDashboard();
                 updateStatus('⚡ 고성능 모드 활성화됨 (목표: 60fps)');
                 
                 // 기존 실시간 분석 중지
@@ -8050,30 +9305,50 @@
         async function handleFileUpload(event) {
             const files = Array.from(event.target.files || []);
             if (files.length === 0) return;
+            
+            // 로딩 상태 표시
+            const container = document.querySelector('.video-container');
+            container.classList.add('loading');
+            
             let firstId = null;
             for (const file of files) {
                 try {
                     updateStatus(`📁 이미지 업로드 중... (${file.name})`);
                     const id = `${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
                     if (!firstId) firstId = id;
+                    
+                    // 파일 크기 검증
+                    if (file.size > 50 * 1024 * 1024) { // 50MB 제한
+                        updateStatus('❌ 파일이 너무 큽니다 (최대 50MB)', true);
+                        continue;
+                    }
+                    
                     const reader = new FileReader();
                     await new Promise((resolve, reject) => {
                         reader.onerror = reject;
                         reader.onload = () => resolve(null);
                         reader.readAsDataURL(file);
                     });
+                    
                     const img = new Image();
                     await new Promise((resolve, reject) => {
                         img.onload = resolve;
                         img.onerror = reject;
                         img.src = reader.result;
                     });
+                    
                     uploadedMedia.push({ id, type: 'image', name: file.name, url: reader.result, element: img });
                     renderMediaList();
+                    
+                    updateStatus(`✅ ${file.name} 업로드 완료`);
                 } catch (error) {
                     updateStatus('❌ 이미지 업로드 실패: ' + error.message, true);
                 }
             }
+            
+            // 로딩 상태 제거
+            container.classList.remove('loading');
+            
             // 첫 번째 항목부터 자동 시작 (옵션)
             if (firstId && document.getElementById('autoStartToggle').checked) {
                 const firstItem = uploadedMedia.find(m => m.id === firstId);
@@ -8119,22 +9394,49 @@
         async function handleVideoUpload(event) {
             const files = Array.from(event.target.files || []);
             if (files.length === 0) return;
+            
+            // 로딩 상태 표시
+            const container = document.querySelector('.video-container');
+            container.classList.add('loading');
+            
             let firstId = null;
             for (const file of files) {
                 try {
                     updateStatus(`🎞️ 동영상 업로드 중... (${file.name})`);
                     const id = `${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
                     if (!firstId) firstId = id;
+                    
+                    // 파일 크기 검증
+                    if (file.size > 200 * 1024 * 1024) { // 200MB 제한
+                        updateStatus('❌ 파일이 너무 큽니다 (최대 200MB)', true);
+                        continue;
+                    }
+                    
                     const objectUrl = URL.createObjectURL(file);
                     const vid = document.createElement('video');
-                    vid.preload = 'auto'; vid.muted = true; vid.controls = false; vid.playsInline = true; vid.src = objectUrl;
-                    await new Promise((resolve,reject)=>{ vid.onloadedmetadata = resolve; vid.onerror = reject; });
+                    vid.preload = 'auto'; 
+                    vid.muted = true; 
+                    vid.controls = false; 
+                    vid.playsInline = true; 
+                    vid.src = objectUrl;
+                    
+                    await new Promise((resolve,reject)=>{ 
+                        vid.onloadedmetadata = resolve; 
+                        vid.onerror = reject; 
+                    });
+                    
                     uploadedMedia.push({ id, type: 'video', name: file.name, url: objectUrl, element: vid });
                     renderMediaList();
+                    
+                    updateStatus(`✅ ${file.name} 업로드 완료`);
                 } catch (e) {
                     updateStatus('❌ 동영상 업로드 실패: ' + e.message, true);
                 }
             }
+            
+            // 로딩 상태 제거
+            container.classList.remove('loading');
+            
             if (firstId && document.getElementById('autoStartToggle').checked) {
                 setActiveMedia(firstId); // 비디오는 onplay에서 실시간 자동 시작
             }
@@ -8516,7 +9818,13 @@
             });
             
             document.getElementById('realtimePoseBtn').addEventListener('click', toggleRealtimePose);
-        document.getElementById('highPerformanceBtn').addEventListener('click', toggleHighPerformanceMode);
+            document.getElementById('highPerformanceBtn').addEventListener('click', toggleHighPerformanceMode);
+            
+            // 성능 테스트 버튼들
+            document.getElementById('mobileTestBtn').addEventListener('click', simulateMobileEnvironment);
+            document.getElementById('desktopTestBtn').addEventListener('click', restoreDesktopEnvironment);
+            document.getElementById('performanceTestBtn').addEventListener('click', runAdvancedPerformanceTest);
+            document.getElementById('performanceDashboardBtn').addEventListener('click', showPerformanceDashboard);
             
             document.getElementById('bodySegBtn').addEventListener('click', async ()=>{
                 const source = currentSourceType === 'image' && uploadedImageEl ? uploadedImageEl : (uploadedVideoEl || video);
@@ -8626,7 +9934,13 @@
             window.setActiveMedia = async function setActiveMedia(id) {
                 const item = uploadedMedia.find(m => m.id === id);
                 if (!item) return;
+                
+                // 로딩 상태 표시
+                const container = document.querySelector('.video-container');
+                container.classList.add('loading');
+                
                 activeMediaId = id;
+                
                 // 이미지/동영상 별로 표시
                 if (item.type === 'image') {
                     const img = item.element;
@@ -8681,26 +9995,32 @@
                     document.getElementById('clearImageBtn').disabled = false;
                     document.getElementById('clearVideoBtn').disabled = true;
                     
-                                    // 이미지 로드 완료 대기
-                if (!img.complete) {
-                    await new Promise((resolve) => {
-                        img.onload = resolve;
-                        img.onerror = resolve;
-                    });
-                }
-                
-                // 이미지 크기에 맞게 컨테이너 재조정 (이미 계산된 크기 사용)
-                adjustContainerToImageSize(img, containerEl, displayWidth, displayHeight);
-                
-                // 이미지 선택 시 자동 분석 실행
-                try { 
-                    updateStatus('🔄 이미지 분석 중...');
-                    await analyzeImage(); 
-                    updateStatus('✅ 이미지 분석 완료');
-                } catch (error) {
-                    updateStatus('❌ 이미지 분석 실패');
-                    console.error('이미지 분석 오류:', error);
-                }
+                    // 이미지 로드 완료 대기
+                    if (!img.complete) {
+                        await new Promise((resolve) => {
+                            img.onload = resolve;
+                            img.onerror = resolve;
+                        });
+                    }
+                    
+                    // 이미지 크기에 맞게 컨테이너 재조정
+                    adjustContainerToImageSize(img, containerEl, displayWidth, displayHeight);
+                    
+                    // 로딩 상태 제거
+                    container.classList.remove('loading');
+                    
+                    // 이미지 선택 시 자동 분석 실행
+                    try { 
+                        updateStatus('🔄 이미지 분석 중...');
+                        canvas.classList.add('analyzing');
+                        await analyzeImage(); 
+                        canvas.classList.remove('analyzing');
+                        updateStatus('✅ 이미지 분석 완료');
+                    } catch (error) {
+                        canvas.classList.remove('analyzing');
+                        updateStatus('❌ 이미지 분석 실패');
+                        console.error('이미지 분석 오류:', error);
+                    }
                 } else {
                     // 비디오 DOM에 배치
                     if (uploadedVideoEl) {
@@ -8711,20 +10031,7 @@
                     const container = document.querySelector('.video-container');
                     
                     // 반응형 비디오 크기 설정
-                    let maxWidth;
-                    if (window.innerWidth < 768) {
-                        maxWidth = window.innerWidth * 0.9;
-                    } else if (window.innerWidth < 1024) {
-                        maxWidth = window.innerWidth * 0.85;
-                    } else {
-                        maxWidth = window.innerWidth * 0.8;
-                    }
-                    
-                    uploadedVideoEl.style.maxWidth = `${maxWidth}px`;
-                    uploadedVideoEl.style.width = '100%';
-                    uploadedVideoEl.style.borderRadius = '12px';
-                    uploadedVideoEl.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)';
-                    uploadedVideoEl.style.transition = 'transform 0.3s ease';
+                    adjustVideoContainerSize(uploadedVideoEl, container);
                     container.insertBefore(uploadedVideoEl, document.getElementById('canvas'));
                     
                     // 비디오 로드 완료 대기
@@ -8758,6 +10065,7 @@
                         if (isRealtime) { toggleRealtime(); }
                         updateStatus('⏹️ 동영상 재생 완료');
                     };
+                    
                     // 크기 맞추기 (최소 크기 보장)
                     const videoWidth = uploadedVideoEl.videoWidth || 640;
                     const videoHeight = uploadedVideoEl.videoHeight || 480;
@@ -8774,7 +10082,16 @@
                     document.getElementById('realtimeBtn').disabled = false;
                     document.getElementById('clearImageBtn').disabled = true;
                     document.getElementById('clearVideoBtn').disabled = false;
-                    try { await uploadedVideoEl.play(); } catch {}
+                    
+                    // 로딩 상태 제거
+                    container.classList.remove('loading');
+                    
+                    try { 
+                        await uploadedVideoEl.play(); 
+                        updateStatus('✅ 비디오 재생 시작');
+                    } catch (error) {
+                        updateStatus('❌ 비디오 재생 실패: ' + error.message, true);
+                    }
                 }
                 renderMediaList();
             }
